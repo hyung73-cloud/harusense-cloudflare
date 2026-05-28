@@ -701,36 +701,83 @@ body {
   font-weight: 700;
   text-decoration: none;
 }
-.rep-login,
-.rep-editor { display: grid; gap: 10px; }
-.rep-field { display: grid; gap: 5px; }
-.rep-field label,
-.remember-row { color: var(--ink-2); font-size: 12px; font-weight: 700; }
-.rep-field input,
-.price-input { width: 100%; min-height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; color: var(--ink); font-family: inherit; font-size: 14px; background: #fff; }
-.remember-row { display: flex; align-items: center; gap: 7px; }
-.rep-button { min-height: 38px; border: none; border-radius: 8px; background: var(--blue); color: #fff; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
-.rep-button.secondary { background: var(--ink); }
-.rep-message { min-height: 18px; color: var(--mute); font-size: 12px; font-weight: 600; }
-.rep-message.error { color: #dc2626; }
-.rep-message.success { color: var(--verified); }
-.rep-clinic-title { color: var(--ink); font-size: 14px; font-weight: 800; }
-.rep-clinic-sub { color: var(--mute); font-size: 11px; line-height: 1.45; }
-.rep-drug-title { margin-top: 6px; color: var(--ink); font-size: 13px; font-weight: 800; }
-.rep-item { display: grid; grid-template-columns: 64px minmax(96px, 1fr) auto; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid var(--line-soft); }
-.rep-dose { color: var(--ink-2); font-size: 12px; font-weight: 800; }
-.stock-toggle { display: inline-flex; align-items: center; gap: 6px; min-width: 82px; justify-content: center; border: 1px solid var(--line); border-radius: 999px; padding: 7px 9px; background: #fff; color: var(--ink-2); font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+/* ===== 병원 관계자 수정 — 전체화면 모달 ===== */
+.rep-trigger { display: grid; gap: 8px; padding: 4px 0; }
+.rep-trigger p { font-size: 12px; color: var(--ink-2); line-height: 1.5; margin: 0; }
+.rep-trigger-btn {
+  min-height: 44px; border: none; border-radius: 10px;
+  background: var(--blue); color: #fff;
+  font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.rep-modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  z-index: 2000; opacity: 0; pointer-events: none;
+  transition: opacity 0.22s ease;
+  backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+}
+.rep-modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.rep-modal {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  z-index: 2100; background: var(--surface);
+  border-radius: 20px 20px 0 0; box-shadow: var(--shadow-lg);
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1);
+  max-height: 92vh; display: flex; flex-direction: column;
+}
+.rep-modal.open { transform: translateY(0); }
+.rep-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--line); flex-shrink: 0;
+}
+.rep-modal-title { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
+.rep-modal-sub { font-size: 12px; color: var(--mute); margin-top: 2px; }
+.rep-modal-close {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: none; background: var(--line-soft);
+  font-size: 20px; color: var(--ink-2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; flex-shrink: 0; font-family: inherit;
+}
+.rep-modal-body { padding: 18px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.rep-modal-footer { padding: 14px 20px 22px; border-top: 1px solid var(--line); flex-shrink: 0; }
+.rep-field { display: grid; gap: 6px; margin-bottom: 16px; }
+.rep-field label { color: var(--ink-2); font-size: 13px; font-weight: 600; }
+.rep-field input {
+  width: 100%; height: 50px; border: 1px solid var(--line);
+  border-radius: 10px; padding: 0 14px; color: var(--ink);
+  font-family: inherit; font-size: 16px; background: #fff;
+}
+.rep-field input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.rep-drug-title { margin: 4px 0 12px; color: var(--ink); font-size: 14px; font-weight: 700; }
+.rep-drug-title:not(:first-child) { margin-top: 22px; }
+.rep-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.rep-dose { width: 56px; flex-shrink: 0; color: var(--ink); font-size: 14px; font-weight: 600; }
+.price-input {
+  flex: 1; min-width: 0; height: 46px; border: 1px solid var(--line);
+  border-radius: 10px; padding: 0 14px; color: var(--ink);
+  font-family: inherit; font-size: 16px; background: #fff; font-variant-numeric: tabular-nums;
+}
+.price-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.stock-toggle {
+  flex-shrink: 0; min-width: 84px; height: 46px;
+  border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  color: var(--ink-2); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
 .stock-toggle.on { border-color: var(--verified); background: var(--verified-soft); color: var(--verified); }
 .stock-toggle.off { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
-.rep-actions { display: flex; gap: 8px; }
-.rep-actions .rep-button { flex: 1; }
-.stock-badge { display: inline-flex; margin-left: 8px; padding: 2px 6px; border-radius: 999px; font-size: 10px; font-weight: 800; vertical-align: middle; }
-.stock-badge.on { background: var(--verified-soft); color: var(--verified); }
-.stock-badge.off { background: #fef2f2; color: #dc2626; }
-@media (max-width: 420px) {
-  .guide-tab { font-size: 12px; padding-left: 4px; padding-right: 4px; }
-  .rep-item { grid-template-columns: 54px 1fr; }
-  .stock-toggle { grid-column: 2; }
+.rep-button {
+  width: 100%; height: 50px; border: none; border-radius: 10px;
+  background: var(--blue); color: #fff; font-family: inherit;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.rep-button.secondary { background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); margin-top: 8px; }
+.rep-message { min-height: 20px; margin-top: 10px; color: var(--mute); font-size: 13px; font-weight: 600; text-align: center; }
+.rep-message.error { color: #dc2626; }
+.rep-message.success { color: var(--verified); }
+@media (min-width: 768px) {
+  .rep-modal { max-width: 440px; left: 50%; right: auto; transform: translateX(-50%) translateY(100%); }
+  .rep-modal.open { transform: translateX(-50%) translateY(0); }
 }
 /* Loading */
 .loading {
@@ -1031,36 +1078,61 @@ body {
       </p>
     </div>
     <div class="guide-pane" id="guideEdit" role="tabpanel" data-guide-pane="edit">
-      <div class="rep-login" id="repLoginBox">
-        <h3>병원 관계자 수정</h3>
-        <p>아이디는 요양기관번호, 비밀번호는 h+요양기관번호입니다. (예: 12339695 / h12339695)</p>
-        <div class="rep-field">
-          <label for="repInstitutionNo">요양기관번호</label>
-          <input id="repInstitutionNo" inputmode="numeric" autocomplete="username" placeholder="12339695" />
-        </div>
-        <div class="rep-field">
-          <label for="repPassword">비밀번호</label>
-          <input id="repPassword" type="password" autocomplete="current-password" placeholder="h12339695" />
-        </div>
-        <label class="remember-row"><input id="repRemember" type="checkbox" /> 이 기기에서 로그인 정보 저장</label>
-        <button class="rep-button" id="repLoginBtn" type="button">로그인</button>
-        <div class="rep-message" id="repLoginMessage"></div>
-      </div>
-      <div class="rep-editor" id="repEditorBox" hidden>
-        <div>
-          <div class="rep-clinic-title" id="repClinicTitle">정보 수정</div>
-          <div class="rep-clinic-sub" id="repClinicSub"></div>
-        </div>
-        <div id="repPriceFields"></div>
-        <div class="rep-actions">
-          <button class="rep-button" id="repSubmitBtn" type="button">수정 내용 제출</button>
-          <button class="rep-button secondary" id="repLogoutBtn" type="button">로그아웃</button>
-        </div>
-        <div class="rep-message" id="repSubmitMessage"></div>
+      <div class="rep-trigger">
+        <p>등록 의원 관계자는 가격·재고를 직접 수정할 수 있습니다. 아이디는 요양기관번호, 비밀번호는 앞에 h를 붙입니다.</p>
+        <button class="rep-trigger-btn" id="repOpenBtn" type="button">병원 관계자 로그인</button>
       </div>
     </div>
   </div>
 </section>
+
+<!-- 병원 관계자 수정 — 전체화면 모달 -->
+<div class="rep-modal-backdrop" id="repModalBackdrop"></div>
+<div class="rep-modal" id="repModal">
+  <!-- 로그인 화면 -->
+  <div id="repLoginView">
+    <div class="rep-modal-header">
+      <div>
+        <div class="rep-modal-title">병원 관계자 로그인</div>
+        <div class="rep-modal-sub">요양기관번호로 로그인하세요</div>
+      </div>
+      <button class="rep-modal-close" id="repCloseBtn1" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="rep-modal-body">
+      <div class="rep-field">
+        <label for="repInstitutionNo">요양기관번호</label>
+        <input id="repInstitutionNo" inputmode="numeric" autocomplete="off" />
+      </div>
+      <div class="rep-field">
+        <label for="repPassword">비밀번호</label>
+        <input id="repPassword" type="password" autocomplete="off" />
+      </div>
+      <div class="rep-message" id="repLoginMessage"></div>
+    </div>
+    <div class="rep-modal-footer">
+      <button class="rep-button" id="repLoginBtn" type="button">로그인</button>
+    </div>
+  </div>
+
+  <!-- 수정 화면 -->
+  <div id="repEditView" hidden>
+    <div class="rep-modal-header">
+      <div>
+        <div class="rep-modal-title" id="repClinicTitle">정보 수정</div>
+        <div class="rep-modal-sub" id="repClinicSub"></div>
+      </div>
+      <button class="rep-modal-close" id="repCloseBtn2" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="rep-modal-body">
+      <div id="repPriceFields"></div>
+    </div>
+    <div class="rep-modal-footer">
+      <button class="rep-button" id="repSubmitBtn" type="button">수정 내용 제출</button>
+      <button class="rep-button secondary" id="repLogoutBtn" type="button">로그아웃</button>
+      <div class="rep-message" id="repSubmitMessage"></div>
+    </div>
+  </div>
+</div>
 <div class="sheet-backdrop" id="backdrop"></div>
 <aside class="detail-sheet" id="sheet">
   <div class="sheet-handle"></div>
@@ -1452,7 +1524,7 @@ function renderRepresentativeEditor() {
       return `
         <div class="rep-item" data-key="${key}">
           <div class="rep-dose">${item.dose}</div>
-          <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" placeholder="가격" />
+          <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" />
           <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
         </div>`;
     }).join("");
@@ -1463,12 +1535,22 @@ function renderRepresentativeEditor() {
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
   });
 }
+// 모달 열기/닫기
+function openRepModal() {
+  document.getElementById("repModalBackdrop").classList.add("open");
+  document.getElementById("repModal").classList.add("open");
+}
+function closeRepModal() {
+  document.getElementById("repModalBackdrop").classList.remove("open");
+  document.getElementById("repModal").classList.remove("open");
+}
+// 로그인 뷰 ↔ 수정 뷰 전환
 function showRepresentativeEditor(show) {
-  const login = document.getElementById("repLoginBox");
-  const editor = document.getElementById("repEditorBox");
-  if (!login || !editor) return;
-  login.hidden = show;
-  editor.hidden = !show;
+  const loginView = document.getElementById("repLoginView");
+  const editView = document.getElementById("repEditView");
+  if (!loginView || !editView) return;
+  loginView.hidden = show;
+  editView.hidden = !show;
   if (show) renderRepresentativeEditor();
 }
 
@@ -1476,7 +1558,6 @@ function showRepresentativeEditor(show) {
 async function handleRepLogin() {
   const id = document.getElementById("repInstitutionNo").value.trim();
   const pw = document.getElementById("repPassword").value.trim();
-  const remember = document.getElementById("repRemember").checked;
 
   if (!id || !pw) {
     setRepMessage("repLoginMessage", "요양기관번호와 비밀번호를 입력해주세요.", "error");
@@ -1497,15 +1578,9 @@ async function handleRepLogin() {
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
 
-      if (remember) {
-        localStorage.setItem(REP_LOGIN_KEY, JSON.stringify({ id, pw }));
-      } else {
-        localStorage.removeItem(REP_LOGIN_KEY);
-      }
-
       // 최신 데이터를 다시 읽어 로그인한 병원의 현재 가격을 정확히 표시
       await loadData();
-      setRepMessage("repLoginMessage", "로그인되었습니다.", "success");
+      setRepMessage("repLoginMessage", "", "");
       showRepresentativeEditor(true);
     } else {
       setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
@@ -1561,30 +1636,49 @@ async function handleRepSubmit() {
 }
 
 function initRepresentativeForm() {
+  const openBtn = document.getElementById("repOpenBtn");
   const loginBtn = document.getElementById("repLoginBtn");
   const submitBtn = document.getElementById("repSubmitBtn");
   const logoutBtn = document.getElementById("repLogoutBtn");
-  if (!loginBtn || loginBtn.dataset.bound === "true") return;
-  loginBtn.dataset.bound = "true";
+  const closeBtn1 = document.getElementById("repCloseBtn1");
+  const closeBtn2 = document.getElementById("repCloseBtn2");
+  const backdrop = document.getElementById("repModalBackdrop");
+  if (!openBtn || openBtn.dataset.bound === "true") return;
+  openBtn.dataset.bound = "true";
+
+  // 모달 열기 (항상 로그인 화면부터)
+  openBtn.addEventListener("click", () => {
+    showRepresentativeEditor(false);
+    setRepMessage("repLoginMessage", "");
+    document.getElementById("repInstitutionNo").value = "";
+    document.getElementById("repPassword").value = "";
+    openRepModal();
+  });
+
+  // 닫기
+  closeBtn1.addEventListener("click", closeRepModal);
+  closeBtn2.addEventListener("click", closeRepModal);
+  backdrop.addEventListener("click", closeRepModal);
+
+  // 로그인 / 제출
   loginBtn.addEventListener("click", handleRepLogin);
   submitBtn.addEventListener("click", handleRepSubmit);
+
+  // 엔터키로 로그인
+  document.getElementById("repPassword").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleRepLogin();
+  });
+
+  // 로그아웃 → 로그인 화면으로
   logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem(REP_LOGIN_KEY);
     REP_ACTIVE_INSTITUTION_NO = "";
     REP_ACTIVE_PASSWORD = "";
     REP_ACTIVE_CLINIC_ID = null;
     showRepresentativeEditor(false);
     setRepMessage("repSubmitMessage", "");
-    setRepMessage("repLoginMessage", "로그아웃되었습니다.", "");
+    document.getElementById("repInstitutionNo").value = "";
+    document.getElementById("repPassword").value = "";
   });
-
-  // 저장된 로그인 정보가 있으면 아이디/비번 채워주되, 자동 로그인은 서버 검증 후에만
-  const savedLogin = JSON.parse(localStorage.getItem(REP_LOGIN_KEY) || "null");
-  if (savedLogin && savedLogin.id) {
-    document.getElementById("repInstitutionNo").value = savedLogin.id || "";
-    document.getElementById("repPassword").value = savedLogin.pw || "";
-    document.getElementById("repRemember").checked = true;
-  }
 }
 
 // Expose for Google Maps callback
