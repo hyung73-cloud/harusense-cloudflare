@@ -723,9 +723,11 @@ body {
   border-radius: 20px 20px 0 0; box-shadow: var(--shadow-lg);
   transform: translateY(100%);
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1);
-  max-height: 92vh; display: flex; flex-direction: column;
+  height: 90vh; max-height: 90vh; display: flex; flex-direction: column;
 }
 .rep-modal.open { transform: translateY(0); }
+.rep-modal > div { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.rep-modal > div[hidden] { display: none; }
 .rep-modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 18px 20px 14px; border-bottom: 1px solid var(--line); flex-shrink: 0;
@@ -739,7 +741,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   line-height: 1; flex-shrink: 0; font-family: inherit;
 }
-.rep-modal-body { padding: 18px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.rep-modal-body { padding: 18px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; }
 .rep-modal-footer { padding: 14px 20px 22px; border-top: 1px solid var(--line); flex-shrink: 0; }
 .rep-field { display: grid; gap: 6px; margin-bottom: 16px; }
 .rep-field label { color: var(--ink-2); font-size: 13px; font-weight: 600; }
