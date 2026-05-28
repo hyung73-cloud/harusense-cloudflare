@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/0.9">
+
+  <!-- 메인 페이지 (지도) -->
+  <url>
+    <loc>https://harusense.com/</loc>
+    <lastmod>2026-05-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://harusense.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://harusense.com/" />
+  </url>
+
+  <!--
+    의원별 정적 페이지가 추가되면 아래에 자동 추가됩니다 (3단계 작업).
+    예시 구조:
+    <url>
+      <loc>https://harusense.com/clinic/newsense</loc>
+      <lastmod>2026-05-25</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>
+  -->
+
+</urlset>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="pinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF8A3D"/>
+      <stop offset="100%" stop-color="#E85D04"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Map pin teardrop -->
+  <path d="M 50 4
+           C 24 4, 6 22, 6 46
+           C 6 65, 22 79, 50 96
+           C 78 79, 94 65, 94 46
+           C 94 22, 76 4, 50 4 Z"
+        fill="url(#pinGrad)"
+        stroke="#FFFFFF"
+        stroke-width="3"/>
+
+  <!-- Larger white circle background -->
+  <circle cx="50" cy="42" r="26" fill="#FFFFFF"/>
+
+  <!-- '하' character - larger and centered in circle -->
+  <text x="50" y="55"
+        font-family="Noto Sans CJK KR"
+        font-size="38"
+        font-weight="900"
+        fill="#E85D04"
+        text-anchor="middle">하</text>
+</svg>
