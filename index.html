@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -145,6 +145,7 @@
   --blue:        #2563eb;
   --blue-deep:   #1e40af;
   --blue-soft:   #eff6ff;
+  --blue-50:     #eff6ff;
   --verified:    #059669;
   --verified-soft:#ecfdf5;
   --shadow-sm:   0 1px 2px rgba(17,24,39,0.06);
@@ -1032,7 +1033,7 @@ body {
     <div class="guide-pane" id="guideEdit" role="tabpanel" data-guide-pane="edit">
       <div class="rep-login" id="repLoginBox">
         <h3>병원 관계자 수정</h3>
-        <p>뉴센스의원 테스트용입니다. 아이디는 요양기관번호, 비밀번호는 h+요양기관번호입니다.</p>
+        <p>아이디는 요양기관번호, 비밀번호는 h+요양기관번호입니다. (예: 12339695 / h12339695)</p>
         <div class="rep-field">
           <label for="repInstitutionNo">요양기관번호</label>
           <input id="repInstitutionNo" inputmode="numeric" autocomplete="username" placeholder="12339695" />
@@ -1047,7 +1048,7 @@ body {
       </div>
       <div class="rep-editor" id="repEditorBox" hidden>
         <div>
-          <div class="rep-clinic-title" id="repClinicTitle">뉴센스의원 정보 수정</div>
+          <div class="rep-clinic-title" id="repClinicTitle">정보 수정</div>
           <div class="rep-clinic-sub" id="repClinicSub"></div>
         </div>
         <div id="repPriceFields"></div>
@@ -1103,7 +1104,6 @@ body {
 
 <script>
 // ─────────── Drug labels (internal mapping) ───────────
-// Internal keys use English; display uses "마000" / "위00" for now (legal caution)
 const DRUG_INFO = {
   mounjaro: {
     displayName: "마000",
@@ -1131,7 +1131,6 @@ let markers = [];
 
 // ─────────── Format helpers ───────────
 function priceKey(drugKey, dose) {
-  // produces e.g. "mounjaro_2.5mg"
   return `${drugKey}_${dose}`;
 }
 function formatPriceShort(v) {
@@ -1154,25 +1153,27 @@ function clinicMatchesDistrict(clinic) {
 }
 
 // ─────────── Data loading ───────────
+// DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
+// 실패 시에만 정적 clinics.json으로 폴백.
 async function loadData() {
   try {
-    try {
-      const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
-      if (apiResp.ok) {
-        CLINIC_DATA = await apiResp.json();
-        applyLocalClinicUpdates();
+    const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
+    if (apiResp.ok) {
+      const data = await apiResp.json();
+      if (data && Array.isArray(data.clinics)) {
+        CLINIC_DATA = data;
         return;
       }
-    } catch (apiErr) {
-      console.info("API data unavailable, falling back to clinics.json");
     }
+  } catch (apiErr) {
+    console.info("API 데이터 로드 실패, clinics.json으로 폴백합니다.");
+  }
+  try {
     const resp = await fetch("clinics.json?ts=" + Date.now(), { cache: "no-store" });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     CLINIC_DATA = await resp.json();
-    applyLocalClinicUpdates();
   } catch (err) {
-    console.error("Failed to load clinics.json:", err);
-    // Fallback: minimal sample so the page still renders something
+    console.error("clinics.json 로드 실패:", err);
     CLINIC_DATA = {
       last_updated: "샘플",
       clinics: [{
@@ -1185,6 +1186,7 @@ async function loadData() {
         phone: "02-3272-8885",
         verified: true,
         prices: { "mounjaro_2.5mg": 280000 },
+        stock: {},
         notes: "데이터 로드 실패 — 폴백 정보"
       }]
     };
@@ -1232,7 +1234,6 @@ function renderMarkers() {
     const el = document.createElement("div");
 
     if (hasPrice) {
-      // 가격 있는 의원 - 파란 박스
       const price = Number(clinic.prices[key]);
       el.className = `marker-wrap${verifiedCls}`;
       el.innerHTML = `
@@ -1272,7 +1273,6 @@ function openSheet(clinic) {
       원장 직접 검증
     </span>` : "";
 
-  // List all doses this clinic has, in canonical order
   const allKeys = [];
   Object.keys(DRUG_INFO).forEach(dKey => {
     const info = DRUG_INFO[dKey];
@@ -1325,8 +1325,6 @@ function openSheet(clinic) {
     </div>
   `;
 
-  // Naver Map search URL - opens in new tab
-  // Combines clinic name + first portion of address for better search accuracy
   const addressFirstPart = (clinic.address || "").split(" ").slice(0, 4).join(" ");
   const naverQuery = encodeURIComponent(`${clinic.name} ${addressFirstPart}`.trim());
   const naverMapUrl = `https://map.naver.com/v5/search/${naverQuery}`;
@@ -1403,13 +1401,11 @@ document.getElementById("guideTabs").addEventListener("click", (e) => {
   });
 });
 
-// Representative update form (MVP: Newsense local immediate preview)
-const REP_STORAGE_KEY = "harusense_rep_updates";
+// ─────────── 병원 관계자 수정 (DB 기반) ───────────
 const REP_LOGIN_KEY = "harusense_rep_login";
-const REP_INSTITUTION_NO = "12339695";
-const REP_PASSWORD = "h12339695";
-let REP_ACTIVE_INSTITUTION_NO = REP_INSTITUTION_NO;
-let REP_ACTIVE_PASSWORD = REP_PASSWORD;
+let REP_ACTIVE_INSTITUTION_NO = "";
+let REP_ACTIVE_PASSWORD = "";
+let REP_ACTIVE_CLINIC_ID = null;
 const REP_KEYS = [
   { drug: "mounjaro", dose: "2.5mg" },
   { drug: "mounjaro", dose: "5mg" },
@@ -1421,22 +1417,14 @@ const REP_KEYS = [
   { drug: "wegovy", dose: "1.7mg" },
   { drug: "wegovy", dose: "2.4mg" },
 ];
+
+// 로그인한 병원을 DB 데이터에서 찾기 (요양기관번호 기준)
 function representativeClinic() {
-  return (CLINIC_DATA.clinics || []).find(c => c.institution_no === REP_ACTIVE_INSTITUTION_NO || c.name === "뉴센스의원");
+  return (CLINIC_DATA.clinics || []).find(
+    c => c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO
+  ) || null;
 }
-function applyLocalClinicUpdates() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(REP_STORAGE_KEY) || "{}");
-    const clinic = representativeClinic();
-    if (!clinic || !saved[REP_ACTIVE_INSTITUTION_NO]) return;
-    clinic.prices = { ...(clinic.prices || {}), ...(saved[REP_ACTIVE_INSTITUTION_NO].prices || {}) };
-    clinic.stock = { ...(clinic.stock || {}), ...(saved[REP_ACTIVE_INSTITUTION_NO].stock || {}) };
-    clinic.updated_at = saved[REP_ACTIVE_INSTITUTION_NO].updated_at;
-    clinic.updated_by = saved[REP_ACTIVE_INSTITUTION_NO].updated_by || "260528";
-  } catch (err) {
-    console.warn("Failed to apply representative updates", err);
-  }
-}
+
 function setRepMessage(id, text, type = "") {
   const el = document.getElementById(id);
   if (!el) return;
@@ -1449,6 +1437,7 @@ function setStockButton(button, inStock) {
   button.classList.toggle("off", !inStock);
   button.textContent = inStock ? "재고 있음" : "재고 없음";
 }
+
 function renderRepresentativeEditor() {
   const clinic = representativeClinic();
   const box = document.getElementById("repPriceFields");
@@ -1482,87 +1471,95 @@ function showRepresentativeEditor(show) {
   editor.hidden = !show;
   if (show) renderRepresentativeEditor();
 }
+
+// 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
 async function handleRepLogin() {
   const id = document.getElementById("repInstitutionNo").value.trim();
   const pw = document.getElementById("repPassword").value.trim();
   const remember = document.getElementById("repRemember").checked;
-  let apiLoginOk = false;
+
+  if (!id || !pw) {
+    setRepMessage("repLoginMessage", "요양기관번호와 비밀번호를 입력해주세요.", "error");
+    return;
+  }
+  setRepMessage("repLoginMessage", "로그인 중입니다...", "");
+
   try {
     const apiResp = await fetch("/api/login", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ institution_no: id, password: pw })
     });
-    if (apiResp.ok) apiLoginOk = true;
-    else if (apiResp.status !== 404 && apiResp.status !== 503) {
-      const data = await apiResp.json().catch(() => ({}));
-      setRepMessage("repLoginMessage", data.error || "로그인에 실패했습니다.", "error");
-      return;
+    const data = await apiResp.json().catch(() => ({}));
+
+    if (apiResp.ok && data.ok) {
+      REP_ACTIVE_INSTITUTION_NO = id;
+      REP_ACTIVE_PASSWORD = pw;
+      REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
+
+      if (remember) {
+        localStorage.setItem(REP_LOGIN_KEY, JSON.stringify({ id, pw }));
+      } else {
+        localStorage.removeItem(REP_LOGIN_KEY);
+      }
+
+      // 최신 데이터를 다시 읽어 로그인한 병원의 현재 가격을 정확히 표시
+      await loadData();
+      setRepMessage("repLoginMessage", "로그인되었습니다.", "success");
+      showRepresentativeEditor(true);
+    } else {
+      setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
     }
   } catch (apiErr) {
-    apiLoginOk = false;
+    setRepMessage("repLoginMessage", "네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.", "error");
   }
-  if (!apiLoginOk && (id !== REP_INSTITUTION_NO || pw !== REP_PASSWORD)) {
-    setRepMessage("repLoginMessage", "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
+}
+
+// 제출: DB에 저장 → 성공하면 서버에서 다시 읽어 모두에게 보이는 진짜 반영
+async function handleRepSubmit() {
+  if (!REP_ACTIVE_INSTITUTION_NO) {
+    setRepMessage("repSubmitMessage", "먼저 로그인해주세요.", "error");
     return;
   }
-  REP_ACTIVE_INSTITUTION_NO = id;
-  REP_ACTIVE_PASSWORD = pw;if (remember) {
-    localStorage.setItem(REP_LOGIN_KEY, JSON.stringify({ id, pw }));
-  } else {
-    localStorage.removeItem(REP_LOGIN_KEY);
-  }
-  setRepMessage("repLoginMessage", "로그인되었습니다.", "success");
-  showRepresentativeEditor(true);
-}
-async function handleRepSubmit() {
-  const clinic = representativeClinic();
-  if (!clinic) return;
-  clinic.prices = clinic.prices || {};
-  clinic.stock = clinic.stock || {};
-  document.querySelectorAll("[data-price-key]").forEach(input => {
-    const raw = input.value.replace(/[^0-9]/g, "");
-    input.value = raw;
-    if (raw) clinic.prices[input.dataset.priceKey] = Number(raw);
-  });
-  document.querySelectorAll("[data-stock-key]").forEach(btn => {
-    clinic.stock[btn.dataset.stockKey] = btn.dataset.stock === "true";
-  });
-  const updatedAt = new Date().toISOString();
-  clinic.updated_at = updatedAt;
-  clinic.updated_by = "260528";
-  const saved = JSON.parse(localStorage.getItem(REP_STORAGE_KEY) || "{}");
-  saved[REP_ACTIVE_INSTITUTION_NO] = {
-    prices: clinic.prices,
-    stock: clinic.stock,
-    updated_at: updatedAt,
-    updated_by: "260528"
-  };
-  localStorage.setItem(REP_STORAGE_KEY, JSON.stringify(saved));
-  renderMarkers();
+
   const apiItems = {};
   document.querySelectorAll("[data-price-key]").forEach(input => {
     const key = input.dataset.priceKey;
+    const raw = input.value.replace(/[^0-9]/g, "");
+    input.value = raw;
     const stockButton = document.querySelector(`[data-stock-key="${key}"]`);
-    apiItems[key] = { price: input.value, in_stock: stockButton ? stockButton.dataset.stock === "true" : true };
+    const inStock = stockButton ? stockButton.dataset.stock === "true" : true;
+    apiItems[key] = { price: raw, in_stock: inStock };
   });
+
+  setRepMessage("repSubmitMessage", "제출 중입니다...", "");
+
   try {
     const apiResp = await fetch("/api/update-clinic", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ institution_no: REP_ACTIVE_INSTITUTION_NO, password: REP_ACTIVE_PASSWORD, items: apiItems })
+      body: JSON.stringify({
+        institution_no: REP_ACTIVE_INSTITUTION_NO,
+        password: REP_ACTIVE_PASSWORD,
+        items: apiItems
+      })
     });
-    if (apiResp.ok) {
-      setRepMessage("repSubmitMessage", "수정 완료되었습니다. 사이트에 바로 반영되었습니다.", "success");
+    const data = await apiResp.json().catch(() => ({}));
+
+    if (apiResp.ok && data.ok) {
+      // DB 저장 성공 → 서버에서 최신 데이터 다시 읽어 지도 갱신 (모두에게 보이는 진짜 반영)
       await loadData();
       renderMarkers();
-      return;
+      renderRepresentativeEditor();
+      setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
+    } else {
+      setRepMessage("repSubmitMessage", data.error || "저장에 실패했습니다. 잠시 후 다시 시도해주세요.", "error");
     }
   } catch (apiErr) {
-    // Local preview fallback below.
+    setRepMessage("repSubmitMessage", "네트워크 오류로 저장하지 못했습니다. 인터넷 연결을 확인해주세요.", "error");
   }
-  setRepMessage("repSubmitMessage", "수정 완료되었습니다. 이 기기 화면에는 즉시 반영되었습니다.", "success");
 }
+
 function initRepresentativeForm() {
   const loginBtn = document.getElementById("repLoginBtn");
   const submitBtn = document.getElementById("repSubmitBtn");
@@ -1573,17 +1570,23 @@ function initRepresentativeForm() {
   submitBtn.addEventListener("click", handleRepSubmit);
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem(REP_LOGIN_KEY);
+    REP_ACTIVE_INSTITUTION_NO = "";
+    REP_ACTIVE_PASSWORD = "";
+    REP_ACTIVE_CLINIC_ID = null;
     showRepresentativeEditor(false);
     setRepMessage("repSubmitMessage", "");
+    setRepMessage("repLoginMessage", "로그아웃되었습니다.", "");
   });
+
+  // 저장된 로그인 정보가 있으면 아이디/비번 채워주되, 자동 로그인은 서버 검증 후에만
   const savedLogin = JSON.parse(localStorage.getItem(REP_LOGIN_KEY) || "null");
-  if (savedLogin) {
+  if (savedLogin && savedLogin.id) {
     document.getElementById("repInstitutionNo").value = savedLogin.id || "";
     document.getElementById("repPassword").value = savedLogin.pw || "";
     document.getElementById("repRemember").checked = true;
-    if (savedLogin.id === REP_INSTITUTION_NO && savedLogin.pw === REP_PASSWORD) showRepresentativeEditor(true);
   }
 }
+
 // Expose for Google Maps callback
 window.initMap = initMap;
 </script>
@@ -1595,16 +1598,3 @@ window.initMap = initMap;
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
