@@ -5,4 +5,4 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "HARUSENSE_DB"
 database_name = "harusense-db"
-database_id = "REPLACE_WITH_CLOUDFLARE_D1_DATABASE_ID"
+database_id = "7202ccd5-de6c-43b3-97ee-d1937829acd3"
