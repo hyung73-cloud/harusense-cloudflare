@@ -757,12 +757,33 @@ body {
 .rep-modal-footer { padding: 14px 20px 22px; border-top: 1px solid var(--line); flex-shrink: 0; }
 .rep-field { display: grid; gap: 6px; margin-bottom: 16px; }
 .rep-field label { color: var(--ink-2); font-size: 13px; font-weight: 600; }
-.rep-field input {
+.rep-field input,
+.rep-field select,
+.rep-field textarea {
   width: 100%; height: 50px; border: 1px solid var(--line);
   border-radius: 10px; padding: 0 14px; color: var(--ink);
   font-family: inherit; font-size: 16px; background: #fff;
 }
-.rep-field input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.rep-field textarea { height: 92px; padding: 12px 14px; line-height: 1.45; resize: vertical; }
+.rep-field input:focus,
+.rep-field select:focus,
+.rep-field textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.rep-help {
+  margin: 0 0 18px; padding: 12px 14px; border-radius: 10px;
+  background: var(--line-soft); color: var(--ink-2);
+  font-size: 13px; line-height: 1.55;
+}
+.rep-link-button {
+  width: 100%; min-height: 44px; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--surface); color: var(--blue-deep);
+  font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+  margin-top: 10px;
+}
+.rep-check {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin: 2px 0 12px; color: var(--ink-2); font-size: 13px; line-height: 1.45;
+}
+.rep-check input { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; }
 .rep-drug-title { margin: 4px 0 12px; color: var(--ink); font-size: 14px; font-weight: 700; }
 .rep-drug-title:not(:first-child) { margin-top: 22px; }
 .rep-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -1068,10 +1089,69 @@ body {
         <label for="repPassword">비밀번호</label>
         <input id="repPassword" type="password" autocomplete="off" />
       </div>
+      <p class="rep-help">아직 계정을 발급받지 않은 병원은 수정 권한을 신청해주세요. 하루센스가 병원 확인 후 보통 6시간 이내에 아이디와 임시 비밀번호를 안내드립니다.</p>
       <div class="rep-message" id="repLoginMessage"></div>
     </div>
     <div class="rep-modal-footer">
       <button class="rep-button" id="repLoginBtn" type="button">로그인</button>
+      <button class="rep-link-button" id="repRequestOpenBtn" type="button">병원 정보 수정 권한 신청</button>
+    </div>
+  </div>
+
+  <!-- 권한 신청 화면 -->
+  <div id="repRequestView" hidden>
+    <div class="rep-modal-header">
+      <div>
+        <div class="rep-modal-title">병원 정보 수정 권한 신청</div>
+        <div class="rep-modal-sub">확인 후 계정을 발급해드립니다</div>
+      </div>
+      <button class="rep-modal-close" id="repCloseBtn3" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="rep-modal-body">
+      <p class="rep-help">병원 대표번호 또는 담당자 연락처로 확인 후, 요양기관번호를 아이디로 사용하고 임시 비밀번호를 안내드립니다.</p>
+      <div class="rep-field">
+        <label for="repRequestClinicName">병원명</label>
+        <input id="repRequestClinicName" autocomplete="organization" />
+      </div>
+      <div class="rep-field">
+        <label for="repRequestClinicPhone">병원 대표번호</label>
+        <input id="repRequestClinicPhone" inputmode="tel" autocomplete="tel" />
+      </div>
+      <div class="rep-field">
+        <label for="repRequestInstitutionNo">요양기관번호</label>
+        <input id="repRequestInstitutionNo" inputmode="numeric" autocomplete="off" />
+      </div>
+      <div class="rep-field">
+        <label for="repRequestName">담당자 이름</label>
+        <input id="repRequestName" autocomplete="name" />
+      </div>
+      <div class="rep-field">
+        <label for="repRequestRole">담당자 직책</label>
+        <select id="repRequestRole">
+          <option value="">선택해주세요</option>
+          <option value="원장">원장</option>
+          <option value="실장">실장</option>
+          <option value="직원">직원</option>
+          <option value="기타 관계자">기타 관계자</option>
+        </select>
+      </div>
+      <div class="rep-field">
+        <label for="repRequestMobile">담당자 연락처</label>
+        <input id="repRequestMobile" inputmode="tel" autocomplete="tel" />
+      </div>
+      <div class="rep-field">
+        <label for="repRequestMemo">수정 요청 내용</label>
+        <textarea id="repRequestMemo" placeholder="예: 마운자로 2.5mg 가격 수정, 재고 상태 변경 등"></textarea>
+      </div>
+      <label class="rep-check">
+        <input id="repRequestConfirm" type="checkbox" />
+        <span>본인은 해당 의료기관의 관계자이며, 입력한 정보가 사실과 다름없음을 확인합니다.</span>
+      </label>
+      <div class="rep-message" id="repRequestMessage"></div>
+    </div>
+    <div class="rep-modal-footer">
+      <button class="rep-button" id="repRequestSubmitBtn" type="button">신청 제출</button>
+      <button class="rep-button secondary" id="repRequestBackBtn" type="button">로그인으로 돌아가기</button>
     </div>
   </div>
 
@@ -1546,14 +1626,101 @@ function closeRepModal() {
   document.getElementById("repModalBackdrop").classList.remove("open");
   document.getElementById("repModal").classList.remove("open");
 }
-// 로그인 뷰 ↔ 수정 뷰 전환
-function showRepresentativeEditor(show) {
+// 로그인 / 신청 / 수정 뷰 전환
+function showRepView(view) {
   const loginView = document.getElementById("repLoginView");
+  const requestView = document.getElementById("repRequestView");
   const editView = document.getElementById("repEditView");
-  if (!loginView || !editView) return;
-  loginView.hidden = show;
-  editView.hidden = !show;
-  if (show) renderRepresentativeEditor();
+  if (!loginView || !requestView || !editView) return;
+  loginView.hidden = view !== "login";
+  requestView.hidden = view !== "request";
+  editView.hidden = view !== "edit";
+  if (view === "edit") renderRepresentativeEditor();
+}
+function showRepresentativeEditor(show) {
+  showRepView(show ? "edit" : "login");
+}
+
+function collectRepresentativeRequest() {
+  return {
+    clinic_name: document.getElementById("repRequestClinicName").value.trim(),
+    clinic_phone: document.getElementById("repRequestClinicPhone").value.trim(),
+    institution_no: document.getElementById("repRequestInstitutionNo").value.trim(),
+    manager_name: document.getElementById("repRequestName").value.trim(),
+    manager_role: document.getElementById("repRequestRole").value,
+    manager_mobile: document.getElementById("repRequestMobile").value.trim(),
+    memo: document.getElementById("repRequestMemo").value.trim(),
+    confirmed: document.getElementById("repRequestConfirm").checked
+  };
+}
+
+function resetRepresentativeRequest() {
+  [
+    "repRequestClinicName",
+    "repRequestClinicPhone",
+    "repRequestInstitutionNo",
+    "repRequestName",
+    "repRequestMobile",
+    "repRequestMemo"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("repRequestRole").value = "";
+  document.getElementById("repRequestConfirm").checked = false;
+  setRepMessage("repRequestMessage", "");
+}
+
+function representativeRequestMailto(payload) {
+  const subject = encodeURIComponent(`[하루센스] 병원 정보 수정 권한 신청 - ${payload.clinic_name}`);
+  const body = encodeURIComponent(
+`병원 정보 수정 권한 신청
+
+병원명: ${payload.clinic_name}
+병원 대표번호: ${payload.clinic_phone}
+요양기관번호: ${payload.institution_no}
+담당자 이름: ${payload.manager_name}
+담당자 직책: ${payload.manager_role}
+담당자 연락처: ${payload.manager_mobile}
+
+수정 요청 내용:
+${payload.memo || "없음"}
+
+확인 문구 동의: 예`
+  );
+  return `mailto:2youngj2@naver.com?subject=${subject}&body=${body}`;
+}
+
+async function handleRepresentativeRequest() {
+  const payload = collectRepresentativeRequest();
+  if (!payload.clinic_name || !payload.clinic_phone || !payload.institution_no || !payload.manager_name || !payload.manager_role || !payload.manager_mobile) {
+    setRepMessage("repRequestMessage", "필수 항목을 모두 입력해주세요.", "error");
+    return;
+  }
+  if (!payload.confirmed) {
+    setRepMessage("repRequestMessage", "의료기관 관계자 확인 문구에 동의해주세요.", "error");
+    return;
+  }
+
+  setRepMessage("repRequestMessage", "신청을 접수하는 중입니다...", "");
+
+  try {
+    const apiResp = await fetch("/api/representative-request", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await apiResp.json().catch(() => ({}));
+    if (apiResp.ok && data.ok) {
+      setRepMessage("repRequestMessage", "신청이 접수되었습니다. 하루센스에서 확인 후 보통 6시간 이내에 안내드립니다.", "success");
+      return;
+    }
+  } catch (apiErr) {
+    // 서버 접수 기능이 준비되기 전에는 이메일 접수로 이어집니다.
+  }
+
+  setRepMessage("repRequestMessage", "메일 앱이 열리면 내용을 확인한 뒤 발송해주세요.", "success");
+  window.location.href = representativeRequestMailto(payload);
 }
 
 // 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
@@ -1641,17 +1808,21 @@ async function handleRepSubmit() {
 function initRepresentativeForm() {
   const openBtn = document.getElementById("repOpenBtn");
   const loginBtn = document.getElementById("repLoginBtn");
+  const requestOpenBtn = document.getElementById("repRequestOpenBtn");
+  const requestSubmitBtn = document.getElementById("repRequestSubmitBtn");
+  const requestBackBtn = document.getElementById("repRequestBackBtn");
   const submitBtn = document.getElementById("repSubmitBtn");
   const logoutBtn = document.getElementById("repLogoutBtn");
   const closeBtn1 = document.getElementById("repCloseBtn1");
   const closeBtn2 = document.getElementById("repCloseBtn2");
+  const closeBtn3 = document.getElementById("repCloseBtn3");
   const backdrop = document.getElementById("repModalBackdrop");
   if (!openBtn || openBtn.dataset.bound === "true") return;
   openBtn.dataset.bound = "true";
 
   // 모달 열기 (항상 로그인 화면부터)
   openBtn.addEventListener("click", () => {
-    showRepresentativeEditor(false);
+    showRepView("login");
     setRepMessage("repLoginMessage", "");
     document.getElementById("repInstitutionNo").value = "";
     document.getElementById("repPassword").value = "";
@@ -1661,10 +1832,20 @@ function initRepresentativeForm() {
   // 닫기
   closeBtn1.addEventListener("click", closeRepModal);
   closeBtn2.addEventListener("click", closeRepModal);
+  closeBtn3.addEventListener("click", closeRepModal);
   backdrop.addEventListener("click", closeRepModal);
 
-  // 로그인 / 제출
+  // 로그인 / 신청 / 제출
   loginBtn.addEventListener("click", handleRepLogin);
+  requestOpenBtn.addEventListener("click", () => {
+    resetRepresentativeRequest();
+    showRepView("request");
+  });
+  requestSubmitBtn.addEventListener("click", handleRepresentativeRequest);
+  requestBackBtn.addEventListener("click", () => {
+    setRepMessage("repRequestMessage", "");
+    showRepView("login");
+  });
   submitBtn.addEventListener("click", handleRepSubmit);
 
   // 엔터키로 로그인
@@ -1677,7 +1858,7 @@ function initRepresentativeForm() {
     REP_ACTIVE_INSTITUTION_NO = "";
     REP_ACTIVE_PASSWORD = "";
     REP_ACTIVE_CLINIC_ID = null;
-    showRepresentativeEditor(false);
+    showRepView("login");
     setRepMessage("repSubmitMessage", "");
     document.getElementById("repInstitutionNo").value = "";
     document.getElementById("repPassword").value = "";
