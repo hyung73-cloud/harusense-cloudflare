@@ -181,12 +181,13 @@ body {
 .brand-sub { font-size: 12px; font-weight: 500; color: var(--mute); letter-spacing: -0.01em; }
 .curator-badge {
   display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px;
+  padding: 5px 10px;
   background: var(--verified-soft);
   color: var(--verified);
   border-radius: 999px;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
 }
 .curator-badge svg { width: 11px; height: 11px; }
 
@@ -267,7 +268,10 @@ body {
 }
 .district-bar::-webkit-scrollbar { display: none; }
 .header-notice {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   position: fixed;
   top: 142px;
   left: 50%;
@@ -275,27 +279,35 @@ body {
   width: calc(100vw - 20px);
   max-width: 430px;
   transform: translateX(-50%);
-  padding: 6px 8px;
+  padding: 7px 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 999px;
   background: rgba(255,255,255,0.96);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
-  color: var(--ink-2);
-  font-size: 10px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.10);
+  color: var(--mute);
+  font-size: 11px;
   font-weight: 600;
   line-height: 1.35;
   text-align: center;
-  white-space: normal;
+  white-space: nowrap;
   pointer-events: none;
 }
-.header-notice .notice-line {
-  display: block;
-}
-.header-notice .update-label {
-  display: inline;
-  margin-top: 0;
-  color: var(--blue);
+.header-notice .notice-verified {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--verified-soft);
+  color: var(--verified);
+  font-size: 11px;
   font-weight: 700;
+}
+.header-notice .notice-meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #64748b;
 }
 @media (min-width: 900px) {
   .district-bar {
@@ -308,11 +320,11 @@ body {
     right: 16px;
     bottom: 12px;
     width: auto;
-    max-width: min(48vw, 760px);
+    max-width: min(48vw, 620px);
     transform: none;
     padding: 0;
     border: none;
-    border-radius: 0;
+    border-radius: 999px;
     background: transparent;
     box-shadow: none;
     font-size: 12px;
@@ -322,15 +334,12 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .header-notice .notice-line {
-    display: inline;
+  .header-notice .notice-verified {
+    padding: 4px 10px;
+    font-size: 11.5px;
   }
-  .header-notice .notice-line + .notice-line::before {
-    content: " ";
-  }
-  .header-notice .update-label {
-    display: inline;
-    margin-top: 0;
+  .header-notice .notice-meta {
+    font-size: 12px;
   }
 }
 .chip {
@@ -626,48 +635,59 @@ body {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 900;
-  background: var(--surface-alt);
+  min-height: 38px;
+  background: rgba(255, 255, 255, 0.94);
   border-top: 1px solid var(--line);
-  display: flex;
-  align-items: stretch;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.06);
-}
-.footer-chip {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.footer-chip {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--ink-2);
+  color: #475569;
   text-decoration: none;
   cursor: pointer;
   background: transparent;
   border: none;
-  border-right: 1px solid var(--line);
   letter-spacing: -0.01em;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease;
-  min-height: 36px;
+  min-height: 38px;
   -webkit-appearance: none;
   appearance: none;
 }
-.footer-chip:last-child { border-right: none; }
-.footer-chip:hover { background: var(--surface); color: var(--ink); }
-.footer-chip:active { background: var(--line-soft); }
+.footer-chip + .footer-chip::before {
+  content: "·";
+  position: absolute;
+  left: -2px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+.footer-chip:hover { color: var(--ink); }
+.footer-chip:active { color: var(--blue-deep); }
 
 /* 모바일 — 좁아도 한 줄 유지 */
 @media (max-width: 380px) {
-  .footer-chip { font-size: 10.5px; padding: 7px 2px; }
+  .footer-chip { font-size: 11px; padding: 0 7px; }
+  .footer-chip + .footer-chip::before { left: -1px; }
 }
 
 /* 데스크탑 — 가운데 정렬 */
 @media (min-width: 768px) {
   .site-footer-nav { justify-content: center; }
-  .footer-chip { flex: 0 1 160px; font-size: 12px; padding: 9px 12px; min-height: 38px; }
+  .footer-chip { flex: 0 0 auto; font-size: 12px; padding: 0 22px; min-height: 38px; }
 }
 
 /* ===== 병원 관계자 수정 — 전체화면 모달 ===== */
@@ -945,7 +965,7 @@ body {
     </div>
     <span class="curator-badge">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-      원장 직접 검증
+      원장 자문
     </span>
   </div>
 
@@ -987,7 +1007,10 @@ body {
     <button class="chip" data-district="노원구">노원</button>
     <button class="chip" data-district="고양시">고양</button>
   </div>
-  <div class="header-notice"><span class="notice-line">정확한 정보는 병원 전화가 가장 빠르고 확실하며,</span><span class="notice-line">대부분의 의원은 예약 없이 방문하는 현실입니다. <span class="update-label">updated by 260528</span></span></div>
+  <div class="header-notice" id="headerNotice">
+    <span class="notice-verified">✓ 원장 자문</span>
+    <span class="notice-meta">업데이트 확인 중 · 방문 전 전화 확인 권장</span>
+  </div>
 </header>
 
 <div class="loading" id="loading">
@@ -1142,6 +1165,43 @@ function clinicHasSelectedPrice(clinic) {
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
+function latestClinicUpdatedAt() {
+  const times = (CLINIC_DATA.clinics || [])
+    .map(clinic => clinic.updated_at)
+    .filter(Boolean)
+    .map(value => new Date(value).getTime())
+    .filter(Number.isFinite);
+  if (!times.length) return null;
+  return new Date(Math.max(...times));
+}
+function formatRelativeUpdateTime(date) {
+  if (!date) return "업데이트 확인 중";
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.max(0, Math.floor(diffMs / 60000));
+  if (diffMin < 1) return "방금 업데이트";
+  if (diffMin < 60) return `${diffMin}분 전 업데이트`;
+
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `${diffHour}시간 전 업데이트`;
+
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffDay < 7) return `${diffDay}일 전 업데이트`;
+
+  return date.toLocaleDateString("ko-KR", {
+    month: "long",
+    day: "numeric"
+  }) + " 업데이트";
+}
+function updateHeaderNotice() {
+  const el = document.getElementById("headerNotice");
+  if (!el) return;
+
+  el.innerHTML = `
+    <span class="notice-verified">✓ 원장 자문</span>
+    <span class="notice-meta">${formatRelativeUpdateTime(latestClinicUpdatedAt())} · 방문 전 전화 확인 권장</span>
+  `;
+}
 
 // ─────────── Data loading ───────────
 // DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
@@ -1202,6 +1262,7 @@ function initMap() {
   });
   loadData().then(() => {
     document.getElementById("loading").style.display = "none";
+    updateHeaderNotice();
     renderMarkers();
     initRepresentativeForm();
   });
@@ -1546,6 +1607,7 @@ async function handleRepSubmit() {
     if (apiResp.ok && data.ok) {
       // DB 저장 성공 → 서버에서 최신 데이터 다시 읽어 지도 갱신 (모두에게 보이는 진짜 반영)
       await loadData();
+      updateHeaderNotice();
       renderMarkers();
       renderRepresentativeEditor();
       setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
