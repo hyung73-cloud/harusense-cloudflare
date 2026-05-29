@@ -142,6 +142,7 @@
   --mute:        #6b7280;
   --line:        #e5e7eb;
   --line-soft:   #f1f3f5;
+  --surface-alt: #f3f4f6;
   --blue:        #2563eb;
   --blue-deep:   #1e40af;
   --blue-soft:   #eff6ff;
@@ -356,7 +357,7 @@ body {
 /* ─────────── Map ─────────── */
 #map {
   position: absolute;
-  top: 134px; bottom: 166px; left: 0; right: 0;
+  top: 134px; bottom: 38px; left: 0; right: 0;
   background: var(--bg);
 }
 
@@ -620,93 +621,17 @@ body {
   line-height: 1.5;
 }
 
-/* Bottom guide tabs */
-.guide-panel {
+/* ===== 메인 푸터 — 미니멀 엑셀 탭 스타일 ===== */
+.site-footer-nav {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 900;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
-}
-.guide-tabs {
-  display: flex;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 8px 12px 0;
-  gap: 6px;
-}
-.guide-tab {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--ink-2);
-  border-radius: 8px 8px 0 0;
-  padding: 9px 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.guide-tab.active {
-  color: var(--blue);
-  border-color: var(--blue);
-  border-bottom-color: var(--surface);
-}
-.guide-body {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 10px 16px 14px;
-  max-height: 112px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  color: var(--ink-2);
-  font-size: 12px;
-  line-height: 1.55;
-}
-.guide-pane { display: none; }
-.guide-pane.active { display: block; }
-.guide-pane p { margin: 0 0 6px; }
-.guide-pane ul {
-  margin: 0;
-  padding-left: 18px;
-}
-.guide-pane li { margin: 3px 0; }
-.guide-pane strong { color: var(--ink); font-weight: 700; }
-.guide-pane h3 {
-  margin: 12px 0 5px;
-  color: var(--ink);
-  font-size: 12.5px;
-  line-height: 1.35;
-}
-.guide-pane h3:first-child { margin-top: 0; }
-.guide-contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-.guide-contact a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: var(--blue-50);
-  color: var(--blue);
-  font-weight: 700;
-  text-decoration: none;
-}
-/* ===== 메인 푸터 — 미니멀 엑셀 탭 스타일 ===== */
-.site-footer-nav {
   background: var(--surface-alt);
   border-top: 1px solid var(--line);
   display: flex;
   align-items: stretch;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.06);
 }
 .footer-chip {
   flex: 1;
@@ -1452,20 +1377,23 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   renderMarkers();
 });
 
-// Guide tabs
-document.getElementById("guideTabs").addEventListener("click", (e) => {
-  const btn = e.target.closest(".guide-tab");
-  if (!btn) return;
-  const tabKey = btn.dataset.guideTab;
-  document.querySelectorAll(".guide-tab").forEach(tab => {
-    const isActive = tab === btn;
-    tab.classList.toggle("active", isActive);
-    tab.setAttribute("aria-selected", isActive ? "true" : "false");
+// Guide tabs (현재 가이드 패널은 푸터로 대체됨 — 요소가 없을 때 안전 처리)
+const guideTabsEl = document.getElementById("guideTabs");
+if (guideTabsEl) {
+  guideTabsEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".guide-tab");
+    if (!btn) return;
+    const tabKey = btn.dataset.guideTab;
+    document.querySelectorAll(".guide-tab").forEach(tab => {
+      const isActive = tab === btn;
+      tab.classList.toggle("active", isActive);
+      tab.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    document.querySelectorAll(".guide-pane").forEach(pane => {
+      pane.classList.toggle("active", pane.dataset.guidePane === tabKey);
+    });
   });
-  document.querySelectorAll(".guide-pane").forEach(pane => {
-    pane.classList.toggle("active", pane.dataset.guidePane === tabKey);
-  });
-});
+}
 
 // ─────────── 병원 관계자 수정 (DB 기반) ───────────
 const REP_LOGIN_KEY = "harusense_rep_login";
