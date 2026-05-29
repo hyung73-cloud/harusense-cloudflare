@@ -713,7 +713,7 @@ body {
   .footer-chip { flex: 0 0 auto; font-size: 12px; padding: 0 22px; min-height: 38px; }
 }
 
-/* ===== 병원 관계자 수정 — 전체화면 모달 ===== */
+/* ===== 요양기관 관계자 수정 — 전체화면 모달 ===== */
 .rep-trigger { display: grid; gap: 8px; padding: 4px 0; }
 .rep-trigger p { font-size: 12px; color: var(--ink-2); line-height: 1.5; margin: 0; }
 .rep-trigger-btn {
@@ -1068,14 +1068,14 @@ body {
   <button class="footer-chip" id="repOpenBtn" type="button">관계자 로그인</button>
 </nav>
 
-<!-- 병원 관계자 수정 — 전체화면 모달 -->
+<!-- 요양기관 관계자 수정 — 전체화면 모달 -->
 <div class="rep-modal-backdrop" id="repModalBackdrop"></div>
 <div class="rep-modal" id="repModal">
   <!-- 로그인 화면 -->
   <div id="repLoginView">
     <div class="rep-modal-header">
       <div>
-        <div class="rep-modal-title">병원 관계자 로그인</div>
+        <div class="rep-modal-title">요양기관 관계자 로그인</div>
         <div class="rep-modal-sub">요양기관번호로 로그인하세요</div>
       </div>
       <button class="rep-modal-close" id="repCloseBtn1" type="button" aria-label="닫기">×</button>
@@ -1089,12 +1089,12 @@ body {
         <label for="repPassword">비밀번호</label>
         <input id="repPassword" type="password" autocomplete="off" />
       </div>
-      <p class="rep-help">아직 계정을 발급받지 않은 병원은 수정 권한을 신청해주세요. 하루센스가 병원 확인 후 보통 6시간 이내에 아이디와 임시 비밀번호를 안내드립니다.</p>
+      <p class="rep-help">아직 계정을 발급받지 않은 요양기관은 수정 권한을 신청해주세요. 하루센스가 확인 후 보통 6시간 이내에 아이디와 임시 비밀번호를 안내드립니다.</p>
       <div class="rep-message" id="repLoginMessage"></div>
     </div>
     <div class="rep-modal-footer">
       <button class="rep-button" id="repLoginBtn" type="button">로그인</button>
-      <button class="rep-link-button" id="repRequestOpenBtn" type="button">병원 정보 수정 권한 신청</button>
+      <button class="rep-link-button" id="repRequestOpenBtn" type="button">요양기관 정보 수정 권한 신청</button>
     </div>
   </div>
 
@@ -1102,19 +1102,19 @@ body {
   <div id="repRequestView" hidden>
     <div class="rep-modal-header">
       <div>
-        <div class="rep-modal-title">병원 정보 수정 권한 신청</div>
+        <div class="rep-modal-title">요양기관 정보 수정 권한 신청</div>
         <div class="rep-modal-sub">확인 후 계정을 발급해드립니다</div>
       </div>
       <button class="rep-modal-close" id="repCloseBtn3" type="button" aria-label="닫기">×</button>
     </div>
     <div class="rep-modal-body">
-      <p class="rep-help">병원 대표번호 또는 담당자 연락처로 확인 후, 요양기관번호를 아이디로 사용하고 임시 비밀번호를 안내드립니다.</p>
+      <p class="rep-help">요양기관 대표번호 또는 담당자 연락처로 확인 후, 요양기관번호를 아이디로 사용하고 임시 비밀번호를 안내드립니다.</p>
       <div class="rep-field">
-        <label for="repRequestClinicName">병원명</label>
+        <label for="repRequestClinicName">요양기관명</label>
         <input id="repRequestClinicName" autocomplete="organization" />
       </div>
       <div class="rep-field">
-        <label for="repRequestClinicPhone">병원 대표번호</label>
+        <label for="repRequestClinicPhone">요양기관 대표번호</label>
         <input id="repRequestClinicPhone" inputmode="tel" autocomplete="tel" />
       </div>
       <div class="rep-field">
@@ -1139,13 +1139,9 @@ body {
         <label for="repRequestMobile">담당자 연락처</label>
         <input id="repRequestMobile" inputmode="tel" autocomplete="tel" />
       </div>
-      <div class="rep-field">
-        <label for="repRequestMemo">수정 요청 내용</label>
-        <textarea id="repRequestMemo" placeholder="예: 마운자로 2.5mg 가격 수정, 재고 상태 변경 등"></textarea>
-      </div>
       <label class="rep-check">
         <input id="repRequestConfirm" type="checkbox" />
-        <span>본인은 해당 의료기관의 관계자이며, 입력한 정보가 사실과 다름없음을 확인합니다.</span>
+        <span>본인은 해당 요양기관의 관계자이며, 입력한 정보가 사실과 다름없음을 확인합니다.</span>
       </label>
       <div class="rep-message" id="repRequestMessage"></div>
     </div>
@@ -1555,7 +1551,7 @@ if (guideTabsEl) {
   });
 }
 
-// ─────────── 병원 관계자 수정 (DB 기반) ───────────
+// ─────────── 요양기관 관계자 수정 (DB 기반) ───────────
 const REP_LOGIN_KEY = "harusense_rep_login";
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
@@ -1572,7 +1568,7 @@ const REP_KEYS = [
   { drug: "wegovy", dose: "2.4mg" },
 ];
 
-// 로그인한 병원을 DB 데이터에서 찾기 (요양기관번호 기준)
+// 로그인한 요양기관을 DB 데이터에서 찾기 (요양기관번호 기준)
 function representativeClinic() {
   return (CLINIC_DATA.clinics || []).find(
     c => c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO
@@ -1649,7 +1645,6 @@ function collectRepresentativeRequest() {
     manager_name: document.getElementById("repRequestName").value.trim(),
     manager_role: document.getElementById("repRequestRole").value,
     manager_mobile: document.getElementById("repRequestMobile").value.trim(),
-    memo: document.getElementById("repRequestMemo").value.trim(),
     confirmed: document.getElementById("repRequestConfirm").checked
   };
 }
@@ -1660,8 +1655,7 @@ function resetRepresentativeRequest() {
     "repRequestClinicPhone",
     "repRequestInstitutionNo",
     "repRequestName",
-    "repRequestMobile",
-    "repRequestMemo"
+    "repRequestMobile"
   ].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
@@ -1672,19 +1666,16 @@ function resetRepresentativeRequest() {
 }
 
 function representativeRequestMailto(payload) {
-  const subject = encodeURIComponent(`[하루센스] 병원 정보 수정 권한 신청 - ${payload.clinic_name}`);
+  const subject = encodeURIComponent(`[하루센스] 요양기관 정보 수정 권한 신청 - ${payload.clinic_name}`);
   const body = encodeURIComponent(
-`병원 정보 수정 권한 신청
+`요양기관 정보 수정 권한 신청
 
-병원명: ${payload.clinic_name}
-병원 대표번호: ${payload.clinic_phone}
+요양기관명: ${payload.clinic_name}
+요양기관 대표번호: ${payload.clinic_phone}
 요양기관번호: ${payload.institution_no}
 담당자 이름: ${payload.manager_name}
 담당자 직책: ${payload.manager_role}
 담당자 연락처: ${payload.manager_mobile}
-
-수정 요청 내용:
-${payload.memo || "없음"}
 
 확인 문구 동의: 예`
   );
@@ -1698,7 +1689,7 @@ async function handleRepresentativeRequest() {
     return;
   }
   if (!payload.confirmed) {
-    setRepMessage("repRequestMessage", "의료기관 관계자 확인 문구에 동의해주세요.", "error");
+    setRepMessage("repRequestMessage", "요양기관 관계자 확인 문구에 동의해주세요.", "error");
     return;
   }
 
@@ -1747,7 +1738,7 @@ async function handleRepLogin() {
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
 
-      // 최신 데이터를 다시 읽어 로그인한 병원의 현재 가격을 정확히 표시
+      // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
       await loadData();
       setRepMessage("repLoginMessage", "", "");
       showRepresentativeEditor(true);
