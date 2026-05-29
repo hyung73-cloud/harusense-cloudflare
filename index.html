@@ -1139,6 +1139,10 @@ body {
         <label for="repRequestMobile">담당자 연락처</label>
         <input id="repRequestMobile" inputmode="tel" autocomplete="tel" />
       </div>
+      <div class="rep-field">
+        <label for="repRequestEmail">담당자 이메일</label>
+        <input id="repRequestEmail" type="email" autocomplete="email" />
+      </div>
       <label class="rep-check">
         <input id="repRequestConfirm" type="checkbox" />
         <span>본인은 해당 요양기관의 관계자이며, 입력한 정보가 사실과 다름없음을 확인합니다.</span>
@@ -1645,6 +1649,7 @@ function collectRepresentativeRequest() {
     manager_name: document.getElementById("repRequestName").value.trim(),
     manager_role: document.getElementById("repRequestRole").value,
     manager_mobile: document.getElementById("repRequestMobile").value.trim(),
+    manager_email: document.getElementById("repRequestEmail").value.trim(),
     confirmed: document.getElementById("repRequestConfirm").checked
   };
 }
@@ -1655,7 +1660,8 @@ function resetRepresentativeRequest() {
     "repRequestClinicPhone",
     "repRequestInstitutionNo",
     "repRequestName",
-    "repRequestMobile"
+    "repRequestMobile",
+    "repRequestEmail"
   ].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
@@ -1667,8 +1673,12 @@ function resetRepresentativeRequest() {
 
 async function handleRepresentativeRequest() {
   const payload = collectRepresentativeRequest();
-  if (!payload.clinic_name || !payload.clinic_phone || !payload.institution_no || !payload.manager_name || !payload.manager_role || !payload.manager_mobile) {
+  if (!payload.clinic_name || !payload.clinic_phone || !payload.institution_no || !payload.manager_name || !payload.manager_role || !payload.manager_mobile || !payload.manager_email) {
     setRepMessage("repRequestMessage", "필수 항목을 모두 입력해주세요.", "error");
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.manager_email)) {
+    setRepMessage("repRequestMessage", "담당자 이메일을 정확히 입력해주세요.", "error");
     return;
   }
   if (!payload.confirmed) {
@@ -1695,7 +1705,7 @@ function submitRepresentativeRequestByForm(payload) {
 
   const form = document.createElement("form");
   form.method = "POST";
-  form.action = "https://formsubmit.co/2youngj2@naver.com";
+  form.action = "https://formsubmit.co/hyung73@gmail.com";
   form.target = "repRequestSubmitFrame";
   form.style.display = "none";
 
@@ -1709,6 +1719,7 @@ function submitRepresentativeRequestByForm(payload) {
     담당자_이름: payload.manager_name,
     담당자_직책: payload.manager_role,
     담당자_연락처: payload.manager_mobile,
+    담당자_이메일: payload.manager_email,
     관계자_확인: "동의"
   };
 
