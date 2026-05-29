@@ -1665,9 +1665,8 @@ function resetRepresentativeRequest() {
   setRepMessage("repRequestMessage", "");
 }
 
-function representativeRequestMailto(payload) {
-  const subject = encodeURIComponent(`[하루센스] 요양기관 정보 수정 권한 신청 - ${payload.clinic_name}`);
-  const body = encodeURIComponent(
+function representativeRequestText(payload) {
+  return (
 `요양기관 정보 수정 권한 신청
 
 요양기관명: ${payload.clinic_name}
@@ -1679,7 +1678,6 @@ function representativeRequestMailto(payload) {
 
 확인 문구 동의: 예`
   );
-  return `mailto:2youngj2@naver.com?subject=${subject}&body=${body}`;
 }
 
 async function handleRepresentativeRequest() {
@@ -1707,11 +1705,13 @@ async function handleRepresentativeRequest() {
       return;
     }
   } catch (apiErr) {
-    // 서버 접수 기능이 준비되기 전에는 이메일 접수로 이어집니다.
+    // 서버 접수 기능이 준비되기 전에는 아래 안내만 표시합니다.
   }
 
-  setRepMessage("repRequestMessage", "메일 앱이 열리면 내용을 확인한 뒤 발송해주세요.", "success");
-  window.location.href = representativeRequestMailto(payload);
+  try {
+    await navigator.clipboard.writeText(representativeRequestText(payload));
+  } catch (clipboardErr) {}
+  setRepMessage("repRequestMessage", "현재 자동 접수 준비 중입니다. 신청 내용이 복사되었습니다. 운영팀 이메일 2youngj2@naver.com 또는 010-7405-0724로 보내주세요.", "success");
 }
 
 // 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
