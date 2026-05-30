@@ -2104,9 +2104,12 @@ async function handleRepSubmit() {
     apiItems[key] = { price: raw, in_stock: inStock };
   });
 
-  setRepMessage("repSubmitMessage", "제출 중입니다...", "");
+  setRepMessage("repSubmitMessage", "저장 중입니다. 보통 5~15초 정도 걸릴 수 있습니다. 창을 닫지 말고 잠시만 기다려주세요.", "");
   const submitBtn = document.getElementById("repSubmitBtn");
-  if (submitBtn) submitBtn.disabled = true;
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "저장 중입니다";
+  }
 
   try {
     const data = await accountApi("updatePrices", {
@@ -2121,13 +2124,18 @@ async function handleRepSubmit() {
       renderMarkers();
       renderRepresentativeEditor();
       setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
+      if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
+      REP_CLOSE_TIMER = setTimeout(closeRepModal, 5000);
     } else {
       setRepMessage("repSubmitMessage", data.error || "저장에 실패했습니다. 잠시 후 다시 시도해주세요.", "error");
     }
   } catch (apiErr) {
     setRepMessage("repSubmitMessage", "네트워크 오류로 저장하지 못했습니다. 인터넷 연결을 확인해주세요.", "error");
   } finally {
-    if (submitBtn) submitBtn.disabled = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "수정 내용 제출";
+    }
   }
 }
 
