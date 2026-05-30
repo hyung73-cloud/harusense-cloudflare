@@ -938,6 +938,35 @@ body {
   font-weight: 700;
   font-size: 11px;
 }
+
+/* Pharmacy markers */
+.marker-wrap.pharmacy .marker-dot {
+  background: #f97316;
+  box-shadow: 0 2px 6px rgba(17,24,39,0.25), 0 0 0 1px rgba(249,115,22,0.35);
+}
+.marker-wrap.pharmacy .price-marker {
+  background: #f97316;
+  box-shadow: 0 3px 10px rgba(249,115,22,0.35), 0 1px 2px rgba(17,24,39,0.1);
+}
+.marker-wrap.pharmacy .price-marker::after {
+  border-top-color: #f97316;
+}
+.marker-wrap.pharmacy .price-marker::before {
+  content: '💊';
+  margin-right: 4px;
+}
+.marker-wrap.pharmacy.verified .marker-dot,
+.marker-wrap.pharmacy.verified .price-marker {
+  background: #f97316;
+}
+.marker-wrap.pharmacy.verified .price-marker::after {
+  border-top-color: #f97316;
+}
+.marker-wrap.pharmacy.verified .price-marker::before {
+  content: '💊';
+  margin-right: 4px;
+  font-size: 12px;
+}
 /* Gray label for clinics without selected dose price */
 .info-marker {
   position: absolute;
@@ -1262,6 +1291,11 @@ function clinicHasSelectedPrice(clinic) {
   const v = clinic.prices && clinic.prices[key];
   return clinicStockAvailable(clinic, key) && v != null && v !== "" && Number.isFinite(Number(v));
 }
+
+function isPharmacy(clinic) {
+  return clinic.type === "pharmacy" || String(clinic.id || "").startsWith("pharmacy_");
+}
+
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
@@ -1382,19 +1416,20 @@ function renderMarkers() {
 
     const hasPrice = clinicHasSelectedPrice(clinic);
     const verifiedCls = clinic.verified ? " verified" : "";
+    const pharmacyCls = isPharmacy(clinic) ? " pharmacy" : "";
 
     const el = document.createElement("div");
 
     if (hasPrice) {
       const price = Number(clinic.prices[key]);
-      el.className = `marker-wrap${verifiedCls}`;
+      el.className = `marker-wrap${verifiedCls}${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
         <div class="price-marker">${formatPriceShort(price)}원</div>
       `;
     } else {
       const label = clinic.stock && clinic.stock[key] === false ? "재고 없음" : "정보 수집중";
-      el.className = "marker-wrap no-price";
+      el.className = `marker-wrap no-price${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
         <div class="info-marker">${label}</div>
@@ -1904,6 +1939,7 @@ window.initMap = initMap;
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=ko&region=KR">
 </script>
 
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
 
