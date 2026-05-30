@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -1058,6 +1058,100 @@ body {
   }
   .sheet-handle { display: none; }
 }
+
+/* ═════════ 병의원/약국검색 버튼 (헤더 우측 작게) ═════════ */
+.clinic-search-btn{
+  display:inline-flex; align-items:center; gap:4px;
+  flex-shrink:0; margin-left:8px;
+  padding:4px 9px;
+  font-family:inherit; font-size:11px; font-weight:500; line-height:1;
+  color:#9ca3af; background:transparent;
+  border:1px solid var(--line); border-radius:999px;
+  cursor:pointer; letter-spacing:-0.01em; white-space:nowrap;
+  transition:color 0.12s ease, border-color 0.12s ease;
+}
+.clinic-search-btn svg{ width:11px; height:11px; flex-shrink:0; }
+.clinic-search-btn:hover{ color:var(--ink-2); border-color:var(--mute); }
+
+/* ═════════ 병의원/약국 검색 모달 (아래에서 올라오는 시트) ═════════ */
+.search-backdrop{
+  position:fixed; inset:0; background:rgba(17,24,39,0.4);
+  z-index:1700; opacity:0; pointer-events:none;
+  transition:opacity 0.22s ease;
+  backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+}
+.search-backdrop.open{ opacity:1; pointer-events:auto; }
+.search-modal{
+  position:fixed; left:0; right:0; bottom:0; z-index:1750;
+  background:var(--surface); border-radius:20px 20px 0 0;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(100%);
+  transition:transform 0.32s cubic-bezier(0.32,0.72,0.36,1);
+  height:80vh; max-height:80vh; display:flex; flex-direction:column;
+}
+.search-modal.open{ transform:translateY(0); }
+.search-bar{
+  display:flex; align-items:center; gap:8px;
+  padding:16px 16px 12px; border-bottom:1px solid var(--line); flex-shrink:0;
+}
+.search-input-box{
+  flex:1; display:flex; align-items:center; gap:8px;
+  height:44px; padding:0 12px;
+  background:var(--line-soft); border:1px solid var(--line); border-radius:12px;
+}
+.search-input-box svg{ width:18px; height:18px; color:var(--mute); flex-shrink:0; }
+.search-input-box input{
+  flex:1; min-width:0; border:none; background:transparent;
+  font-family:inherit; font-size:16px; color:var(--ink); outline:none;
+}
+.search-cancel{
+  flex-shrink:0; border:none; background:transparent;
+  font-family:inherit; font-size:14px; font-weight:600; color:var(--blue);
+  cursor:pointer; padding:4px 6px;
+}
+.search-results{
+  flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:6px 8px 24px;
+}
+.search-item{
+  display:flex; align-items:center; gap:10px;
+  width:100%; text-align:left;
+  padding:13px 12px; border:none; background:transparent;
+  border-radius:12px; cursor:pointer; font-family:inherit;
+  border-bottom:1px solid var(--line-soft);
+}
+.search-item:hover{ background:var(--blue-soft); }
+.search-item:last-child{ border-bottom:none; }
+.search-item-icon{
+  width:34px; height:34px; flex-shrink:0; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+.search-item-icon.clinic{ background:var(--blue-soft); }
+.search-item-icon.pharmacy{ background:#fdf0e7; }
+.search-item-body{ flex:1; min-width:0; }
+.search-item-name{
+  font-size:15px; font-weight:600; color:var(--ink); letter-spacing:-0.01em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.search-item-meta{
+  font-size:12px; color:var(--mute); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.search-type-badge{
+  flex-shrink:0; padding:3px 8px; border-radius:999px;
+  font-size:11px; font-weight:600; white-space:nowrap;
+}
+.search-type-badge.clinic{ background:var(--blue-soft); color:var(--blue-deep); }
+.search-type-badge.pharmacy{ background:#fdf0e7; color:#c2693a; }
+.search-empty{ text-align:center; padding:40px 16px; color:var(--mute); font-size:13px; line-height:1.6; }
+@media (min-width:768px){
+  .search-modal{
+    max-width:440px; left:50%; right:auto; bottom:20px;
+    transform:translateX(-50%) translateY(120%);
+    border-radius:16px; height:auto; max-height:calc(100vh - 130px);
+  }
+  .search-modal.open{ transform:translateX(-50%) translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -1068,6 +1162,13 @@ body {
       <span class="brand-name">하루센스 GLP-1 가격지도</span>
       <span class="brand-sub">인크레틴 치료제 가격정보</span>
     </div>
+    <button type="button" class="clinic-search-btn" onclick="openClinicSearch()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <span>병의원/약국검색</span>
+    </button>
   </div>
 
   <!-- Drug + Dose toggle -->
@@ -1302,6 +1403,22 @@ body {
 
   <h3>가격지도 정보는 얼마나 정확한가요?</h3>
   <p>공개된 정보를 기반으로 큐레이션하며, 원장 직접 검증 의원은 ✓ 표시로 구분됩니다. 정확한 가격은 의원에 직접 전화로 확인하시는 것이 가장 빠르고 확실합니다.</p>
+</div>
+
+<!-- ═════════ 병의원/약국 검색 모달 ═════════ -->
+<div class="search-backdrop" id="searchBackdrop"></div>
+<div class="search-modal" id="searchModal">
+  <div class="search-bar">
+    <div class="search-input-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input id="searchInput" type="text" placeholder="병의원·약국 이름·지역 검색" autocomplete="off" />
+    </div>
+    <button class="search-cancel" id="searchCancel" type="button">취소</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
 </div>
 
 <script>
@@ -2269,6 +2386,93 @@ function initRepresentativeForm() {
   });
 }
 
+// ─────────── 병의원/약국 검색 ───────────
+(function () {
+  // "하루센스" 클릭 시 강제 새로고침
+  const brand = document.querySelector(".brand-name");
+  if (brand) {
+    brand.style.cursor = "pointer";
+    brand.title = "새로고침";
+    brand.addEventListener("click", () => location.reload());
+  }
+
+  const backdrop  = document.getElementById("searchBackdrop");
+  const modal     = document.getElementById("searchModal");
+  const input     = document.getElementById("searchInput");
+  const results   = document.getElementById("searchResults");
+  const cancelBtn = document.getElementById("searchCancel");
+  if (!backdrop || !modal || !input || !results) return;
+
+  function isPh(c) {
+    return (typeof isPharmacy === "function") ? isPharmacy(c) : (c.type === "pharmacy");
+  }
+
+  function render(list) {
+    if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || CLINIC_DATA.clinics.length === 0) {
+      results.innerHTML = '<div class="search-empty">지도 데이터를 불러오는 중입니다.<br>잠시 후 다시 시도해주세요.</div>';
+      return;
+    }
+    if (!list.length) {
+      results.innerHTML = '<div class="search-empty">검색 결과가 없습니다.</div>';
+      return;
+    }
+    results.innerHTML = list.slice(0, 60).map(c => {
+      const ph = isPh(c);
+      const t = ph ? "pharmacy" : "clinic";
+      const icon = ph ? "💊" : "🏥";
+      const label = ph ? "약국" : "병의원";
+      const meta = [c.district, c.address].filter(Boolean).join(" · ");
+      return '<button class="search-item" data-idx="' + c.__idx + '">' +
+          '<span class="search-item-icon ' + t + '">' + icon + '</span>' +
+          '<span class="search-item-body">' +
+            '<span class="search-item-name">' + (c.name || "") + '</span>' +
+            '<span class="search-item-meta">' + meta + '</span>' +
+          '</span>' +
+          '<span class="search-type-badge ' + t + '">' + label + '</span>' +
+        '</button>';
+    }).join("");
+  }
+
+  function doSearch(q) {
+    const clinics = (CLINIC_DATA && CLINIC_DATA.clinics) || [];
+    clinics.forEach((c, i) => { c.__idx = i; });
+    const query = (q || "").trim().toLowerCase();
+    const list = !query ? clinics.slice() : clinics.filter(c =>
+      ((c.name || "") + " " + (c.address || "") + " " + (c.district || "")).toLowerCase().indexOf(query) !== -1
+    );
+    render(list);
+  }
+
+  window.openClinicSearch = function () {
+    backdrop.classList.add("open");
+    modal.classList.add("open");
+    input.value = "";
+    doSearch("");
+    setTimeout(() => input.focus(), 250);
+  };
+  function closeSearch() {
+    backdrop.classList.remove("open");
+    modal.classList.remove("open");
+  }
+
+  input.addEventListener("input", () => doSearch(input.value));
+  if (cancelBtn) cancelBtn.addEventListener("click", closeSearch);
+  backdrop.addEventListener("click", closeSearch);
+
+  results.addEventListener("click", (e) => {
+    const item = e.target.closest(".search-item");
+    if (!item) return;
+    const clinic = (CLINIC_DATA.clinics || [])[Number(item.dataset.idx)];
+    if (!clinic) return;
+    closeSearch();
+    if (map && clinic.lat && clinic.lng) {
+      map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
+      if (map.getZoom() < 15) map.setZoom(15);
+    }
+    if (typeof openSheet === "function") setTimeout(() => openSheet(clinic), 320);
+  });
+})();
+
 // Expose for Google Maps callback
 window.initMap = initMap;
 </script>
@@ -2283,5 +2487,3 @@ window.initMap = initMap;
 
 </body>
 </html>
-
-
