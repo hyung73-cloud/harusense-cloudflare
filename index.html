@@ -1296,6 +1296,39 @@ function isPharmacy(clinic) {
   return clinic.type === "pharmacy" || String(clinic.id || "").startsWith("pharmacy_");
 }
 
+
+function isPharmacy(clinic) {
+  return clinic.type === "pharmacy" || String(clinic.id || "").startsWith("pharmacy_");
+}
+function mergeClinicData(apiData, staticData) {
+  const apiClinics = Array.isArray(apiData && apiData.clinics) ? apiData.clinics : [];
+  const staticClinics = Array.isArray(staticData && staticData.clinics) ? staticData.clinics : [];
+  const merged = new Map();
+
+  staticClinics.forEach(clinic => {
+    if (clinic && clinic.id) merged.set(clinic.id, clinic);
+  });
+
+  // DB wins for the same id so representative login edits stay live.
+  apiClinics.forEach(clinic => {
+    if (!clinic || !clinic.id) return;
+    const staticClinic = merged.get(clinic.id) || {};
+    merged.set(clinic.id, {
+      ...staticClinic,
+      ...clinic,
+      type: clinic.type || staticClinic.type,
+      prices: clinic.prices || staticClinic.prices || {},
+      stock: clinic.stock || staticClinic.stock || {}
+    });
+  });
+
+  return {
+    last_updated: (apiData && apiData.last_updated) || (staticData && staticData.last_updated) || "",
+    version: "api-d1-plus-excel-json",
+    clinics: Array.from(merged.values())
+  };
+}
+
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
@@ -1341,41 +1374,51 @@ function updateHeaderNotice() {
 // DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
 // 실패 시에만 정적 clinics.json으로 폴백.
 async function loadData() {
+  let apiData = null;
+  let staticData = null;
+
   try {
     const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
     if (apiResp.ok) {
       const data = await apiResp.json();
-      if (data && Array.isArray(data.clinics)) {
-        CLINIC_DATA = data;
-        return;
-      }
+      if (data && Array.isArray(data.clinics)) apiData = data;
     }
   } catch (apiErr) {
-    console.info("API 데이터 로드 실패, clinics.json으로 폴백합니다.");
+    console.info("API 데이터 로드 실패, clinics.json 데이터를 사용합니다.");
   }
+
   try {
     const resp = await fetch("clinics.json?ts=" + Date.now(), { cache: "no-store" });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    CLINIC_DATA = await resp.json();
-  } catch (err) {
-    console.error("clinics.json 로드 실패:", err);
-    CLINIC_DATA = {
-      last_updated: "샘플",
-      clinics: [{
-        id: "newsense_fallback",
-        name: "뉴센스의원",
-        district: "마포구",
-        address: "서울 마포구 신촌로 170 이대푸르지오시티 3층",
-        lat: 37.5563294,
-        lng: 126.9442987,
-        phone: "02-3272-8885",
-        verified: true,
-        prices: { "mounjaro_2.5mg": 280000 },
-        stock: {},
-        notes: "데이터 로드 실패 — 폴백 정보"
-      }]
-    };
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data && Array.isArray(data.clinics)) staticData = data;
+    }
+  } catch (jsonErr) {
+    console.info("clinics.json 로드 실패, API 데이터만 사용합니다.");
   }
+
+  if (apiData || staticData) {
+    CLINIC_DATA = mergeClinicData(apiData, staticData);
+    return;
+  }
+
+  console.error("지도 데이터 로드 실패: API와 clinics.json 모두 사용할 수 없습니다.");
+  CLINIC_DATA = {
+    last_updated: "샘플",
+    clinics: [{
+      id: "newsense_fallback",
+      name: "뉴센스의원",
+      district: "마포구",
+      address: "서울 마포구 신촌로 170 이대푸르지오시티 3층",
+      lat: 37.5563294,
+      lng: 126.9442987,
+      phone: "02-3272-8885",
+      verified: true,
+      prices: { "mounjaro_2.5mg": 280000 },
+      stock: {},
+      notes: "데이터 로드 실패 — 폴백 정보"
+    }]
+  };
 }
 
 // ─────────── Map init ───────────
@@ -1939,6 +1982,7 @@ window.initMap = initMap;
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=ko&region=KR">
 </script>
 
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
