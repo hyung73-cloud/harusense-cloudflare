@@ -1162,12 +1162,59 @@ body {
   .search-modal.open{ transform:translateX(-50%) translateY(0); }
 }
 
-/* ─────────── Language toggle + FX banner ─────────── */
+/* ─────────── Language toggle + FX chip (header top-right) ─────────── */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: flex-end;
+  gap: 5px;
   flex-shrink: 0;
+  min-width: 0;
+}
+.fx-chip {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  max-width: min(46vw, 280px);
+  padding: 3px 8px 3px 5px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+  border: 1px solid #bae6fd;
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.2;
+}
+.fx-chip.visible { display: inline-flex; }
+.fx-chip-pill {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #0ea5e9;
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.fx-chip-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #0369a1;
+  font-variant-numeric: tabular-nums;
+}
+.fx-chip-line em {
+  font-style: normal;
+  font-weight: 700;
+  color: #047857;
+}
+.fx-chip-line .fx-sep {
+  margin: 0 3px;
+  color: #94a3b8;
+  font-weight: 500;
 }
 .lang-toggle {
   display: inline-flex;
@@ -1176,6 +1223,7 @@ body {
   border-radius: 999px;
   background: var(--line-soft);
   font-family: inherit;
+  flex-shrink: 0;
 }
 .lang-toggle-btn {
   border: none;
@@ -1194,49 +1242,6 @@ body {
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow-sm);
-}
-.fx-banner {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  margin-top: 8px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
-  border: 1px solid #bae6fd;
-  font-size: 11px;
-  line-height: 1.35;
-}
-.fx-banner.visible { display: flex; }
-.fx-banner-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #0ea5e9;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.fx-banner-rate {
-  font-weight: 700;
-  color: #0369a1;
-  font-variant-numeric: tabular-nums;
-}
-.fx-banner-updated {
-  font-weight: 600;
-  color: #0f766e;
-  font-variant-numeric: tabular-nums;
-}
-.fx-banner-updated em {
-  font-style: normal;
-  font-weight: 800;
-  color: #047857;
 }
 .price-krw-hint {
   display: block;
@@ -1274,6 +1279,9 @@ html.lang-en .brand-name {
   font-weight: 600;
   letter-spacing: -0.02em;
   color: #0f172a;
+  max-width: min(34vw, 200px);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 html.lang-en .drug-group {
   border-radius: 8px;
@@ -1332,10 +1340,15 @@ html.lang-en .footer-chip {
   font-weight: 500;
   color: #64748b;
 }
-html.lang-en #map { top: 176px; }
-html.lang-en .header-notice { top: 184px; }
-@media (min-width: 900px) {
-  html.lang-en .header-notice { top: auto; }
+html.lang-en .fx-chip { max-width: min(50vw, 300px); }
+@media (max-width: 480px) {
+  html.lang-en .brand-name { max-width: 32vw; font-size: 13px; }
+  html.lang-en .clinic-search-btn span { display: none; }
+  html.lang-en .clinic-search-btn { padding: 4px 7px; margin-left: 0; }
+  .fx-chip { max-width: min(54vw, 220px); padding: 2px 6px 2px 4px; }
+  .fx-chip-line { font-size: 8.5px; }
+  .fx-chip-pill { font-size: 7.5px; padding: 2px 5px; }
+  .header-actions { gap: 4px; }
 }
 @media (max-width: 380px) {
   .lang-toggle-btn { padding: 4px 7px; font-size: 9px; }
@@ -1351,6 +1364,10 @@ html.lang-en .header-notice { top: 184px; }
       <span class="brand-sub" data-i18n="brandSub">인크레틴 치료제 가격정보</span>
     </div>
     <div class="header-actions">
+      <div class="fx-chip" id="fxBanner" aria-live="polite">
+        <span class="fx-chip-pill" data-i18n="fxLiveShort">FX</span>
+        <span class="fx-chip-line" id="fxChipLine"></span>
+      </div>
       <div class="lang-toggle" role="group" aria-label="Language">
         <button type="button" class="lang-toggle-btn active" data-lang="ko" id="langKo">KOR</button>
         <button type="button" class="lang-toggle-btn" data-lang="en" id="langEn">ENG</button>
@@ -1363,11 +1380,6 @@ html.lang-en .header-notice { top: 184px; }
         <span data-i18n="searchBtn">병의원/약국검색</span>
       </button>
     </div>
-  </div>
-  <div class="fx-banner" id="fxBanner" aria-live="polite">
-    <span class="fx-banner-pill" data-i18n="fxLive">Live FX</span>
-    <span class="fx-banner-rate" id="fxRateText">—</span>
-    <span class="fx-banner-updated" id="fxUpdatedText"></span>
   </div>
 
   <!-- Drug + Dose toggle -->
@@ -1665,6 +1677,7 @@ const I18N = {
     searchEmpty: "검색 결과가 없습니다.",
     searchPharmacy: "약국", searchClinic: "병의원",
     fxLive: "실시간 환율",
+    fxLiveShort: "FX",
     fxLoading: "환율 불러오는 중…",
     fxRate: "1 USD = ₩{rate}",
     fxUpdated: "환율 갱신: <em>{time}</em>",
@@ -1713,6 +1726,7 @@ const I18N = {
     searchEmpty: "No results found.",
     searchPharmacy: "Pharmacy", searchClinic: "Clinic",
     fxLive: "Live FX",
+    fxLiveShort: "FX",
     fxLoading: "Fetching exchange rate…",
     fxRate: "1 USD = ₩{rate}",
     fxUpdated: "FX updated: <em>{time}</em>",
@@ -1742,7 +1756,6 @@ function applyI18n() {
   });
   document.getElementById("langKo")?.classList.toggle("active", appLang === "ko");
   document.getElementById("langEn")?.classList.toggle("active", appLang === "en");
-  document.getElementById("fxBanner")?.classList.toggle("visible", appLang === "en");
   if (appLang === "en") {
     document.title = "Harusense GLP-1 Price Map | Mounjaro & Wegovy in Seoul";
   } else {
@@ -1770,21 +1783,21 @@ function formatFxTime(date) {
 }
 
 function updateFxBanner() {
-  const rateEl = document.getElementById("fxRateText");
-  const updatedEl = document.getElementById("fxUpdatedText");
-  if (!rateEl || !updatedEl) return;
+  const banner = document.getElementById("fxBanner");
+  const lineEl = document.getElementById("fxChipLine");
+  if (!banner || !lineEl) return;
+  banner.classList.toggle("visible", appLang === "en");
   if (appLang !== "en") return;
   if (fx.loading) {
-    rateEl.textContent = t("fxLoading");
-    updatedEl.innerHTML = "";
+    lineEl.textContent = t("fxLoading");
     return;
   }
   if (fx.krwPerUsd) {
-    rateEl.textContent = t("fxRate", { rate: fx.krwPerUsd.toLocaleString("en-US", { maximumFractionDigits: 2 }) });
-    updatedEl.innerHTML = t("fxUpdated", { time: formatFxTime(fx.updatedAt) });
+    const rate = fx.krwPerUsd.toLocaleString("en-US", { maximumFractionDigits: 2 });
+    const time = formatFxTime(fx.updatedAt);
+    lineEl.innerHTML = `1 USD = ₩${rate}<span class="fx-sep">·</span><em>${time}</em>`;
   } else {
-    rateEl.textContent = t("fxLoading");
-    updatedEl.innerHTML = "";
+    lineEl.textContent = t("fxLoading");
   }
 }
 
@@ -2118,13 +2131,10 @@ function updateHeaderNotice() {
   if (!el) return;
 
   const clinicUpdate = formatRelativeUpdateTime(latestClinicUpdatedAt());
-  const fxPart = appLang === "en" && fx.updatedAt && fx.krwPerUsd
-    ? ` · ${t("fxUpdatedShort", { time: formatFxTime(fx.updatedAt) })}`
-    : "";
 
   el.innerHTML = `
     <span class="notice-verified">${t("noticeVerified")}</span>
-    <span class="notice-meta">${clinicUpdate} · ${t("noticeCallBefore")}${fxPart}</span>
+    <span class="notice-meta">${clinicUpdate} · ${t("noticeCallBefore")}</span>
   `;
 }
 
