@@ -1109,6 +1109,7 @@ body {
     </div>
     <div class="rep-modal-body">
       <p class="rep-help">요양기관 대표번호 또는 담당자 연락처로 확인 후, 요양기관번호를 아이디로 사용하고 임시 비밀번호를 안내드립니다.</p>
+      <div class="rep-message" id="repRequestTopMessage"></div>
       <div class="rep-field">
         <label for="repRequestClinicName">요양기관명</label>
         <input id="repRequestClinicName" autocomplete="organization" />
@@ -1671,6 +1672,7 @@ function resetRepresentativeRequest() {
   document.getElementById("repRequestRole").value = "";
   document.getElementById("repRequestConfirm").checked = false;
   setRepMessage("repRequestMessage", "");
+  setRepMessage("repRequestTopMessage", "");
 }
 
 async function handleRepresentativeRequest() {
@@ -1689,9 +1691,14 @@ async function handleRepresentativeRequest() {
   }
 
   setRepMessage("repRequestMessage", "신청을 접수하는 중입니다...", "");
+  setRepMessage("repRequestTopMessage", "신청을 접수하는 중입니다...", "");
   submitRepresentativeRequestToGoogleForm(payload);
   resetRepresentativeRequest();
-  setRepMessage("repRequestMessage", "신청이 접수되었습니다. 하루센스에서 확인 후 보통 6시간 이내에 안내드립니다.", "success");
+  const successMessage = "신청이 접수되었습니다. 하루센스에서 확인 후 보통 6시간 이내에 안내드립니다.";
+  setRepMessage("repRequestMessage", successMessage, "success");
+  setRepMessage("repRequestTopMessage", successMessage, "success");
+  const requestBody = document.querySelector("#repRequestView .rep-modal-body");
+  if (requestBody) requestBody.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function submitRepresentativeRequestToGoogleForm(payload) {
