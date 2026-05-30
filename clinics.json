@@ -1,9 +1,10 @@
 {
   "last_updated": "2026-05-30",
-  "version": "v7-29entries-clinics-pharmacies",
+  "version": "v8-29entries-clinics-pharmacies-contact-updated",
   "clinics": [
     {
       "id": "clinic_1_뉴센스의원",
+      "institution_no": "12339695",
       "name": "뉴센스의원",
       "district": "마포구",
       "address": "서울 마포구 신촌로 170 이대푸르지오시티 3층",
@@ -11,6 +12,8 @@
       "lng": 126.9442987,
       "phone": "02-3272-8885",
       "verified": true,
+      "notes": "원장 직접 처방 · 일본어 상담 가능",
+      "updated_by": "260528",
       "prices": {
         "mounjaro_2.5mg": 305000,
         "mounjaro_5mg": 405000,
@@ -21,13 +24,11 @@
         "wegovy_1.0mg": 309000,
         "wegovy_1.7mg": 369000,
         "wegovy_2.4mg": 429000
-      },
-      "notes": "원장 직접 처방 · 일본어 상담 가능",
-      "institution_no": "12339695",
-      "updated_by": "260528"
+      }
     },
     {
       "id": "clinic_2_서울바램의원",
+      "institution_no": "TEMP101",
       "name": "서울바램의원",
       "district": "서대문구",
       "address": "서울특별시 서대문구 신촌역로 22-5 신촌 청년푸드스토어 2층 53호",
@@ -35,17 +36,17 @@
       "lng": 126.942917,
       "phone": "02-365-7575",
       "verified": false,
+      "notes": "신촌기차역가까움",
       "prices": {
         "mounjaro_2.5mg": 320000,
         "mounjaro_5mg": 430000,
         "mounjaro_7.5mg": 596000,
         "mounjaro_10mg": 686000
-      },
-      "notes": "신촌기차역가까움",
-      "institution_no": "TEMP101"
+      }
     },
     {
       "id": "clinic_3_위비앙병원",
+      "institution_no": "TEMP102",
       "name": "위비앙병원",
       "district": "마포구",
       "address": "서울특별시 마포구 아현동 346-56",
@@ -53,16 +54,16 @@
       "lng": 126.952443,
       "phone": "02-6207-8811",
       "verified": false,
+      "notes": "아현역",
       "prices": {
         "mounjaro_2.5mg": 305000,
         "mounjaro_5mg": 405000,
         "mounjaro_7.5mg": 605000
-      },
-      "notes": "아현역",
-      "institution_no": "TEMP102"
+      }
     },
     {
       "id": "clinic_4_연세위더스여성의원",
+      "institution_no": "TEMP103",
       "name": "연세위더스여성의원",
       "district": "마포구",
       "address": "서울특별시 마포구 양화로 178, 11층 (동교동, 목화빌딩)",
@@ -70,17 +71,17 @@
       "lng": 126.9251464,
       "phone": "02-323-1194",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 335000,
         "mounjaro_5mg": 450000,
         "mounjaro_7.5mg": 579000,
         "mounjaro_10mg": 579000
-      },
-      "notes": "",
-      "institution_no": "TEMP103"
+      }
     },
     {
       "id": "clinic_5_낙성대또본의원",
+      "institution_no": "TEMP104",
       "name": "낙성대또본의원",
       "district": "관악구",
       "address": "서울특별시 관악구 남부순환로 1931, 3층, 4층 (봉천동, 케에타워)",
@@ -88,17 +89,17 @@
       "lng": 126.9638055,
       "phone": "02-871-4737",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 320000,
         "mounjaro_5mg": 430000,
         "mounjaro_7.5mg": 570000,
         "mounjaro_10mg": 580000
-      },
-      "notes": "",
-      "institution_no": "TEMP104"
+      }
     },
     {
       "id": "clinic_6_서여의도의원",
+      "institution_no": "TEMP105",
       "name": "서여의도의원",
       "district": "영등포구",
       "address": "서울특별시 영등포구 국회대로70길 18, 한양빌딩 2층 2호 (여의도동)",
@@ -106,15 +107,15 @@
       "lng": 126.9203375,
       "phone": "02-6953-5382",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 360000,
         "mounjaro_5mg": 480000
-      },
-      "notes": "",
-      "institution_no": "TEMP105"
+      }
     },
     {
       "id": "clinic_7_로하스의원",
+      "institution_no": "TEMP106",
       "name": "로하스의원",
       "district": "영등포구",
       "address": "서울특별시 영등포구 여의대로 108, 파크원 2층 201호 (여의도동)",
@@ -122,17 +123,17 @@
       "lng": 126.9271926,
       "phone": "02-782-7579",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 349000,
         "mounjaro_5mg": 449000,
         "mounjaro_7.5mg": 599000,
         "mounjaro_10mg": 599000
-      },
-      "notes": "",
-      "institution_no": "TEMP106"
+      }
     },
     {
       "id": "clinic_8_닥터킴이비인후과의원",
+      "institution_no": "TEMP107",
       "name": "닥터킴이비인후과의원",
       "district": "영등포구",
       "address": "서울특별시 영등포구 여의나루로 42, 407호 (여의도동, 여의도종합상가)",
@@ -140,17 +141,17 @@
       "lng": 126.9248093,
       "phone": "02-780-7582",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 320000,
         "mounjaro_5mg": 410000,
         "mounjaro_7.5mg": 560000,
         "mounjaro_10mg": 560000
-      },
-      "notes": "",
-      "institution_no": "TEMP107"
+      }
     },
     {
       "id": "clinic_9_강서아이엠유의원",
+      "institution_no": "TEMP108",
       "name": "강서아이엠유의원",
       "district": "강서구",
       "address": "서울특별시 강서구 마곡중앙로 55, 문영 퀸즈파크13 3층 304~306호 (마곡동)",
@@ -158,17 +159,17 @@
       "lng": 126.8264079,
       "phone": "02-2661-1190",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 315000,
         "mounjaro_5mg": 405000,
         "mounjaro_7.5mg": 575000,
         "mounjaro_10mg": 580000
-      },
-      "notes": "",
-      "institution_no": "TEMP108"
+      }
     },
     {
       "id": "clinic_10_밴스의원_용산점",
+      "institution_no": "TEMP109",
       "name": "밴스의원 용산점",
       "district": "용산구",
       "address": "서울특별시 용산구 새창로 217, 1501호 (한강로2가, 용산토투밸리)",
@@ -176,15 +177,15 @@
       "lng": 126.9677165,
       "phone": "02-6956-0059",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 374000,
         "mounjaro_5mg": 484000
-      },
-      "notes": "",
-      "institution_no": "TEMP109"
+      }
     },
     {
       "id": "clinic_11_덕은365의원",
+      "institution_no": "TEMP110",
       "name": "덕은365의원",
       "district": "고양시",
       "address": "경기도 고양시 덕양구 으뜸로 138, 311~314호 (덕은동)",
@@ -192,17 +193,17 @@
       "lng": 126.8708873,
       "phone": "02-6953-4175",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 360000,
         "mounjaro_5mg": 450000,
         "mounjaro_7.5mg": 600000,
         "mounjaro_10mg": 600000
-      },
-      "notes": "",
-      "institution_no": "TEMP110"
+      }
     },
     {
       "id": "clinic_12_다시봄의원",
+      "institution_no": "TEMP111",
       "name": "다시봄의원",
       "district": "동작구",
       "address": "서울특별시 동작구 흑석한강로 27, 106동 B104호 (흑석동, 흑석한강푸르지오상가)",
@@ -210,17 +211,17 @@
       "lng": 126.9658328,
       "phone": "02-814-9119",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 315000,
         "mounjaro_5mg": 410000,
         "mounjaro_7.5mg": 560000,
         "mounjaro_10mg": 560000
-      },
-      "notes": "",
-      "institution_no": "TEMP111"
+      }
     },
     {
       "id": "clinic_13_필모어의원",
+      "institution_no": "TEMP112",
       "name": "필모어의원",
       "district": "종로구",
       "address": "서울특별시 종로구 돈화문로 30, 3호선 종로3가역 지하2층 319-205-2호 (묘동)",
@@ -228,17 +229,17 @@
       "lng": 126.9920933,
       "phone": "02-744-7255",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 300000,
         "mounjaro_5mg": 385000,
         "mounjaro_7.5mg": 540000,
         "mounjaro_10mg": 540000
-      },
-      "notes": "",
-      "institution_no": "TEMP112"
+      }
     },
     {
       "id": "clinic_15_종로광장정형외과",
+      "institution_no": "TEMP113",
       "name": "종로광장정형외과",
       "district": "종로구",
       "address": "서울특별시 종로구 종로 223",
@@ -246,16 +247,16 @@
       "lng": 127.0024872,
       "phone": "02-3675-7650",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 330000,
         "mounjaro_7.5mg": 540000,
         "mounjaro_10mg": 540000
-      },
-      "notes": "",
-      "institution_no": "TEMP113"
+      }
     },
     {
       "id": "clinic_16_목동기운찬마취통증의학과의원",
+      "institution_no": "TEMP114",
       "name": "목동기운찬마취통증의학과의원",
       "district": "양천구",
       "address": "서울특별시 양천구 목동중앙로 85, 1동 지하1층 106,107호 (목동, 강산아파트)",
@@ -263,17 +264,17 @@
       "lng": 126.8714588,
       "phone": "02-2651-6661",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 310000,
         "mounjaro_5mg": 410000,
         "mounjaro_7.5mg": 550000,
         "mounjaro_10mg": 550000
-      },
-      "notes": "",
-      "institution_no": "TEMP114"
+      }
     },
     {
       "id": "clinic_17_엄소아과의원",
+      "institution_no": "TEMP115",
       "name": "엄소아과의원",
       "district": "노원구",
       "address": "서울특별시 노원구 상계동 수락산역 인근",
@@ -281,17 +282,17 @@
       "lng": 127.054858,
       "phone": "",
       "verified": false,
+      "notes": "주소·전화번호 추가 확인 필요",
       "prices": {
         "mounjaro_2.5mg": 310000,
         "mounjaro_5mg": 410000,
         "mounjaro_7.5mg": 560000,
         "mounjaro_10mg": 560000
-      },
-      "notes": "주소·전화번호 추가 확인 필요",
-      "institution_no": "TEMP115"
+      }
     },
     {
       "id": "clinic_18_웰빙내과의원",
+      "institution_no": "TEMP116",
       "name": "웰빙내과의원",
       "district": "고양시",
       "address": "경기도 고양시 일산서구 중앙로 1426, 6층 (주엽동, 일송노블레스)",
@@ -299,17 +300,17 @@
       "lng": 126.7619286,
       "phone": "031-912-8292",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 310000,
         "mounjaro_5mg": 410000,
         "mounjaro_7.5mg": 560000,
         "mounjaro_10mg": 560000
-      },
-      "notes": "",
-      "institution_no": "TEMP116"
+      }
     },
     {
       "id": "clinic_19_미래365가정의학과의원",
+      "institution_no": "TEMP117",
       "name": "미래365가정의학과의원",
       "district": "강서구",
       "address": "서울특별시 강서구 화곡로 398, 홈플러스강서점앤본사사옥 4층 (등촌동)",
@@ -317,215 +318,214 @@
       "lng": 126.8550758,
       "phone": "02-6958-8266",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 350000,
         "mounjaro_5mg": 450000,
         "mounjaro_7.5mg": 580000,
         "mounjaro_10mg": 580000
-      },
-      "notes": "",
-      "institution_no": "TEMP117"
+      }
     },
     {
       "id": "clinic_20_서울투탑재활의학과의원군자점",
+      "institution_no": "TEMP118",
       "name": "서울투탑재활의학과의원 군자점",
       "district": "광진구",
       "address": "서울 광진구 (군자역 인근)",
       "lat": 37.556481,
       "lng": 127.082077,
-      "phone": "",
+      "phone": "02-456-3360",
       "verified": false,
+      "notes": "",
       "prices": {
         "wegovy_0.25mg": 260000,
         "wegovy_0.5mg": 290000,
         "wegovy_1.0mg": 310000,
         "wegovy_1.7mg": 390000,
         "wegovy_2.4mg": 420000
-      },
-      "notes": "전화번호 확인 필요",
-      "institution_no": "TEMP118"
+      }
     },
     {
       "id": "clinic_21_샤프성형외과의원",
+      "institution_no": "TEMP119",
       "name": "샤프성형외과의원",
       "district": "서초구",
       "address": "서울 서초구 강남대로 (신논현역 9번 출구 앞 투썸플레이스 빌딩 8층)",
       "lat": 37.503749,
       "lng": 127.023505,
-      "phone": "",
+      "phone": "02-599-8875",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 305000,
         "mounjaro_5mg": 405000,
         "mounjaro_7.5mg": 565000,
         "mounjaro_10mg": 585000
-      },
-      "notes": "전화번호 확인 필요",
-      "institution_no": "TEMP119"
+      }
     },
     {
       "id": "clinic_23_삼성신내과의원",
+      "institution_no": "TEMP120",
       "name": "삼성신내과의원",
       "district": "광진구",
-      "address": "서울 광진구 아차산로 208 2층 201호",
+      "address": "서울특별시 광진구 아차산로 208, 상록빌딩 2층 (자양동)",
       "lat": 37.541041,
       "lng": 127.066469,
-      "phone": "",
+      "phone": "02-469-0114",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 360000,
         "mounjaro_5mg": 450000,
         "mounjaro_7.5mg": 600000,
         "mounjaro_10mg": 600000
-      },
-      "notes": "전화번호 확인 필요",
-      "institution_no": "TEMP120"
+      }
     },
     {
       "id": "clinic_28_강동이엠365의원",
+      "institution_no": "TEMP121",
       "name": "강동이엠365의원",
       "district": "강동구",
-      "address": "서울 강동구 아리수로93나길 76, 2~5층 (강일동)",
+      "address": "서울특별시 강동구 아리수로93나길 76, 2,3,4,5층 (강일동)",
       "lat": 37.572585,
       "lng": 127.175839,
-      "phone": "",
+      "phone": "02-428-9111",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 320000,
         "mounjaro_5mg": 420000,
         "mounjaro_7.5mg": 575000,
         "mounjaro_10mg": 575000
-      },
-      "notes": "전화번호 확인 필요",
-      "institution_no": "TEMP121"
+      }
     },
     {
       "id": "clinic_30_서울수정형외과의원",
+      "institution_no": "TEMP122",
       "name": "서울수정형외과의원",
-      "district": "노원구",
-      "address": "서울 노원구 (노원역 인근)",
+      "district": "강북구",
+      "address": "서울특별시 강북구 도봉로 184, 5,6,7층",
       "lat": 37.625137,
       "lng": 127.026865,
-      "phone": "",
+      "phone": "02-987-8000",
       "verified": false,
+      "notes": "365일 진료",
       "prices": {
         "mounjaro_2.5mg": 350000,
         "mounjaro_5mg": 450000
-      },
-      "notes": "365일 진료 · 전화번호 확인 필요",
-      "institution_no": "TEMP122"
+      }
     },
     {
       "id": "pharmacy_튼튼약국",
+      "institution_no": "PH01",
       "name": "튼튼약국",
       "district": "마포구",
       "type": "pharmacy",
-      "address": "서울 마포구 대흥로24길 24",
+      "address": "서울 마포구 대흥로24길 24 마포프레스티지자이상가 A동 203호",
       "lat": 37.554243,
       "lng": 126.946932,
-      "phone": "",
+      "phone": "02-704-5921",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 310000,
         "mounjaro_5mg": 400000
-      },
-      "notes": "",
-      "institution_no": "PH01"
+      }
     },
     {
       "id": "pharmacy_맑은약국",
+      "institution_no": "PH02",
       "name": "맑은약국",
       "district": "서대문구",
       "type": "pharmacy",
-      "address": "서울 서대문구 신촌로 107, 세인빌딩 1층",
+      "address": "서울특별시 서대문구 신촌로 107, 세인빌딩 1층",
       "lat": 37.555615,
       "lng": 126.937857,
-      "phone": "",
+      "phone": "02-363-3668",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 310000,
         "mounjaro_5mg": 405000,
         "mounjaro_7.5mg": 560000,
         "mounjaro_10mg": 560000
-      },
-      "notes": "",
-      "institution_no": "PH02"
+      }
     },
     {
       "id": "pharmacy_세란약국",
+      "institution_no": "PH03",
       "name": "세란약국",
       "district": "서대문구",
       "type": "pharmacy",
-      "address": "서울 서대문구 연세로 39 1층",
+      "address": "서울특별시 서대문구 연세로 39 (창천동)",
       "lat": 37.559126,
       "lng": 126.936727,
-      "phone": "",
+      "phone": "02-322-1239",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 304000,
         "mounjaro_5mg": 403000,
         "mounjaro_7.5mg": 570000,
         "mounjaro_10mg": 570000
-      },
-      "notes": "",
-      "institution_no": "PH03"
+      }
     },
     {
       "id": "pharmacy_두리봄약국",
+      "institution_no": "PH04",
       "name": "두리봄약국",
       "district": "마포구",
       "type": "pharmacy",
-      "address": "",
+      "address": "서울 마포구 월드컵로3길 14 딜라이트스퀘어 2차 309호",
       "lat": 37.544791,
       "lng": 126.949563,
-      "phone": "",
+      "phone": "070-4189-3430",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 289900,
         "mounjaro_5mg": 384900,
         "mounjaro_7.5mg": 538900,
         "mounjaro_10mg": 538900
-      },
-      "notes": "",
-      "institution_no": "PH04"
+      }
     },
     {
       "id": "pharmacy_피크약국",
+      "institution_no": "PH05",
       "name": "피크약국",
       "district": "마포구",
       "type": "pharmacy",
-      "address": "",
+      "address": "서울특별시 마포구 양화로 61, 두암빌딩 1층 (서교동)",
       "lat": 37.550822,
       "lng": 126.915069,
-      "phone": "",
+      "phone": "02-3143-6191",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 290000,
         "mounjaro_5mg": 385000,
         "mounjaro_7.5mg": 537000,
         "mounjaro_10mg": 537000
-      },
-      "notes": "",
-      "institution_no": "PH05"
+      }
     },
     {
       "id": "pharmacy_셀약국",
+      "institution_no": "PH06",
       "name": "셀약국",
       "district": "마포구",
       "type": "pharmacy",
-      "address": "",
+      "address": "서울특별시 마포구 양화로 72, 1층 118호 (서교동)",
       "lat": 37.550798,
       "lng": 126.916722,
-      "phone": "",
+      "phone": "02-337-7959",
       "verified": false,
+      "notes": "",
       "prices": {
         "mounjaro_2.5mg": 290000,
         "mounjaro_5mg": 390000,
         "mounjaro_7.5mg": 539000,
         "mounjaro_10mg": 539000
-      },
-      "notes": "",
-      "institution_no": "PH06"
+      }
     }
   ]
 }
