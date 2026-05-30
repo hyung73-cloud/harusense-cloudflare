@@ -1734,15 +1734,18 @@ function setStockButton(button, inStock) {
 function renderRepresentativeEditor() {
   const clinic = representativeClinic();
   const box = document.getElementById("repPriceFields");
+  const submitBtn = document.getElementById("repSubmitBtn");
   if (!box) return;
   if (!clinic) {
     document.getElementById("repClinicTitle").textContent = "계정 확인 완료";
     document.getElementById("repClinicSub").textContent = `${REP_ACTIVE_INSTITUTION_NO} · 지도 데이터 연결 전`;
+    if (submitBtn) submitBtn.hidden = true;
     box.innerHTML = `
       <p class="rep-help">로그인과 비밀번호 변경은 완료되었습니다. 다만 이 계정은 아직 지도에 표시된 요양기관 데이터와 연결되어 있지 않아 가격 수정 항목을 표시할 수 없습니다. 실제 등록된 요양기관 계정으로 로그인하면 가격/재고 수정 항목이 표시됩니다.</p>
     `;
     return;
   }
+  if (submitBtn) submitBtn.hidden = false;
   document.getElementById("repClinicTitle").textContent = `${clinic.name} 정보 수정`;
   document.getElementById("repClinicSub").textContent = `${clinic.address || ""} · ${clinic.phone || "전화번호 미등록"}`;
   const groups = ["mounjaro", "wegovy"].map(drug => {
@@ -1989,6 +1992,8 @@ async function handleRepPasswordChange() {
   }
 
   setRepMessage("repPasswordMessage", "비밀번호를 변경하는 중입니다...", "");
+  const passwordSubmitBtn = document.getElementById("repPasswordSubmitBtn");
+  if (passwordSubmitBtn) passwordSubmitBtn.disabled = true;
   try {
     const data = await accountApi("changePassword", {
       institution_no: REP_ACTIVE_INSTITUTION_NO,
@@ -2004,6 +2009,8 @@ async function handleRepPasswordChange() {
     }
   } catch (err) {
     setRepMessage("repPasswordMessage", "네트워크 오류로 비밀번호를 변경하지 못했습니다.", "error");
+  } finally {
+    if (passwordSubmitBtn) passwordSubmitBtn.disabled = false;
   }
 }
 
