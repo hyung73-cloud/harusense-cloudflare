@@ -1274,14 +1274,19 @@ html.lang-en .header {
   box-shadow: 0 1px 0 rgba(15,23,42,0.03);
 }
 html.lang-en .brand-sub { display: none; }
+html.lang-en .header-top { align-items: flex-start; }
+html.lang-en .brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-right: 6px;
+}
 html.lang-en .brand-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: #0f172a;
-  max-width: min(34vw, 200px);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.2;
 }
 html.lang-en .drug-group {
   border-radius: 8px;
@@ -1342,7 +1347,7 @@ html.lang-en .footer-chip {
 }
 html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 @media (max-width: 480px) {
-  html.lang-en .brand-name { max-width: 32vw; font-size: 13px; }
+  html.lang-en .brand-name { font-size: 13px; }
   html.lang-en .clinic-search-btn span { display: none; }
   html.lang-en .clinic-search-btn { padding: 4px 7px; margin-left: 0; }
   .fx-chip { max-width: min(54vw, 220px); padding: 2px 6px 2px 4px; }
@@ -1686,6 +1691,7 @@ const I18N = {
   },
   en: {
     brandTitle: "Harusense GLP-1 Price Map",
+    brandTitleShort: "Harusense GLP-1 Map",
     brandSub: "Incretin therapy pricing",
     searchBtn: "Search",
     loading: "Loading map data",
@@ -1746,11 +1752,20 @@ function t(key, vars) {
   return s;
 }
 
+function applyBrandTitle() {
+  const el = document.querySelector(".brand-name[data-i18n='brandTitle']");
+  if (!el) return;
+  const useShort = appLang === "en" && window.matchMedia("(max-width: 480px)").matches;
+  el.textContent = useShort && I18N.en.brandTitleShort ? I18N.en.brandTitleShort : t("brandTitle");
+}
+
 function applyI18n() {
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
+    if (key === "brandTitle") return;
     if (key) el.textContent = t(key);
   });
+  applyBrandTitle();
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
   });
@@ -2378,6 +2393,7 @@ function initLangToggle() {
 document.addEventListener("DOMContentLoaded", () => {
   applyI18n();
   initLangToggle();
+  window.addEventListener("resize", applyBrandTitle);
 });
 
 // ─────────── Drug/Dose toggle handling ───────────
