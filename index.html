@@ -906,6 +906,9 @@ body {
   left: 50%;
   bottom: 14px;
   transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--blue);
   color: #fff;
   border-radius: 8px;
@@ -921,6 +924,42 @@ body {
   border: 1.5px solid #fff;
   text-align: center;
   z-index: 2;
+}
+.price-update-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 1px 4px rgba(34,197,94,0.5);
+  flex-shrink: 0;
+  animation: priceUpdatePulse 2.5s ease-in-out infinite;
+}
+@keyframes priceUpdatePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.82; }
+}
+.price-update-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(6px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(17,24,39,0.92);
+  color: #f9fafb;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(17,24,39,0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+.marker-wrap:hover .price-update-tip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 .price-marker::after {
   content: '';
@@ -2018,17 +2057,29 @@ function applyClinicOverrides(data, overrides) {
     const items = normalizePriceItems(update.items);
     const prices = { ...(clinic.prices || {}) };
     const stock = { ...(clinic.stock || {}) };
+    const price_updated_at = { ...(clinic.price_updated_at || {}) };
+    const touchedAt = update.updated_at || new Date().toISOString();
     Object.entries(items).forEach(([key, item]) => {
+      const prevPrice = clinic.prices && clinic.prices[key] != null ? Number(clinic.prices[key]) : null;
+      const prevStock = clinic.stock && clinic.stock[key] === false;
       if (item.price !== "" && Number.isFinite(Number(item.price))) {
-        prices[key] = Number(item.price);
+        const newPrice = Number(item.price);
+        prices[key] = newPrice;
+        const newStock = item.in_stock !== false;
+        stock[key] = newStock;
+        if (prevPrice !== newPrice || prevStock !== !newStock) {
+          price_updated_at[key] = touchedAt;
+        }
+      } else {
+        stock[key] = item.in_stock !== false;
       }
-      stock[key] = item.in_stock !== false;
     });
 
     return {
       ...clinic,
       prices,
       stock,
+      price_updated_at,
       updated_at: update.updated_at || clinic.updated_at,
       updated_by: update.institution_no || clinic.updated_by
     };
@@ -2141,6 +2192,48 @@ function formatRelativeUpdateTime(date) {
     day: "numeric"
   }) + t("updateSuffix");
 }
+
+const PRICE_UPDATE_DOT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
+
+function getPriceUpdatedAt(clinic, doseKey) {
+  if (!clinic || !doseKey) return null;
+  const raw = clinic.price_updated_at && clinic.price_updated_at[doseKey];
+  if (raw) {
+    const d = new Date(raw);
+    if (Number.isFinite(d.getTime())) return d;
+  }
+  return null;
+}
+
+function isRecentPriceUpdate(clinic, doseKey) {
+  const at = getPriceUpdatedAt(clinic, doseKey);
+  if (!at) return false;
+  return Date.now() - at.getTime() <= PRICE_UPDATE_DOT_MAX_AGE_MS;
+}
+
+function getPriceUpdateTooltip(clinic, doseKey) {
+  const at = getPriceUpdatedAt(clinic, doseKey);
+  if (!at) return "";
+  const rel = formatRelativeUpdateTime(at);
+  if (appLang === "en") {
+    if (clinic.updated_by) return `Clinic updated · ${rel}`;
+    if (clinic.verified) return `Doctor verified · ${rel}`;
+    return `Recently updated · ${rel}`;
+  }
+  if (clinic.updated_by) return `의원에서 직접 수정 · ${rel}`;
+  if (clinic.verified) return `원장 확인 가격 · ${rel}`;
+  return `최근 반영 · ${rel}`;
+}
+
+function buildPriceMarkerHtml(clinic, price, doseKey) {
+  const showDot = isRecentPriceUpdate(clinic, doseKey);
+  const tip = showDot ? getPriceUpdateTooltip(clinic, doseKey) : "";
+  const dotHtml = showDot
+    ? `<span class="price-update-dot" aria-hidden="true"></span><span class="price-update-tip">${tip}</span>`
+    : "";
+  return `<span class="price-marker-text">${formatMarkerPrice(price)}</span>${dotHtml}`;
+}
+
 function updateHeaderNotice() {
   const el = document.getElementById("headerNotice");
   if (!el) return;
@@ -2221,7 +2314,8 @@ function clinicDataSignature(data) {
     c.lng,
     c.prices,
     c.stock,
-    c.updated_at
+    c.updated_at,
+    c.price_updated_at
   ].join(":")).join("|");
 }
 
@@ -2409,7 +2503,7 @@ function renderMarkers() {
       el.className = `marker-wrap${verifiedCls}${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
-        <div class="price-marker">${formatMarkerPrice(price)}</div>
+        <div class="price-marker">${buildPriceMarkerHtml(clinic, price, key)}</div>
       `;
     } else {
       const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
