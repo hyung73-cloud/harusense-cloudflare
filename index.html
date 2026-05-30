@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <!-- Google Tag Manager -->
@@ -947,6 +947,20 @@ body {
   font-weight: 700;
   font-size: 11px;
 }
+/* ─── 약국 마커 — 주황 + 캡슐 아이콘 ─── */
+.marker-wrap.pharmacy .marker-dot {
+  background: #f59e0b;
+  box-shadow: 0 2px 6px rgba(245,158,11,0.35), 0 0 0 1px rgba(245,158,11,0.3);
+}
+.marker-wrap.pharmacy .price-marker { background: #f59e0b; }
+.marker-wrap.pharmacy .price-marker::after { border-top-color: #f59e0b; }
+.marker-wrap.pharmacy:hover .price-marker { box-shadow: 0 6px 18px rgba(245,158,11,0.5); }
+.price-marker .pill-icon {
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
 /* Gray label for clinics without selected dose price */
 .info-marker {
   position: absolute;
@@ -1059,6 +1073,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="chip" data-district="양천구">양천</button>
     <button class="chip" data-district="노원구">노원</button>
     <button class="chip" data-district="고양시">고양</button>
+    <button class="chip" data-district="광진구">광진</button>
+    <button class="chip" data-district="서초구">서초</button>
+    <button class="chip" data-district="강동구">강동</button>
   </div>
   <div class="header-notice" id="headerNotice">
     <span class="notice-verified">✓ 원장 자문</span>
@@ -1393,20 +1410,23 @@ function renderMarkers() {
     if (!clinicMatchesDistrict(clinic)) return;
 
     const hasPrice = clinicHasSelectedPrice(clinic);
+    const isPharmacy = clinic.type === "pharmacy" || (clinic.name || "").endsWith("약국");
     const verifiedCls = clinic.verified ? " verified" : "";
+    const pharmacyCls = isPharmacy ? " pharmacy" : "";
+    const pillSvg = `<svg class="pill-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" fill="#fff"/><rect x="2.5" y="8.5" width="9.5" height="7" rx="3.5" fill="#ffe6b3"/><line x1="12" y1="8.5" x2="12" y2="15.5" stroke="#f59e0b" stroke-width="1.4"/></svg>`;
 
     const el = document.createElement("div");
 
     if (hasPrice) {
       const price = Number(clinic.prices[key]);
-      el.className = `marker-wrap${verifiedCls}`;
+      el.className = `marker-wrap${verifiedCls}${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
-        <div class="price-marker">${formatPriceShort(price)}원</div>
+        <div class="price-marker">${isPharmacy ? pillSvg : ""}${formatPriceShort(price)}원</div>
       `;
     } else {
       const label = clinic.stock && clinic.stock[key] === false ? "재고 없음" : "정보 수집중";
-      el.className = "marker-wrap no-price";
+      el.className = `marker-wrap no-price${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
         <div class="info-marker">${label}</div>
@@ -1902,6 +1922,3 @@ window.initMap = initMap;
 
 </body>
 </html>
-
-
-
