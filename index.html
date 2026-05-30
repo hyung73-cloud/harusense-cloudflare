@@ -2153,44 +2153,84 @@ function updateHeaderNotice() {
   `;
 }
 
-// ─────────── Data loading ───────────
-// DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
-// 실패 시에만 정적 clinics.json으로 폴백.
-async function loadData() {
-  let apiData = null;
-  let staticData = null;
+// ─────────── Data cache (stale-while-revalidate) ───────────
+const HARUSENSE_DATA_CACHE_VERSION = 1;
+const HARUSENSE_CACHE = {
+  version: HARUSENSE_DATA_CACHE_VERSION,
+  keys: {
+    base: "harusense_cache_base_v1",
+    overrides: "harusense_cache_overrides_v1"
+  },
+  ttl: {
+    baseMs: 30 * 60 * 1000,
+    overridesMs: 5 * 60 * 1000
+  }
+};
 
+function readDataCache(storageKey, ttlMs) {
   try {
-    const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
-    if (apiResp.ok) {
-      const data = await apiResp.json();
-      if (data && Array.isArray(data.clinics)) apiData = data;
-    }
-  } catch (apiErr) {
-    console.info("API 데이터 로드 실패, clinics.json 데이터를 사용합니다.");
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    const packet = JSON.parse(raw);
+    if (!packet || packet.version !== HARUSENSE_DATA_CACHE_VERSION) return null;
+    if (Date.now() - packet.savedAt > ttlMs) return null;
+    return packet.payload;
+  } catch (err) {
+    return null;
   }
+}
 
+function writeDataCache(storageKey, payload) {
   try {
-    const resp = await fetch("clinics.json?ts=" + Date.now(), { cache: "no-store" });
-    if (resp.ok) {
-      const data = await resp.json();
-      if (data && Array.isArray(data.clinics)) staticData = data;
-    }
-  } catch (jsonErr) {
-    console.info("clinics.json 로드 실패, API 데이터만 사용합니다.");
+    localStorage.setItem(storageKey, JSON.stringify({
+      version: HARUSENSE_DATA_CACHE_VERSION,
+      savedAt: Date.now(),
+      payload
+    }));
+  } catch (err) {
+    console.info("브라우저 저장 공간 부족 — 캐시를 건너뜁니다.");
   }
+}
 
-  if (apiData || staticData) {
-    CLINIC_DATA = mergeClinicData(apiData, staticData);
-    if (SUBMITTED_CLINICS_ON_MAP) {
-      const submittedClinics = await loadSubmittedClinics();
-      applySubmittedClinics(CLINIC_DATA, submittedClinics);
-    }
-    const overrides = await loadClinicOverrides();
-    applyClinicOverrides(CLINIC_DATA, overrides);
-    return;
+function bustClinicCaches(scope = "all") {
+  if (scope === "all" || scope === "overrides") {
+    localStorage.removeItem(HARUSENSE_CACHE.keys.overrides);
   }
+  if (scope === "all" || scope === "base") {
+    localStorage.removeItem(HARUSENSE_CACHE.keys.base);
+  }
+}
 
+async function buildMergedClinicData(apiData, staticData, overrides) {
+  if (!apiData && !staticData) return null;
+  const data = mergeClinicData(apiData, staticData);
+  if (SUBMITTED_CLINICS_ON_MAP) {
+    const submittedClinics = await loadSubmittedClinics();
+    applySubmittedClinics(data, submittedClinics);
+  }
+  applyClinicOverrides(data, overrides || []);
+  return data;
+}
+
+function clinicDataSignature(data) {
+  const clinics = data && Array.isArray(data.clinics) ? data.clinics : [];
+  return clinics.map(c => [
+    c.id,
+    c.institution_no,
+    c.lat,
+    c.lng,
+    c.prices,
+    c.stock,
+    c.updated_at
+  ].join(":")).join("|");
+}
+
+function refreshClinicDisplay() {
+  updateHeaderNotice();
+  renderMarkers();
+}
+
+function applyClinicFallbackData() {
   console.error("지도 데이터 로드 실패: API와 clinics.json 모두 사용할 수 없습니다.");
   CLINIC_DATA = {
     last_updated: "샘플",
@@ -2210,6 +2250,117 @@ async function loadData() {
   };
 }
 
+async function tryLoadClinicDataFromCache() {
+  const cachedBase = readDataCache(HARUSENSE_CACHE.keys.base, HARUSENSE_CACHE.ttl.baseMs);
+  if (!cachedBase) return false;
+  const cachedOverrides = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs) || [];
+  const merged = await buildMergedClinicData(cachedBase.apiData, cachedBase.staticData, cachedOverrides);
+  if (!merged) return false;
+  CLINIC_DATA = merged;
+  return true;
+}
+
+async function fetchClinicSourcesFromNetwork() {
+  const fetchJson = async url => {
+    try {
+      const resp = await fetch(url, { cache: "default" });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      return data && Array.isArray(data.clinics) ? data : null;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  const [apiData, staticData] = await Promise.all([
+    fetchJson("/api/clinics"),
+    fetchJson("clinics.json")
+  ]);
+  return { apiData, staticData };
+}
+
+async function fetchClinicOverridesFromNetwork(force) {
+  if (!force) {
+    const cached = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs);
+    if (cached) return cached;
+  }
+  const overrides = await loadClinicOverrides();
+  writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
+  return overrides;
+}
+
+async function revalidateClinicData(options = {}) {
+  const force = options.force === true;
+  const prevSig = clinicDataSignature(CLINIC_DATA);
+
+  if (force) bustClinicCaches("overrides");
+
+  const [{ apiData, staticData }, overrides] = await Promise.all([
+    fetchClinicSourcesFromNetwork(),
+    fetchClinicOverridesFromNetwork(force)
+  ]);
+
+  if (!apiData && !staticData) {
+    if (!CLINIC_DATA.clinics || !CLINIC_DATA.clinics.length) applyClinicFallbackData();
+    return false;
+  }
+
+  writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
+  const merged = await buildMergedClinicData(apiData, staticData, overrides);
+  if (!merged) return false;
+
+  CLINIC_DATA = merged;
+  const changed = prevSig !== clinicDataSignature(CLINIC_DATA);
+  return changed || force;
+}
+
+function revalidateClinicDataInBackground() {
+  revalidateClinicData().then(changed => {
+    if (changed) refreshClinicDisplay();
+  }).catch(() => {});
+}
+
+async function loadData(options = {}) {
+  const force = options.force === true;
+  if (force) bustClinicCaches("overrides");
+  const changed = await revalidateClinicData({ force });
+  return changed;
+}
+
+function applyOverridesInBackground() {
+  loadClinicOverrides()
+    .then(overrides => {
+      writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
+      const prevSig = clinicDataSignature(CLINIC_DATA);
+      applyClinicOverrides(CLINIC_DATA, overrides);
+      if (prevSig !== clinicDataSignature(CLINIC_DATA)) refreshClinicDisplay();
+    })
+    .catch(() => {});
+}
+
+async function bootstrapClinicData() {
+  const hadCache = await tryLoadClinicDataFromCache();
+  if (hadCache) {
+    revalidateClinicDataInBackground();
+    return true;
+  }
+
+  const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
+  if (apiData || staticData) {
+    writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
+    const merged = await buildMergedClinicData(apiData, staticData, []);
+    if (merged) {
+      CLINIC_DATA = merged;
+      applyOverridesInBackground();
+      revalidateClinicDataInBackground();
+      return false;
+    }
+  }
+
+  await revalidateClinicData({ force: false });
+  return false;
+}
+
 // ─────────── Map init ───────────
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -2226,12 +2377,11 @@ function initMap() {
       { featureType: "transit.station", elementType: "labels", stylers: [{ visibility: "on" }] }
     ]
   });
-  loadData().then(() => {
+  bootstrapClinicData().then(() => {
     document.getElementById("loading").style.display = "none";
     applyI18n();
     if (appLang === "en") startFxRefresh();
-    updateHeaderNotice();
-    renderMarkers();
+    refreshClinicDisplay();
     initRepresentativeForm();
   });
 }
@@ -2718,7 +2868,8 @@ async function handleRepLogin() {
         showRepView("password");
       } else {
         // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
-        await loadData();
+        await loadData({ force: true });
+        refreshClinicDisplay();
         showRepresentativeEditor(true);
       }
     } else {
@@ -2809,9 +2960,8 @@ async function handleRepSubmit() {
     });
 
     if (data.ok) {
-      await loadData();
-      updateHeaderNotice();
-      renderMarkers();
+      await loadData({ force: true });
+      refreshClinicDisplay();
       renderRepresentativeEditor();
       setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
       if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
