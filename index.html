@@ -938,67 +938,6 @@ body {
   font-weight: 700;
   font-size: 11px;
 }
-
-
-/* Pharmacy markers */
-.marker-wrap.pharmacy .marker-dot {
-  background: #e89a6a;
-  box-shadow: 0 2px 6px rgba(17,24,39,0.18), 0 0 0 1px rgba(232,154,106,0.28);
-}
-.marker-wrap.pharmacy .price-marker {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: #e89a6a;
-  color: #fff;
-  border-color: rgba(255,255,255,0.95);
-  padding: 5px 10px 5px 6px;
-  box-shadow: 0 3px 10px rgba(193,106,62,0.22), 0 1px 2px rgba(17,24,39,0.08);
-}
-.marker-wrap.pharmacy .price-marker::after {
-  border-top-color: #e89a6a;
-}
-.marker-wrap.pharmacy .price-marker::before {
-  content: '💊';
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24), 0 1px 3px rgba(30,64,175,0.24);
-}
-.marker-wrap.pharmacy:hover .price-marker {
-  box-shadow: 0 6px 16px rgba(193,106,62,0.28), 0 1px 2px rgba(17,24,39,0.08);
-}
-.marker-wrap.pharmacy.verified .marker-dot,
-.marker-wrap.pharmacy.verified .price-marker {
-  background: #e89a6a;
-}
-.marker-wrap.pharmacy.verified .price-marker::after {
-  border-top-color: #e89a6a;
-}
-.marker-wrap.pharmacy.verified .price-marker::before {
-  content: '💊';
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24), 0 1px 3px rgba(30,64,175,0.24);
-}
-
 /* Gray label for clinics without selected dose price */
 .info-marker {
   position: absolute;
@@ -1217,6 +1156,33 @@ body {
     </div>
   </div>
 
+  <!-- 최초 비밀번호 변경 화면 -->
+  <div id="repPasswordView" hidden>
+    <div class="rep-modal-header">
+      <div>
+        <div class="rep-modal-title">비밀번호 변경</div>
+        <div class="rep-modal-sub">최초 로그인 후 새 비밀번호를 설정해주세요</div>
+      </div>
+      <button class="rep-modal-close" id="repCloseBtn4" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="rep-modal-body">
+      <p class="rep-help">보안을 위해 임시 비밀번호를 새 비밀번호로 변경해야 정보 수정 화면으로 이동할 수 있습니다.</p>
+      <div class="rep-field">
+        <label for="repNewPassword">새 비밀번호</label>
+        <input id="repNewPassword" type="password" autocomplete="new-password" />
+      </div>
+      <div class="rep-field">
+        <label for="repNewPasswordConfirm">새 비밀번호 확인</label>
+        <input id="repNewPasswordConfirm" type="password" autocomplete="new-password" />
+      </div>
+      <div class="rep-message" id="repPasswordMessage"></div>
+    </div>
+    <div class="rep-modal-footer">
+      <button class="rep-button" id="repPasswordSubmitBtn" type="button">비밀번호 변경</button>
+      <button class="rep-button secondary" id="repPasswordBackBtn" type="button">로그인으로 돌아가기</button>
+    </div>
+  </div>
+
   <!-- 수정 화면 -->
   <div id="repEditView" hidden>
     <div class="rep-modal-header">
@@ -1323,41 +1289,6 @@ function clinicHasSelectedPrice(clinic) {
   const v = clinic.prices && clinic.prices[key];
   return clinicStockAvailable(clinic, key) && v != null && v !== "" && Number.isFinite(Number(v));
 }
-
-
-
-function isPharmacy(clinic) {
-  return clinic.type === "pharmacy" || String(clinic.id || "").startsWith("pharmacy_");
-}
-function mergeClinicData(apiData, staticData) {
-  const apiClinics = Array.isArray(apiData && apiData.clinics) ? apiData.clinics : [];
-  const staticClinics = Array.isArray(staticData && staticData.clinics) ? staticData.clinics : [];
-  const merged = new Map();
-
-  staticClinics.forEach(clinic => {
-    if (clinic && clinic.id) merged.set(clinic.id, clinic);
-  });
-
-  // DB wins for the same id so representative login edits stay live.
-  apiClinics.forEach(clinic => {
-    if (!clinic || !clinic.id) return;
-    const staticClinic = merged.get(clinic.id) || {};
-    merged.set(clinic.id, {
-      ...staticClinic,
-      ...clinic,
-      type: clinic.type || staticClinic.type,
-      prices: clinic.prices || staticClinic.prices || {},
-      stock: clinic.stock || staticClinic.stock || {}
-    });
-  });
-
-  return {
-    last_updated: (apiData && apiData.last_updated) || (staticData && staticData.last_updated) || "",
-    version: "api-d1-plus-excel-json",
-    clinics: Array.from(merged.values())
-  };
-}
-
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
@@ -1403,51 +1334,41 @@ function updateHeaderNotice() {
 // DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
 // 실패 시에만 정적 clinics.json으로 폴백.
 async function loadData() {
-  let apiData = null;
-  let staticData = null;
-
   try {
     const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
     if (apiResp.ok) {
       const data = await apiResp.json();
-      if (data && Array.isArray(data.clinics)) apiData = data;
+      if (data && Array.isArray(data.clinics)) {
+        CLINIC_DATA = data;
+        return;
+      }
     }
   } catch (apiErr) {
-    console.info("API 데이터 로드 실패, clinics.json 데이터를 사용합니다.");
+    console.info("API 데이터 로드 실패, clinics.json으로 폴백합니다.");
   }
-
   try {
     const resp = await fetch("clinics.json?ts=" + Date.now(), { cache: "no-store" });
-    if (resp.ok) {
-      const data = await resp.json();
-      if (data && Array.isArray(data.clinics)) staticData = data;
-    }
-  } catch (jsonErr) {
-    console.info("clinics.json 로드 실패, API 데이터만 사용합니다.");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    CLINIC_DATA = await resp.json();
+  } catch (err) {
+    console.error("clinics.json 로드 실패:", err);
+    CLINIC_DATA = {
+      last_updated: "샘플",
+      clinics: [{
+        id: "newsense_fallback",
+        name: "뉴센스의원",
+        district: "마포구",
+        address: "서울 마포구 신촌로 170 이대푸르지오시티 3층",
+        lat: 37.5563294,
+        lng: 126.9442987,
+        phone: "02-3272-8885",
+        verified: true,
+        prices: { "mounjaro_2.5mg": 280000 },
+        stock: {},
+        notes: "데이터 로드 실패 — 폴백 정보"
+      }]
+    };
   }
-
-  if (apiData || staticData) {
-    CLINIC_DATA = mergeClinicData(apiData, staticData);
-    return;
-  }
-
-  console.error("지도 데이터 로드 실패: API와 clinics.json 모두 사용할 수 없습니다.");
-  CLINIC_DATA = {
-    last_updated: "샘플",
-    clinics: [{
-      id: "newsense_fallback",
-      name: "뉴센스의원",
-      district: "마포구",
-      address: "서울 마포구 신촌로 170 이대푸르지오시티 3층",
-      lat: 37.5563294,
-      lng: 126.9442987,
-      phone: "02-3272-8885",
-      verified: true,
-      prices: { "mounjaro_2.5mg": 280000 },
-      stock: {},
-      notes: "데이터 로드 실패 — 폴백 정보"
-    }]
-  };
 }
 
 // ─────────── Map init ───────────
@@ -1488,20 +1409,19 @@ function renderMarkers() {
 
     const hasPrice = clinicHasSelectedPrice(clinic);
     const verifiedCls = clinic.verified ? " verified" : "";
-    const pharmacyCls = isPharmacy(clinic) ? " pharmacy" : "";
 
     const el = document.createElement("div");
 
     if (hasPrice) {
       const price = Number(clinic.prices[key]);
-      el.className = `marker-wrap${verifiedCls}${pharmacyCls}`;
+      el.className = `marker-wrap${verifiedCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
         <div class="price-marker">${formatPriceShort(price)}원</div>
       `;
     } else {
       const label = clinic.stock && clinic.stock[key] === false ? "재고 없음" : "정보 수집중";
-      el.className = `marker-wrap no-price${pharmacyCls}`;
+      el.className = "marker-wrap no-price";
       el.innerHTML = `
         <div class="marker-dot"></div>
         <div class="info-marker">${label}</div>
@@ -1667,6 +1587,7 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
+const ACCOUNT_API_URL = "";
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
@@ -1745,10 +1666,12 @@ function closeRepModal() {
 function showRepView(view) {
   const loginView = document.getElementById("repLoginView");
   const requestView = document.getElementById("repRequestView");
+  const passwordView = document.getElementById("repPasswordView");
   const editView = document.getElementById("repEditView");
-  if (!loginView || !requestView || !editView) return;
+  if (!loginView || !requestView || !passwordView || !editView) return;
   loginView.hidden = view !== "login";
   requestView.hidden = view !== "request";
+  passwordView.hidden = view !== "password";
   editView.hidden = view !== "edit";
   if (view === "edit") renderRepresentativeEditor();
 }
@@ -1860,6 +1783,38 @@ function submitRepresentativeRequestToGoogleForm(payload) {
   setTimeout(() => form.remove(), 1000);
 }
 
+function accountApi(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    if (!ACCOUNT_API_URL) {
+      reject(new Error("ACCOUNT_API_URL is not configured"));
+      return;
+    }
+    const callbackName = `harusenseAccountCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+    const query = new URLSearchParams({ action, callback: callbackName, ...params });
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("timeout"));
+    }, 12000);
+    window[callbackName] = data => {
+      clearTimeout(timer);
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = () => {
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error("network"));
+    };
+    script.src = `${ACCOUNT_API_URL}?${query.toString()}`;
+    document.body.appendChild(script);
+  });
+}
+
 // 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
 async function handleRepLogin() {
   const id = document.getElementById("repInstitutionNo").value.trim();
@@ -1872,14 +1827,12 @@ async function handleRepLogin() {
   setRepMessage("repLoginMessage", "로그인 중입니다...", "");
 
   try {
-    const apiResp = await fetch("/api/login", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ institution_no: id, password: pw })
+    const data = await accountApi("login", {
+      institution_no: id,
+      password: pw
     });
-    const data = await apiResp.json().catch(() => ({}));
 
-    if (apiResp.ok && data.ok) {
+    if (data.ok) {
       REP_ACTIVE_INSTITUTION_NO = id;
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
@@ -1887,12 +1840,60 @@ async function handleRepLogin() {
       // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
       await loadData();
       setRepMessage("repLoginMessage", "", "");
-      showRepresentativeEditor(true);
+      if (data.must_change_password) {
+        document.getElementById("repNewPassword").value = "";
+        document.getElementById("repNewPasswordConfirm").value = "";
+        setRepMessage("repPasswordMessage", "");
+        showRepView("password");
+      } else {
+        showRepresentativeEditor(true);
+      }
     } else {
       setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
     }
   } catch (apiErr) {
-    setRepMessage("repLoginMessage", "네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.", "error");
+    setRepMessage("repLoginMessage", ACCOUNT_API_URL ? "네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요." : "로그인 API 연결 주소가 아직 설정되지 않았습니다.", "error");
+  }
+}
+
+async function handleRepPasswordChange() {
+  const newPassword = document.getElementById("repNewPassword").value.trim();
+  const confirm = document.getElementById("repNewPasswordConfirm").value.trim();
+
+  if (!newPassword || !confirm) {
+    setRepMessage("repPasswordMessage", "새 비밀번호를 입력해주세요.", "error");
+    return;
+  }
+  if (newPassword.length < 8) {
+    setRepMessage("repPasswordMessage", "새 비밀번호는 8자 이상으로 입력해주세요.", "error");
+    return;
+  }
+  if (newPassword !== confirm) {
+    setRepMessage("repPasswordMessage", "새 비밀번호가 서로 다릅니다.", "error");
+    return;
+  }
+  if (newPassword === REP_ACTIVE_PASSWORD) {
+    setRepMessage("repPasswordMessage", "임시 비밀번호와 다른 새 비밀번호를 입력해주세요.", "error");
+    return;
+  }
+
+  setRepMessage("repPasswordMessage", "비밀번호를 변경하는 중입니다...", "");
+  try {
+    const data = await accountApi("changePassword", {
+      institution_no: REP_ACTIVE_INSTITUTION_NO,
+      current_password: REP_ACTIVE_PASSWORD,
+      new_password: newPassword
+    });
+    if (data.ok) {
+      REP_ACTIVE_PASSWORD = newPassword;
+      setRepMessage("repPasswordMessage", "비밀번호가 변경되었습니다.", "success");
+      await loadData();
+      showRepresentativeEditor(true);
+    } else {
+      setRepMessage("repPasswordMessage", data.error || "비밀번호 변경에 실패했습니다.", "error");
+    }
+  } catch (err) {
+    setRepMessage("repPasswordMessage", "네트워크 오류로 비밀번호를 변경하지 못했습니다.", "error");
   }
 }
 
@@ -1953,6 +1954,9 @@ function initRepresentativeForm() {
   const closeBtn1 = document.getElementById("repCloseBtn1");
   const closeBtn2 = document.getElementById("repCloseBtn2");
   const closeBtn3 = document.getElementById("repCloseBtn3");
+  const closeBtn4 = document.getElementById("repCloseBtn4");
+  const passwordSubmitBtn = document.getElementById("repPasswordSubmitBtn");
+  const passwordBackBtn = document.getElementById("repPasswordBackBtn");
   const backdrop = document.getElementById("repModalBackdrop");
   if (!openBtn || openBtn.dataset.bound === "true") return;
   openBtn.dataset.bound = "true";
@@ -1970,6 +1974,7 @@ function initRepresentativeForm() {
   closeBtn1.addEventListener("click", closeRepModal);
   closeBtn2.addEventListener("click", closeRepModal);
   closeBtn3.addEventListener("click", closeRepModal);
+  closeBtn4.addEventListener("click", closeRepModal);
   backdrop.addEventListener("click", closeRepModal);
 
   // 로그인 / 신청 / 제출
@@ -1983,11 +1988,21 @@ function initRepresentativeForm() {
     setRepMessage("repRequestMessage", "");
     showRepView("login");
   });
+  passwordSubmitBtn.addEventListener("click", handleRepPasswordChange);
+  passwordBackBtn.addEventListener("click", () => {
+    REP_ACTIVE_INSTITUTION_NO = "";
+    REP_ACTIVE_PASSWORD = "";
+    setRepMessage("repPasswordMessage", "");
+    showRepView("login");
+  });
   submitBtn.addEventListener("click", handleRepSubmit);
 
   // 엔터키로 로그인
   document.getElementById("repPassword").addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleRepLogin();
+  });
+  document.getElementById("repNewPasswordConfirm").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleRepPasswordChange();
   });
 
   // 로그아웃 → 로그인 화면으로
@@ -2010,9 +2025,6 @@ window.initMap = initMap;
 <script async
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=ko&region=KR">
 </script>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-
 
 </body>
 </html>
