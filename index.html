@@ -1385,6 +1385,72 @@ function mergeClinicData(apiData, staticData) {
   };
 }
 
+function normalizePriceItems(items) {
+  if (!items || typeof items !== "object") return {};
+  const normalized = {};
+  Object.entries(items).forEach(([key, value]) => {
+    if (!key) return;
+    if (value && typeof value === "object" && ("price" in value || "in_stock" in value)) {
+      normalized[key] = {
+        price: value.price === "" || value.price == null ? "" : Number(value.price),
+        in_stock: value.in_stock !== false
+      };
+    } else {
+      normalized[key] = {
+        price: value === "" || value == null ? "" : Number(value),
+        in_stock: true
+      };
+    }
+  });
+  return normalized;
+}
+
+function applyClinicOverrides(data, overrides) {
+  if (!data || !Array.isArray(data.clinics) || !Array.isArray(overrides)) return data;
+  const byInstitution = new Map();
+  overrides.forEach(update => {
+    if (!update || !update.institution_no) return;
+    byInstitution.set(String(update.institution_no).trim(), update);
+  });
+  if (!byInstitution.size) return data;
+
+  data.clinics = data.clinics.map(clinic => {
+    const institutionNo = String(clinic.institution_no || "").trim();
+    const update = byInstitution.get(institutionNo);
+    if (!update) return clinic;
+
+    const items = normalizePriceItems(update.items);
+    const prices = { ...(clinic.prices || {}) };
+    const stock = { ...(clinic.stock || {}) };
+    Object.entries(items).forEach(([key, item]) => {
+      if (item.price !== "" && Number.isFinite(Number(item.price))) {
+        prices[key] = Number(item.price);
+      }
+      stock[key] = item.in_stock !== false;
+    });
+
+    return {
+      ...clinic,
+      prices,
+      stock,
+      updated_at: update.updated_at || clinic.updated_at,
+      updated_by: update.institution_no || clinic.updated_by
+    };
+  });
+
+  return data;
+}
+
+async function loadClinicOverrides() {
+  try {
+    const data = await accountApi("getClinicOverrides");
+    if (data && data.ok && Array.isArray(data.updates)) return data.updates;
+  } catch (err) {
+    console.info("요양기관 수정값 로드 실패, 기본 지도 데이터만 사용합니다.");
+  }
+  return [];
+}
+
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
@@ -1455,6 +1521,8 @@ async function loadData() {
 
   if (apiData || staticData) {
     CLINIC_DATA = mergeClinicData(apiData, staticData);
+    const overrides = await loadClinicOverrides();
+    applyClinicOverrides(CLINIC_DATA, overrides);
     return;
   }
 
@@ -1694,7 +1762,7 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbyQJ6gC3O19cxWtXhqgEbj-6C5Xo81tDTXIxtRsLANO6JJrK_GvucKXGin1G0u_XbQN0Q/exec";
+const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbzehQBWanBn1lODxUGajlWNo9soAsrwd9rkF97KqS5vKm_XaN2BcuN27oV_BUKPiMcMsQ/exec";
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
@@ -1714,7 +1782,8 @@ const REP_KEYS = [
 // 로그인한 요양기관을 DB 데이터에서 찾기 (요양기관번호 기준)
 function representativeClinic() {
   return (CLINIC_DATA.clinics || []).find(
-    c => c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO
+    c => (c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO) ||
+      (c.id && String(c.id) === REP_ACTIVE_INSTITUTION_NO)
   ) || null;
 }
 
@@ -2014,7 +2083,7 @@ async function handleRepPasswordChange() {
   }
 }
 
-// 제출: DB에 저장 → 성공하면 서버에서 다시 읽어 모두에게 보이는 진짜 반영
+// 제출: 관계자 계정표에 저장 → 지도 로딩 시 같은 요양기관번호에만 덮어쓰기
 async function handleRepSubmit() {
   if (!REP_ACTIVE_INSTITUTION_NO) {
     setRepMessage("repSubmitMessage", "먼저 로그인해주세요.", "error");
@@ -2036,21 +2105,17 @@ async function handleRepSubmit() {
   });
 
   setRepMessage("repSubmitMessage", "제출 중입니다...", "");
+  const submitBtn = document.getElementById("repSubmitBtn");
+  if (submitBtn) submitBtn.disabled = true;
 
   try {
-    const apiResp = await fetch("/api/update-clinic", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        institution_no: REP_ACTIVE_INSTITUTION_NO,
-        password: REP_ACTIVE_PASSWORD,
-        items: apiItems
-      })
+    const data = await accountApi("updatePrices", {
+      institution_no: REP_ACTIVE_INSTITUTION_NO,
+      password: REP_ACTIVE_PASSWORD,
+      items_json: JSON.stringify(apiItems)
     });
-    const data = await apiResp.json().catch(() => ({}));
 
-    if (apiResp.ok && data.ok) {
-      // DB 저장 성공 → 서버에서 최신 데이터 다시 읽어 지도 갱신 (모두에게 보이는 진짜 반영)
+    if (data.ok) {
       await loadData();
       updateHeaderNotice();
       renderMarkers();
@@ -2061,6 +2126,8 @@ async function handleRepSubmit() {
     }
   } catch (apiErr) {
     setRepMessage("repSubmitMessage", "네트워크 오류로 저장하지 못했습니다. 인터넷 연결을 확인해주세요.", "error");
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
   }
 }
 
