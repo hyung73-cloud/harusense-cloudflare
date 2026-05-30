@@ -1217,6 +1217,33 @@ body {
     </div>
   </div>
 
+  <!-- 최초 비밀번호 변경 화면 -->
+  <div id="repPasswordView" hidden>
+    <div class="rep-modal-header">
+      <div>
+        <div class="rep-modal-title">비밀번호 변경</div>
+        <div class="rep-modal-sub">최초 로그인 후 새 비밀번호를 설정해주세요</div>
+      </div>
+      <button class="rep-modal-close" id="repCloseBtn4" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="rep-modal-body">
+      <p class="rep-help">보안을 위해 임시 비밀번호를 새 비밀번호로 변경해야 정보 수정 화면으로 이동할 수 있습니다.</p>
+      <div class="rep-field">
+        <label for="repNewPassword">새 비밀번호</label>
+        <input id="repNewPassword" type="password" autocomplete="new-password" />
+      </div>
+      <div class="rep-field">
+        <label for="repNewPasswordConfirm">새 비밀번호 확인</label>
+        <input id="repNewPasswordConfirm" type="password" autocomplete="new-password" />
+      </div>
+      <div class="rep-message" id="repPasswordMessage"></div>
+    </div>
+    <div class="rep-modal-footer">
+      <button class="rep-button" id="repPasswordSubmitBtn" type="button">비밀번호 변경</button>
+      <button class="rep-button secondary" id="repPasswordBackBtn" type="button">로그인으로 돌아가기</button>
+    </div>
+  </div>
+
   <!-- 수정 화면 -->
   <div id="repEditView" hidden>
     <div class="rep-modal-header">
@@ -1667,6 +1694,7 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
+const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbyQJ6gC3O19cxWtXhqgEbj-6C5Xo81tDTXIxtRsLANO6JJrK_GvucKXGin1G0u_XbQN0Q/exec";
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
@@ -1745,10 +1773,12 @@ function closeRepModal() {
 function showRepView(view) {
   const loginView = document.getElementById("repLoginView");
   const requestView = document.getElementById("repRequestView");
+  const passwordView = document.getElementById("repPasswordView");
   const editView = document.getElementById("repEditView");
-  if (!loginView || !requestView || !editView) return;
+  if (!loginView || !requestView || !passwordView || !editView) return;
   loginView.hidden = view !== "login";
   requestView.hidden = view !== "request";
+  passwordView.hidden = view !== "password";
   editView.hidden = view !== "edit";
   if (view === "edit") renderRepresentativeEditor();
 }
@@ -1860,6 +1890,34 @@ function submitRepresentativeRequestToGoogleForm(payload) {
   setTimeout(() => form.remove(), 1000);
 }
 
+function accountApi(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `harusenseAccountCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+    const query = new URLSearchParams({ action, callback: callbackName, ...params });
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("timeout"));
+    }, 12000);
+    window[callbackName] = data => {
+      clearTimeout(timer);
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = () => {
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error("network"));
+    };
+    script.src = `${ACCOUNT_API_URL}?${query.toString()}`;
+    document.body.appendChild(script);
+  });
+}
+
 // 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
 async function handleRepLogin() {
   const id = document.getElementById("repInstitutionNo").value.trim();
@@ -1872,14 +1930,12 @@ async function handleRepLogin() {
   setRepMessage("repLoginMessage", "로그인 중입니다...", "");
 
   try {
-    const apiResp = await fetch("/api/login", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ institution_no: id, password: pw })
+    const data = await accountApi("login", {
+      institution_no: id,
+      password: pw
     });
-    const data = await apiResp.json().catch(() => ({}));
 
-    if (apiResp.ok && data.ok) {
+    if (data.ok) {
       REP_ACTIVE_INSTITUTION_NO = id;
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
@@ -1887,12 +1943,60 @@ async function handleRepLogin() {
       // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
       await loadData();
       setRepMessage("repLoginMessage", "", "");
-      showRepresentativeEditor(true);
+      if (data.must_change_password) {
+        document.getElementById("repNewPassword").value = "";
+        document.getElementById("repNewPasswordConfirm").value = "";
+        setRepMessage("repPasswordMessage", "");
+        showRepView("password");
+      } else {
+        showRepresentativeEditor(true);
+      }
     } else {
       setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
     }
   } catch (apiErr) {
     setRepMessage("repLoginMessage", "네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.", "error");
+  }
+}
+
+async function handleRepPasswordChange() {
+  const newPassword = document.getElementById("repNewPassword").value.trim();
+  const confirm = document.getElementById("repNewPasswordConfirm").value.trim();
+
+  if (!newPassword || !confirm) {
+    setRepMessage("repPasswordMessage", "새 비밀번호를 입력해주세요.", "error");
+    return;
+  }
+  if (newPassword.length < 8) {
+    setRepMessage("repPasswordMessage", "새 비밀번호는 8자 이상으로 입력해주세요.", "error");
+    return;
+  }
+  if (newPassword !== confirm) {
+    setRepMessage("repPasswordMessage", "새 비밀번호가 서로 다릅니다.", "error");
+    return;
+  }
+  if (newPassword === REP_ACTIVE_PASSWORD) {
+    setRepMessage("repPasswordMessage", "임시 비밀번호와 다른 새 비밀번호를 입력해주세요.", "error");
+    return;
+  }
+
+  setRepMessage("repPasswordMessage", "비밀번호를 변경하는 중입니다...", "");
+  try {
+    const data = await accountApi("changePassword", {
+      institution_no: REP_ACTIVE_INSTITUTION_NO,
+      current_password: REP_ACTIVE_PASSWORD,
+      new_password: newPassword
+    });
+    if (data.ok) {
+      REP_ACTIVE_PASSWORD = newPassword;
+      setRepMessage("repPasswordMessage", "비밀번호가 변경되었습니다.", "success");
+      await loadData();
+      showRepresentativeEditor(true);
+    } else {
+      setRepMessage("repPasswordMessage", data.error || "비밀번호 변경에 실패했습니다.", "error");
+    }
+  } catch (err) {
+    setRepMessage("repPasswordMessage", "네트워크 오류로 비밀번호를 변경하지 못했습니다.", "error");
   }
 }
 
@@ -1953,6 +2057,9 @@ function initRepresentativeForm() {
   const closeBtn1 = document.getElementById("repCloseBtn1");
   const closeBtn2 = document.getElementById("repCloseBtn2");
   const closeBtn3 = document.getElementById("repCloseBtn3");
+  const closeBtn4 = document.getElementById("repCloseBtn4");
+  const passwordSubmitBtn = document.getElementById("repPasswordSubmitBtn");
+  const passwordBackBtn = document.getElementById("repPasswordBackBtn");
   const backdrop = document.getElementById("repModalBackdrop");
   if (!openBtn || openBtn.dataset.bound === "true") return;
   openBtn.dataset.bound = "true";
@@ -1970,6 +2077,7 @@ function initRepresentativeForm() {
   closeBtn1.addEventListener("click", closeRepModal);
   closeBtn2.addEventListener("click", closeRepModal);
   closeBtn3.addEventListener("click", closeRepModal);
+  closeBtn4.addEventListener("click", closeRepModal);
   backdrop.addEventListener("click", closeRepModal);
 
   // 로그인 / 신청 / 제출
@@ -1983,11 +2091,21 @@ function initRepresentativeForm() {
     setRepMessage("repRequestMessage", "");
     showRepView("login");
   });
+  passwordSubmitBtn.addEventListener("click", handleRepPasswordChange);
+  passwordBackBtn.addEventListener("click", () => {
+    REP_ACTIVE_INSTITUTION_NO = "";
+    REP_ACTIVE_PASSWORD = "";
+    setRepMessage("repPasswordMessage", "");
+    showRepView("login");
+  });
   submitBtn.addEventListener("click", handleRepSubmit);
 
   // 엔터키로 로그인
   document.getElementById("repPassword").addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleRepLogin();
+  });
+  document.getElementById("repNewPasswordConfirm").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleRepPasswordChange();
   });
 
   // 로그아웃 → 로그인 화면으로
