@@ -1563,6 +1563,7 @@ const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYb
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
+let REP_CLOSE_TIMER = null;
 const REP_KEYS = [
   { drug: "mounjaro", dose: "2.5mg" },
   { drug: "mounjaro", dose: "5mg" },
@@ -1628,6 +1629,10 @@ function openRepModal() {
 function closeRepModal() {
   document.getElementById("repModalBackdrop").classList.remove("open");
   document.getElementById("repModal").classList.remove("open");
+  if (REP_CLOSE_TIMER) {
+    clearTimeout(REP_CLOSE_TIMER);
+    REP_CLOSE_TIMER = null;
+  }
 }
 // 로그인 / 신청 / 수정 뷰 전환
 function showRepView(view) {
@@ -1699,6 +1704,11 @@ async function handleRepresentativeRequest() {
   setRepMessage("repRequestTopMessage", successMessage, "success");
   const requestBody = document.querySelector("#repRequestView .rep-modal-body");
   if (requestBody) requestBody.scrollTo({ top: 0, behavior: "smooth" });
+  if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
+  REP_CLOSE_TIMER = setTimeout(() => {
+    closeRepModal();
+    showRepView("login");
+  }, 7000);
 }
 
 function submitRepresentativeRequestToGoogleForm(payload) {
