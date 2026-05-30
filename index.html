@@ -2182,8 +2182,10 @@ async function loadData() {
 
   if (apiData || staticData) {
     CLINIC_DATA = mergeClinicData(apiData, staticData);
-    const submittedClinics = await loadSubmittedClinics();
-    applySubmittedClinics(CLINIC_DATA, submittedClinics);
+    if (SUBMITTED_CLINICS_ON_MAP) {
+      const submittedClinics = await loadSubmittedClinics();
+      applySubmittedClinics(CLINIC_DATA, submittedClinics);
+    }
     const overrides = await loadClinicOverrides();
     applyClinicOverrides(CLINIC_DATA, overrides);
     return;
@@ -2449,6 +2451,8 @@ const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
 const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbz-ICcd5njyuklOzdJ4tacR620JU32pqJ_dj2otz2xLZJKTDnW1Qt3VBMibaj5rlASdpA/exec";
+/** false = 신규 핀은 운영자 엑셀→clinics.json 만. true = 시트 getSubmittedClinics (나중·자동좌표용). */
+const SUBMITTED_CLINICS_ON_MAP = false;
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
@@ -2496,7 +2500,7 @@ function renderRepresentativeEditor() {
     document.getElementById("repClinicSub").textContent = `${REP_ACTIVE_INSTITUTION_NO} · 지도 데이터 연결 전`;
     if (submitBtn) submitBtn.hidden = true;
     box.innerHTML = `
-      <p class="rep-help">로그인과 비밀번호 변경은 완료되었습니다. 다만 이 계정은 아직 지도에 표시된 요양기관 데이터와 연결되어 있지 않아 가격 수정 항목을 표시할 수 없습니다. 실제 등록된 요양기관 계정으로 로그인하면 가격/재고 수정 항목이 표시됩니다.</p>
+      <p class="rep-help">로그인은 완료되었습니다. 지도·가격 수정은 운영 검수(엑셀 반영) 후 이용 가능합니다. 요양기관번호가 지도 데이터에 등록되면 이 화면에 가격·재고 항목이 표시됩니다.</p>
     `;
     return;
   }
