@@ -1441,6 +1441,60 @@ function applyClinicOverrides(data, overrides) {
   return data;
 }
 
+function applySubmittedClinics(data, submittedClinics) {
+  if (!data || !Array.isArray(data.clinics) || !Array.isArray(submittedClinics)) return data;
+  const existingInstitutionNos = new Set(
+    data.clinics
+      .map(clinic => String(clinic.institution_no || "").trim())
+      .filter(Boolean)
+  );
+  const existingIds = new Set(
+    data.clinics
+      .map(clinic => String(clinic.id || "").trim())
+      .filter(Boolean)
+  );
+
+  submittedClinics.forEach(clinic => {
+    if (!clinic || !clinic.institution_no || !clinic.lat || !clinic.lng) return;
+    const institutionNo = String(clinic.institution_no).trim();
+    const id = String(clinic.id || `submitted_${institutionNo}`).trim();
+
+    // 이미 검수되어 지도에 있는 요양기관은 좌표/표시정보를 절대 흔들지 않습니다.
+    if (existingInstitutionNos.has(institutionNo) || existingIds.has(id)) return;
+
+    data.clinics.push({
+      id,
+      type: clinic.type || "clinic",
+      name: clinic.name || "신규 요양기관",
+      district: clinic.district || "",
+      address: clinic.address || "",
+      lat: Number(clinic.lat),
+      lng: Number(clinic.lng),
+      phone: clinic.phone || "",
+      institution_no: institutionNo,
+      verified: false,
+      prices: clinic.prices || {},
+      stock: clinic.stock || {},
+      updated_at: clinic.updated_at || "",
+      notes: clinic.notes || "요양기관 관계자 신청으로 추가"
+    });
+    existingInstitutionNos.add(institutionNo);
+    existingIds.add(id);
+  });
+
+  return data;
+}
+
+async function loadSubmittedClinics() {
+  try {
+    const data = await accountApi("getSubmittedClinics");
+    if (data && data.ok && Array.isArray(data.clinics)) return data.clinics;
+  } catch (err) {
+    console.info("신규 신청 요양기관 로드 실패, 기존 지도 데이터만 사용합니다.");
+  }
+  return [];
+}
+
 async function loadClinicOverrides() {
   try {
     const data = await accountApi("getClinicOverrides");
@@ -1521,6 +1575,8 @@ async function loadData() {
 
   if (apiData || staticData) {
     CLINIC_DATA = mergeClinicData(apiData, staticData);
+    const submittedClinics = await loadSubmittedClinics();
+    applySubmittedClinics(CLINIC_DATA, submittedClinics);
     const overrides = await loadClinicOverrides();
     applyClinicOverrides(CLINIC_DATA, overrides);
     return;
@@ -1762,7 +1818,7 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbzehQBWanBn1lODxUGajlWNo9soAsrwd9rkF97KqS5vKm_XaN2BcuN27oV_BUKPiMcMsQ/exec";
+const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbz6oMjvADnsaIu11fBf4EW6j7BvQ3GFDR_sBMr59tLz9pZDFoNhCncY6ekMFDxUmodU2Q/exec";
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
