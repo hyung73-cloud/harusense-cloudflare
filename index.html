@@ -2100,6 +2100,20 @@ function cloneClinicData(data) {
   return JSON.parse(JSON.stringify(data || { clinics: [] }));
 }
 
+function stripVolatilePriceData(data) {
+  const cloned = cloneClinicData(data);
+  if (!cloned || !Array.isArray(cloned.clinics)) return cloned;
+  cloned.clinics = cloned.clinics.map(clinic => {
+    const safe = cloneClinic(clinic);
+    safe.prices = {};
+    safe.stock = {};
+    safe.price_updated_at = {};
+    delete safe.updated_by;
+    return safe;
+  });
+  return cloned;
+}
+
 function clinicMapStats(data) {
   const data2 = stripDemoClinics(data);
   const clinics = data2 && Array.isArray(data2.clinics) ? data2.clinics : [];
@@ -2189,7 +2203,7 @@ function commitClinicData(candidate, options) {
   if (nextStats.pinned > 0) {
     LAST_STABLE_MAP_DATA = cloneClinicData(next);
     try {
-      writeDataCache(HARUSENSE_CACHE.keys.stable, LAST_STABLE_MAP_DATA);
+      writeDataCache(HARUSENSE_CACHE.keys.stable, stripVolatilePriceData(LAST_STABLE_MAP_DATA));
     } catch (e) { /* 캐시 실패해도 지도는 표시 */ }
   }
   return nextStats.pinned > 0;
@@ -2636,7 +2650,7 @@ function updateHeaderNotice() {
 }
 
 // ─────────── Data cache (stale-while-revalidate) ───────────
-const HARUSENSE_DATA_CACHE_VERSION = 1;
+const HARUSENSE_DATA_CACHE_VERSION = 2;
 const HARUSENSE_CACHE = {
   version: HARUSENSE_DATA_CACHE_VERSION,
   keys: {
