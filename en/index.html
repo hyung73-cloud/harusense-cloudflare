@@ -2009,32 +2009,205 @@ function clinicHasSelectedPrice(clinic) {
 function isPharmacy(clinic) {
   return clinic.type === "pharmacy" || String(clinic.id || "").startsWith("pharmacy_");
 }
+
+function hasValidCoords(clinic) {
+  return clinic && Number.isFinite(Number(clinic.lat)) && Number.isFinite(Number(clinic.lng));
+}
+
+function cloneClinic(clinic) {
+  return JSON.parse(JSON.stringify(clinic || {}));
+}
+
+function countPharmacies(data) {
+  return (data && Array.isArray(data.clinics) ? data.clinics : []).filter(isPharmacy).length;
+}
+
+/** Legacy demo rows from old clinics.json — never show on production map */
+function isDemoClinic(clinic) {
+  if (!clinic) return true;
+  const id = String(clinic.id || "");
+  const name = String(clinic.name || "");
+  if (/^sample_/i.test(id)) return true;
+  if (/샘플의원/i.test(name)) return true;
+  if (id === "newsense_fallback") return true;
+  if (id === "newsense" && !id.startsWith("clinic_")) return true;
+  return false;
+}
+
+function stripDemoClinics(data) {
+  if (!data || !Array.isArray(data.clinics)) return data;
+  return {
+    ...data,
+    clinics: data.clinics.filter(c => !isDemoClinic(c)),
+  };
+}
+
+function countPinnedClinics(data) {
+  const list = stripDemoClinics(data);
+  if (!list || !Array.isArray(list.clinics)) return 0;
+  return list.clinics.filter(hasValidCoords).length;
+}
+
+function cloneClinicData(data) {
+  return JSON.parse(JSON.stringify(data || { clinics: [] }));
+}
+
+function clinicMapStats(data) {
+  const data2 = stripDemoClinics(data);
+  const clinics = data2 && Array.isArray(data2.clinics) ? data2.clinics : [];
+  return {
+    total: clinics.length,
+    pinned: clinics.filter(hasValidCoords).length,
+    pharmacies: countPharmacies(data2),
+  };
+}
+
+function isUnsafeDataRegression(prev, next) {
+  if (!prev || !prev.clinics || !prev.clinics.length) return false;
+  const p = clinicMapStats(prev);
+  const n = clinicMapStats(next);
+  if (p.pinned >= 3 && n.pinned < Math.max(3, Math.floor(p.pinned * 0.9))) return true;
+  if (p.pharmacies >= 2 && n.pharmacies === 0) return true;
+  if (p.total >= 5 && n.total < Math.floor(p.total * 0.85)) return true;
+  return false;
+}
+
+function unionPreserveClinics(prevData, nextData) {
+  if (!prevData || !Array.isArray(prevData.clinics) || !prevData.clinics.length) {
+    return nextData ? cloneClinicData(nextData) : null;
+  }
+  if (!nextData || !Array.isArray(nextData.clinics)) {
+    return cloneClinicData(prevData);
+  }
+  const byId = new Map();
+  nextData.clinics.forEach(c => {
+    if (!c || !c.id) return;
+    byId.set(String(c.id), cloneClinic(c));
+  });
+  prevData.clinics.forEach(prev => {
+    if (!prev || !prev.id || !hasValidCoords(prev)) return;
+    const id = String(prev.id);
+    if (!byId.has(id)) {
+      byId.set(id, cloneClinic(prev));
+      return;
+    }
+    byId.set(id, mergeOneClinicRecord(byId.get(id), prev));
+  });
+  return {
+    last_updated: nextData.last_updated || prevData.last_updated || "",
+    version: nextData.version || prevData.version || "stable-union",
+    clinics: Array.from(byId.values()),
+  };
+}
+
+function mergeOneClinicRecord(staticClinic, apiClinic) {
+  const s = staticClinic || {};
+  const a = apiClinic || {};
+  const out = {
+    ...s,
+    ...a,
+    type: a.type || s.type,
+    prices: { ...(s.prices || {}), ...(a.prices || {}) },
+    stock: { ...(s.stock || {}), ...(a.stock || {}) },
+    price_updated_at: { ...(s.price_updated_at || {}), ...(a.price_updated_at || {}) },
+  };
+
+  if (hasValidCoords(s)) {
+    out.lat = Number(s.lat);
+    out.lng = Number(s.lng);
+  } else if (hasValidCoords(a)) {
+    out.lat = Number(a.lat);
+    out.lng = Number(a.lng);
+  }
+  if (
+    s.type === "pharmacy" || String(s.id || "").startsWith("pharmacy_") ||
+    a.type === "pharmacy" || String(a.id || "").startsWith("pharmacy_")
+  ) {
+    out.type = "pharmacy";
+  }
+  if (s.verified) {
+    if (s.name) out.name = s.name;
+    if (s.address) out.address = s.address;
+    if (s.district) out.district = s.district;
+    if (s.phone) out.phone = s.phone;
+  }
+  return out;
+}
+
+let LAST_STABLE_MAP_DATA = null;
+
+function commitClinicData(candidate, options) {
+  const force = options && options.force === true;
+  if (!candidate || !Array.isArray(candidate.clinics)) return false;
+  const prev = (LAST_STABLE_MAP_DATA && LAST_STABLE_MAP_DATA.clinics.length)
+    ? LAST_STABLE_MAP_DATA
+    : CLINIC_DATA;
+  const next = unionPreserveClinics(
+    stripDemoClinics(prev),
+    stripDemoClinics(cloneClinicData(candidate))
+  );
+  if (!next) return false;
+  if (!force && isUnsafeDataRegression(prev, next)) {
+    console.warn("[Harusense] Pin data shrink blocked — keeping map");
+    return false;
+  }
+  const nextStats = clinicMapStats(next);
+  const prevStats = clinicMapStats(prev);
+  if (nextStats.pinned === 0 && prevStats.pinned > 0) return false;
+  CLINIC_DATA = next;
+  if (nextStats.pinned > 0) {
+    LAST_STABLE_MAP_DATA = cloneClinicData(next);
+    writeDataCache(HARUSENSE_CACHE.keys.stable, LAST_STABLE_MAP_DATA);
+  }
+  return nextStats.pinned > 0;
+}
+
 function mergeClinicData(apiData, staticData) {
-  const apiClinics = Array.isArray(apiData && apiData.clinics) ? apiData.clinics : [];
-  const staticClinics = Array.isArray(staticData && staticData.clinics) ? staticData.clinics : [];
-  const merged = new Map();
+  const apiClinics = Array.isArray(apiData && apiData.clinics)
+    ? apiData.clinics.filter(c => !isDemoClinic(c))
+    : [];
+  const staticClinics = Array.isArray(staticData && staticData.clinics)
+    ? staticData.clinics.filter(c => !isDemoClinic(c))
+    : [];
+  const byId = new Map();
+  const institutionToId = new Map();
+
+  const LEGACY_STATIC_ID_TO_INST = { newsense: "12339695" };
 
   staticClinics.forEach(clinic => {
-    if (clinic && clinic.id) merged.set(clinic.id, clinic);
+    if (!clinic || !clinic.id) return;
+    const row = cloneClinic(clinic);
+    let inst = String(row.institution_no || "").trim();
+    if (!inst && LEGACY_STATIC_ID_TO_INST[row.id]) {
+      inst = LEGACY_STATIC_ID_TO_INST[row.id];
+      row.institution_no = inst;
+    }
+    byId.set(row.id, row);
+    if (inst) institutionToId.set(inst, row.id);
   });
 
-  // DB wins for the same id so representative login edits stay live.
-  apiClinics.forEach(clinic => {
-    if (!clinic || !clinic.id) return;
-    const staticClinic = merged.get(clinic.id) || {};
-    merged.set(clinic.id, {
-      ...staticClinic,
-      ...clinic,
-      type: clinic.type || staticClinic.type,
-      prices: clinic.prices || staticClinic.prices || {},
-      stock: clinic.stock || staticClinic.stock || {}
-    });
+  apiClinics.forEach(apiClinic => {
+    if (!apiClinic || !apiClinic.id) return;
+    const inst = String(apiClinic.institution_no || "").trim();
+    let targetId = apiClinic.id;
+
+    if (byId.has(apiClinic.id)) {
+      targetId = apiClinic.id;
+    } else if (inst && institutionToId.has(inst)) {
+      targetId = institutionToId.get(inst);
+    }
+
+    const staticClinic = byId.get(targetId) || byId.get(apiClinic.id) || {};
+    const merged = mergeOneClinicRecord(staticClinic, { ...apiClinic, id: targetId });
+    byId.set(targetId, merged);
+    if (inst) institutionToId.set(inst, targetId);
+    if (apiClinic.id !== targetId) byId.delete(apiClinic.id);
   });
 
   return {
     last_updated: (apiData && apiData.last_updated) || (staticData && staticData.last_updated) || "",
-    version: "api-d1-plus-excel-json",
-    clinics: Array.from(merged.values())
+    version: "api-d1-plus-excel-json-protected",
+    clinics: Array.from(byId.values())
   };
 }
 
@@ -2270,11 +2443,13 @@ const HARUSENSE_CACHE = {
   version: HARUSENSE_DATA_CACHE_VERSION,
   keys: {
     base: "harusense_cache_base_v1",
-    overrides: "harusense_cache_overrides_v1"
+    overrides: "harusense_cache_overrides_v1",
+    stable: "harusense_cache_stable_pins_v1"
   },
   ttl: {
     baseMs: 30 * 60 * 1000,
-    overridesMs: 5 * 60 * 1000
+    overridesMs: 5 * 60 * 1000,
+    stableMs: 7 * 24 * 60 * 60 * 1000
   }
 };
 
@@ -2343,6 +2518,10 @@ function refreshClinicDisplay() {
 }
 
 function applyClinicFallbackData() {
+  if (LAST_STABLE_MAP_DATA && LAST_STABLE_MAP_DATA.clinics && LAST_STABLE_MAP_DATA.clinics.length) {
+    commitClinicData(LAST_STABLE_MAP_DATA, { force: true });
+    return;
+  }
   console.error("지도 데이터 로드 실패: API와 clinics.json 모두 사용할 수 없습니다.");
   CLINIC_DATA = {
     last_updated: "샘플",
@@ -2362,32 +2541,54 @@ function applyClinicFallbackData() {
   };
 }
 
+async function tryLoadStableDisplayCache() {
+  const stable = readDataCache(HARUSENSE_CACHE.keys.stable, HARUSENSE_CACHE.ttl.stableMs);
+  if (!stable || countPinnedClinics(stable) < 1) return false;
+  return commitClinicData(stripDemoClinics(stable), { force: true });
+}
+
+async function ensureMapHasPins() {
+  if (countPinnedClinics(CLINIC_DATA) > 0) return true;
+  bustClinicCaches("all");
+  const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
+  if (!apiData || countPinnedClinics(apiData) < 1) {
+    console.error("[Harusense] /api/clinics missing — old clinics.json sample data must not be used alone");
+  }
+  let overrides = [];
+  try { overrides = await loadClinicOverrides(); } catch (e) {}
+  const merged = await buildMergedClinicData(apiData, staticData, overrides);
+  if (merged && commitClinicData(merged, { force: true })) return true;
+  if (LAST_STABLE_MAP_DATA && countPinnedClinics(LAST_STABLE_MAP_DATA) > 0) {
+    return commitClinicData(LAST_STABLE_MAP_DATA, { force: true });
+  }
+  applyClinicFallbackData();
+  return countPinnedClinics(CLINIC_DATA) > 0;
+}
+
 async function tryLoadClinicDataFromCache() {
+  if (await tryLoadStableDisplayCache()) return true;
   const cachedBase = readDataCache(HARUSENSE_CACHE.keys.base, HARUSENSE_CACHE.ttl.baseMs);
   if (!cachedBase) return false;
   const cachedOverrides = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs) || [];
   const merged = await buildMergedClinicData(cachedBase.apiData, cachedBase.staticData, cachedOverrides);
   if (!merged) return false;
-  CLINIC_DATA = merged;
-  return true;
+  return commitClinicData(merged, { force: true });
 }
 
 async function fetchClinicSourcesFromNetwork() {
-  const fetchJson = async url => {
+  const fetchJson = async (url, noStore) => {
     try {
-      const resp = await fetch(url, { cache: "default" });
+      const resp = await fetch(url, { cache: noStore ? "no-store" : "default" });
       if (!resp.ok) return null;
       const data = await resp.json();
-      return data && Array.isArray(data.clinics) ? data : null;
+      return data && Array.isArray(data.clinics) ? stripDemoClinics(data) : null;
     } catch (err) {
       return null;
     }
   };
 
-  const [apiData, staticData] = await Promise.all([
-    fetchJson("/api/clinics"),
-    fetchJson("/clinics.json")
-  ]);
+  const apiData = await fetchJson("/api/clinics", true);
+  const staticData = await fetchJson("/clinics.json", false);
   return { apiData, staticData };
 }
 
@@ -2417,11 +2618,19 @@ async function revalidateClinicData(options = {}) {
     return false;
   }
 
-  writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
   const merged = await buildMergedClinicData(apiData, staticData, overrides);
   if (!merged) return false;
 
-  CLINIC_DATA = merged;
+  if (apiData || staticData) {
+    const probe = await buildMergedClinicData(apiData, staticData, []);
+    const ref = LAST_STABLE_MAP_DATA || CLINIC_DATA;
+    if (!probe || !isUnsafeDataRegression(ref, probe)) {
+      writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
+    }
+  }
+
+  const committed = commitClinicData(merged, { force });
+  if (!committed) return false;
   const changed = prevSig !== clinicDataSignature(CLINIC_DATA);
   return changed || force;
 }
@@ -2444,13 +2653,23 @@ function applyOverridesInBackground() {
     .then(overrides => {
       writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
       const prevSig = clinicDataSignature(CLINIC_DATA);
-      applyClinicOverrides(CLINIC_DATA, overrides);
-      if (prevSig !== clinicDataSignature(CLINIC_DATA)) refreshClinicDisplay();
+      const next = cloneClinicData(CLINIC_DATA);
+      applyClinicOverrides(next, overrides);
+      if (commitClinicData(next, { force: true }) && prevSig !== clinicDataSignature(CLINIC_DATA)) {
+        refreshClinicDisplay();
+      }
     })
     .catch(() => {});
 }
 
 async function bootstrapClinicData() {
+  const hadStable = await tryLoadStableDisplayCache();
+  if (hadStable) {
+    applyOverridesInBackground();
+    revalidateClinicDataInBackground();
+    return true;
+  }
+
   const hadCache = await tryLoadClinicDataFromCache();
   if (hadCache) {
     revalidateClinicDataInBackground();
@@ -2459,10 +2678,9 @@ async function bootstrapClinicData() {
 
   const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
   if (apiData || staticData) {
-    writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
     const merged = await buildMergedClinicData(apiData, staticData, []);
-    if (merged) {
-      CLINIC_DATA = merged;
+    if (merged && commitClinicData(merged, { force: true })) {
+      writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
       applyOverridesInBackground();
       revalidateClinicDataInBackground();
       return false;
@@ -2489,13 +2707,22 @@ function initMap() {
       { featureType: "transit.station", elementType: "labels", stylers: [{ visibility: "on" }] }
     ]
   });
-  bootstrapClinicData().then(() => {
-    document.getElementById("loading").style.display = "none";
-    applyI18n();
-    if (appLang === "en") startFxRefresh();
-    refreshClinicDisplay();
-    initRepresentativeForm();
-  });
+  bootstrapClinicData()
+    .then(() => ensureMapHasPins())
+    .then(() => {
+      document.getElementById("loading").style.display = "none";
+      applyI18n();
+      if (appLang === "en") startFxRefresh();
+      refreshClinicDisplay();
+      initRepresentativeForm();
+    })
+    .catch(err => {
+      console.error("[Harusense] clinic load error", err);
+      ensureMapHasPins().finally(() => {
+        document.getElementById("loading").style.display = "none";
+        refreshClinicDisplay();
+      });
+    });
 }
 
 // ─────────── Render markers ───────────
@@ -2508,7 +2735,9 @@ function renderMarkers() {
   let visibleCount = 0;
 
   CLINIC_DATA.clinics.forEach(clinic => {
+    if (isDemoClinic(clinic)) return;
     if (!clinicMatchesDistrict(clinic)) return;
+    if (!hasValidCoords(clinic)) return;
 
     const hasPrice = clinicHasSelectedPrice(clinic);
     const verifiedCls = clinic.verified ? " verified" : "";
