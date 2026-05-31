@@ -140,7 +140,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -906,9 +906,6 @@ body {
   left: 50%;
   bottom: 14px;
   transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   background: var(--blue);
   color: #fff;
   border-radius: 8px;
@@ -924,42 +921,6 @@ body {
   border: 1.5px solid #fff;
   text-align: center;
   z-index: 2;
-}
-.price-update-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 1px 4px rgba(34,197,94,0.5);
-  flex-shrink: 0;
-  animation: priceUpdatePulse 2.5s ease-in-out infinite;
-}
-@keyframes priceUpdatePulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.12); opacity: 0.82; }
-}
-.price-update-tip {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 10px);
-  transform: translateX(-50%) translateY(6px);
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: rgba(17,24,39,0.92);
-  color: #f9fafb;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.35;
-  white-space: nowrap;
-  box-shadow: 0 8px 20px rgba(17,24,39,0.22);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 5;
-}
-.marker-wrap:hover .price-update-tip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 .price-marker::after {
   content: '';
@@ -1201,59 +1162,12 @@ body {
   .search-modal.open{ transform:translateX(-50%) translateY(0); }
 }
 
-/* ─────────── Language toggle + FX chip (header top-right) ─────────── */
+/* ─────────── Language toggle + FX banner ─────────── */
 .header-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
+  gap: 6px;
   flex-shrink: 0;
-  min-width: 0;
-}
-.fx-chip {
-  display: none;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  max-width: min(46vw, 280px);
-  padding: 3px 8px 3px 5px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
-  border: 1px solid #bae6fd;
-  white-space: nowrap;
-  overflow: hidden;
-  line-height: 1.2;
-}
-.fx-chip.visible { display: inline-flex; }
-.fx-chip-pill {
-  flex-shrink: 0;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: #0ea5e9;
-  color: #fff;
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.fx-chip-line {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 9.5px;
-  font-weight: 600;
-  color: #0369a1;
-  font-variant-numeric: tabular-nums;
-}
-.fx-chip-line em {
-  font-style: normal;
-  font-weight: 700;
-  color: #047857;
-}
-.fx-chip-line .fx-sep {
-  margin: 0 3px;
-  color: #94a3b8;
-  font-weight: 500;
 }
 .lang-toggle {
   display: inline-flex;
@@ -1262,7 +1176,6 @@ body {
   border-radius: 999px;
   background: var(--line-soft);
   font-family: inherit;
-  flex-shrink: 0;
 }
 .lang-toggle-btn {
   border: none;
@@ -1281,6 +1194,49 @@ body {
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow-sm);
+}
+.fx-banner {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+  border: 1px solid #bae6fd;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.fx-banner.visible { display: flex; }
+.fx-banner-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #0ea5e9;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fx-banner-rate {
+  font-weight: 700;
+  color: #0369a1;
+  font-variant-numeric: tabular-nums;
+}
+.fx-banner-updated {
+  font-weight: 600;
+  color: #0f766e;
+  font-variant-numeric: tabular-nums;
+}
+.fx-banner-updated em {
+  font-style: normal;
+  font-weight: 800;
+  color: #047857;
 }
 .price-krw-hint {
   display: block;
@@ -1313,19 +1269,11 @@ html.lang-en .header {
   box-shadow: 0 1px 0 rgba(15,23,42,0.03);
 }
 html.lang-en .brand-sub { display: none; }
-html.lang-en .header-top { align-items: flex-start; }
-html.lang-en .brand {
-  flex: 1 1 auto;
-  min-width: 0;
-  padding-right: 6px;
-}
 html.lang-en .brand-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: #0f172a;
-  white-space: normal;
-  line-height: 1.2;
 }
 html.lang-en .drug-group {
   border-radius: 8px;
@@ -1384,20 +1332,16 @@ html.lang-en .footer-chip {
   font-weight: 500;
   color: #64748b;
 }
-html.lang-en .fx-chip { max-width: min(50vw, 300px); }
-@media (max-width: 480px) {
-  html.lang-en .brand-name { font-size: 13px; }
-  html.lang-en .clinic-search-btn span { display: none; }
-  html.lang-en .clinic-search-btn { padding: 4px 7px; margin-left: 0; }
-  .fx-chip { max-width: min(54vw, 220px); padding: 2px 6px 2px 4px; }
-  .fx-chip-line { font-size: 8.5px; }
-  .fx-chip-pill { font-size: 7.5px; padding: 2px 5px; }
-  .header-actions { gap: 4px; }
+html.lang-en #map { top: 168px; }
+@media (min-width: 900px) {
+  html.lang-en .header-notice { font-size: 11.5px; }
 }
 @media (max-width: 380px) {
   .lang-toggle-btn { padding: 4px 7px; font-size: 9px; }
 }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -1408,10 +1352,6 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
       <span class="brand-sub" data-i18n="brandSub">인크레틴 치료제 가격정보</span>
     </div>
     <div class="header-actions">
-      <div class="fx-chip" id="fxBanner" aria-live="polite">
-        <span class="fx-chip-pill" data-i18n="fxLiveShort">FX</span>
-        <span class="fx-chip-line" id="fxChipLine"></span>
-      </div>
       <div class="lang-toggle" role="group" aria-label="Language">
         <button type="button" class="lang-toggle-btn active" data-lang="ko" id="langKo">KOR</button>
         <button type="button" class="lang-toggle-btn" data-lang="en" id="langEn">ENG</button>
@@ -1424,6 +1364,11 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
         <span data-i18n="searchBtn">병의원/약국검색</span>
       </button>
     </div>
+  </div>
+  <div class="fx-banner" id="fxBanner" aria-live="polite">
+    <span class="fx-banner-pill" data-i18n="fxLive">Live FX</span>
+    <span class="fx-banner-rate" id="fxRateText">—</span>
+    <span class="fx-banner-updated" id="fxUpdatedText"></span>
   </div>
 
   <!-- Drug + Dose toggle -->
@@ -1721,7 +1666,6 @@ const I18N = {
     searchEmpty: "검색 결과가 없습니다.",
     searchPharmacy: "약국", searchClinic: "병의원",
     fxLive: "실시간 환율",
-    fxLiveShort: "FX",
     fxLoading: "환율 불러오는 중…",
     fxRate: "1 USD = ₩{rate}",
     fxUpdated: "환율 갱신: <em>{time}</em>",
@@ -1730,7 +1674,6 @@ const I18N = {
   },
   en: {
     brandTitle: "Harusense GLP-1 Price Map",
-    brandTitleShort: "Harusense GLP-1 Map",
     brandSub: "Incretin therapy pricing",
     searchBtn: "Search",
     loading: "Loading map data",
@@ -1771,7 +1714,6 @@ const I18N = {
     searchEmpty: "No results found.",
     searchPharmacy: "Pharmacy", searchClinic: "Clinic",
     fxLive: "Live FX",
-    fxLiveShort: "FX",
     fxLoading: "Fetching exchange rate…",
     fxRate: "1 USD = ₩{rate}",
     fxUpdated: "FX updated: <em>{time}</em>",
@@ -1791,25 +1733,17 @@ function t(key, vars) {
   return s;
 }
 
-function applyBrandTitle() {
-  const el = document.querySelector(".brand-name[data-i18n='brandTitle']");
-  if (!el) return;
-  const useShort = appLang === "en" && window.matchMedia("(max-width: 480px)").matches;
-  el.textContent = useShort && I18N.en.brandTitleShort ? I18N.en.brandTitleShort : t("brandTitle");
-}
-
 function applyI18n() {
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
-    if (key === "brandTitle") return;
     if (key) el.textContent = t(key);
   });
-  applyBrandTitle();
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
   });
   document.getElementById("langKo")?.classList.toggle("active", appLang === "ko");
   document.getElementById("langEn")?.classList.toggle("active", appLang === "en");
+  document.getElementById("fxBanner")?.classList.toggle("visible", appLang === "en");
   if (appLang === "en") {
     document.title = "Harusense GLP-1 Price Map | Mounjaro & Wegovy in Seoul";
   } else {
@@ -1837,21 +1771,21 @@ function formatFxTime(date) {
 }
 
 function updateFxBanner() {
-  const banner = document.getElementById("fxBanner");
-  const lineEl = document.getElementById("fxChipLine");
-  if (!banner || !lineEl) return;
-  banner.classList.toggle("visible", appLang === "en");
+  const rateEl = document.getElementById("fxRateText");
+  const updatedEl = document.getElementById("fxUpdatedText");
+  if (!rateEl || !updatedEl) return;
   if (appLang !== "en") return;
   if (fx.loading) {
-    lineEl.textContent = t("fxLoading");
+    rateEl.textContent = t("fxLoading");
+    updatedEl.innerHTML = "";
     return;
   }
   if (fx.krwPerUsd) {
-    const rate = fx.krwPerUsd.toLocaleString("en-US", { maximumFractionDigits: 2 });
-    const time = formatFxTime(fx.updatedAt);
-    lineEl.innerHTML = `1 USD = ₩${rate}<span class="fx-sep">·</span><em>${time}</em>`;
+    rateEl.textContent = t("fxRate", { rate: fx.krwPerUsd.toLocaleString("en-US", { maximumFractionDigits: 2 }) });
+    updatedEl.innerHTML = t("fxUpdated", { time: formatFxTime(fx.updatedAt) });
   } else {
-    lineEl.textContent = t("fxLoading");
+    rateEl.textContent = t("fxLoading");
+    updatedEl.innerHTML = "";
   }
 }
 
@@ -1952,30 +1886,11 @@ function priceKey(drugKey, dose) {
   return `${drugKey}_${dose}`;
 }
 function formatPriceShort(v) {
-  if (appLang === "en") {
-    const usd = krwToUsd(v);
-    if (usd >= 1000) return "$" + (usd / 1000).toFixed(1).replace(/\.0$/, "") + "k";
-    return "$" + Math.round(usd);
-  }
   if (v >= 10000) {
     const man = v / 10000;
     return (man % 1 === 0 ? man.toFixed(0) : man.toFixed(1)) + "만";
   }
   return v.toLocaleString();
-}
-
-function formatPriceFull(v) {
-  if (appLang === "en") {
-    const usd = Math.round(krwToUsd(v));
-    const krwHint = `<span class="price-krw-hint">≈ ₩${Number(v).toLocaleString("en-US")}</span>`;
-    return { value: "$" + usd.toLocaleString("en-US"), suffix: krwHint };
-  }
-  return { value: Number(v).toLocaleString(), suffix: `<span class="won">${t("won")}</span>` };
-}
-
-function formatMarkerPrice(v) {
-  if (appLang === "en") return formatPriceShort(v);
-  return formatPriceShort(v) + "원";
 }
 function clinicStockAvailable(clinic, key) {
   return !(clinic.stock && clinic.stock[key] === false);
@@ -2057,29 +1972,17 @@ function applyClinicOverrides(data, overrides) {
     const items = normalizePriceItems(update.items);
     const prices = { ...(clinic.prices || {}) };
     const stock = { ...(clinic.stock || {}) };
-    const price_updated_at = { ...(clinic.price_updated_at || {}) };
-    const touchedAt = update.updated_at || new Date().toISOString();
     Object.entries(items).forEach(([key, item]) => {
-      const prevPrice = clinic.prices && clinic.prices[key] != null ? Number(clinic.prices[key]) : null;
-      const prevStock = clinic.stock && clinic.stock[key] === false;
       if (item.price !== "" && Number.isFinite(Number(item.price))) {
-        const newPrice = Number(item.price);
-        prices[key] = newPrice;
-        const newStock = item.in_stock !== false;
-        stock[key] = newStock;
-        if (prevPrice !== newPrice || prevStock !== !newStock) {
-          price_updated_at[key] = touchedAt;
-        }
-      } else {
-        stock[key] = item.in_stock !== false;
+        prices[key] = Number(item.price);
       }
+      stock[key] = item.in_stock !== false;
     });
 
     return {
       ...clinic,
       prices,
       stock,
-      price_updated_at,
       updated_at: update.updated_at || clinic.updated_at,
       updated_by: update.institution_no || clinic.updated_by
     };
@@ -2165,166 +2068,70 @@ function latestClinicUpdatedAt() {
   return new Date(Math.max(...times));
 }
 function formatRelativeUpdateTime(date) {
-  if (!date) return t("updateChecking");
+  if (!date) return "업데이트 확인 중";
 
   const diffMs = Date.now() - date.getTime();
   const diffMin = Math.max(0, Math.floor(diffMs / 60000));
-  if (appLang === "en") {
-    if (diffMin < 1) return t("updateJustNow");
-    if (diffMin < 60) return diffMin + t("updateMinAgo");
-    const diffHour = Math.floor(diffMin / 60);
-    if (diffHour < 24) return diffHour + t("updateHourAgo");
-    const diffDay = Math.floor(diffHour / 24);
-    if (diffDay < 7) return diffDay + t("updateDayAgo");
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + t("updateSuffix");
-  }
-  if (diffMin < 1) return t("updateJustNow");
-  if (diffMin < 60) return `${diffMin}${t("updateMinAgo")}`;
+  if (diffMin < 1) return "방금 업데이트";
+  if (diffMin < 60) return `${diffMin}분 전 업데이트`;
 
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour}${t("updateHourAgo")}`;
+  if (diffHour < 24) return `${diffHour}시간 전 업데이트`;
 
   const diffDay = Math.floor(diffHour / 24);
-  if (diffDay < 7) return `${diffDay}${t("updateDayAgo")}`;
+  if (diffDay < 7) return `${diffDay}일 전 업데이트`;
 
   return date.toLocaleDateString("ko-KR", {
     month: "long",
     day: "numeric"
-  }) + t("updateSuffix");
+  }) + " 업데이트";
 }
-
-const PRICE_UPDATE_DOT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
-
-function getPriceUpdatedAt(clinic, doseKey) {
-  if (!clinic || !doseKey) return null;
-  const raw = clinic.price_updated_at && clinic.price_updated_at[doseKey];
-  if (raw) {
-    const d = new Date(raw);
-    if (Number.isFinite(d.getTime())) return d;
-  }
-  return null;
-}
-
-function isRecentPriceUpdate(clinic, doseKey) {
-  const at = getPriceUpdatedAt(clinic, doseKey);
-  if (!at) return false;
-  return Date.now() - at.getTime() <= PRICE_UPDATE_DOT_MAX_AGE_MS;
-}
-
-function getPriceUpdateTooltip(clinic, doseKey) {
-  const at = getPriceUpdatedAt(clinic, doseKey);
-  if (!at) return "";
-  const rel = formatRelativeUpdateTime(at);
-  if (appLang === "en") {
-    if (clinic.updated_by) return `Clinic updated · ${rel}`;
-    if (clinic.verified) return `Doctor verified · ${rel}`;
-    return `Recently updated · ${rel}`;
-  }
-  if (clinic.updated_by) return `의원에서 직접 수정 · ${rel}`;
-  if (clinic.verified) return `원장 확인 가격 · ${rel}`;
-  return `최근 반영 · ${rel}`;
-}
-
-function buildPriceMarkerHtml(clinic, price, doseKey) {
-  const showDot = isRecentPriceUpdate(clinic, doseKey);
-  const tip = showDot ? getPriceUpdateTooltip(clinic, doseKey) : "";
-  const dotHtml = showDot
-    ? `<span class="price-update-dot" aria-hidden="true"></span><span class="price-update-tip">${tip}</span>`
-    : "";
-  return `<span class="price-marker-text">${formatMarkerPrice(price)}</span>${dotHtml}`;
-}
-
 function updateHeaderNotice() {
   const el = document.getElementById("headerNotice");
   if (!el) return;
 
-  const clinicUpdate = formatRelativeUpdateTime(latestClinicUpdatedAt());
-
   el.innerHTML = `
-    <span class="notice-verified">${t("noticeVerified")}</span>
-    <span class="notice-meta">${clinicUpdate} · ${t("noticeCallBefore")}</span>
+    <span class="notice-verified">✓ 원장 자문</span>
+    <span class="notice-meta">${formatRelativeUpdateTime(latestClinicUpdatedAt())} · 방문 전 전화 확인 권장</span>
   `;
 }
 
-// ─────────── Data cache (stale-while-revalidate) ───────────
-const HARUSENSE_DATA_CACHE_VERSION = 1;
-const HARUSENSE_CACHE = {
-  version: HARUSENSE_DATA_CACHE_VERSION,
-  keys: {
-    base: "harusense_cache_base_v1",
-    overrides: "harusense_cache_overrides_v1"
-  },
-  ttl: {
-    baseMs: 30 * 60 * 1000,
-    overridesMs: 5 * 60 * 1000
-  }
-};
+// ─────────── Data loading ───────────
+// DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
+// 실패 시에만 정적 clinics.json으로 폴백.
+async function loadData() {
+  let apiData = null;
+  let staticData = null;
 
-function readDataCache(storageKey, ttlMs) {
   try {
-    const raw = localStorage.getItem(storageKey);
-    if (!raw) return null;
-    const packet = JSON.parse(raw);
-    if (!packet || packet.version !== HARUSENSE_DATA_CACHE_VERSION) return null;
-    if (Date.now() - packet.savedAt > ttlMs) return null;
-    return packet.payload;
-  } catch (err) {
-    return null;
+    const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
+    if (apiResp.ok) {
+      const data = await apiResp.json();
+      if (data && Array.isArray(data.clinics)) apiData = data;
+    }
+  } catch (apiErr) {
+    console.info("API 데이터 로드 실패, clinics.json 데이터를 사용합니다.");
   }
-}
 
-function writeDataCache(storageKey, payload) {
   try {
-    localStorage.setItem(storageKey, JSON.stringify({
-      version: HARUSENSE_DATA_CACHE_VERSION,
-      savedAt: Date.now(),
-      payload
-    }));
-  } catch (err) {
-    console.info("브라우저 저장 공간 부족 — 캐시를 건너뜁니다.");
+    const resp = await fetch("clinics.json?ts=" + Date.now(), { cache: "no-store" });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data && Array.isArray(data.clinics)) staticData = data;
+    }
+  } catch (jsonErr) {
+    console.info("clinics.json 로드 실패, API 데이터만 사용합니다.");
   }
-}
 
-function bustClinicCaches(scope = "all") {
-  if (scope === "all" || scope === "overrides") {
-    localStorage.removeItem(HARUSENSE_CACHE.keys.overrides);
-  }
-  if (scope === "all" || scope === "base") {
-    localStorage.removeItem(HARUSENSE_CACHE.keys.base);
-  }
-}
-
-async function buildMergedClinicData(apiData, staticData, overrides) {
-  if (!apiData && !staticData) return null;
-  const data = mergeClinicData(apiData, staticData);
-  if (SUBMITTED_CLINICS_ON_MAP) {
+  if (apiData || staticData) {
+    CLINIC_DATA = mergeClinicData(apiData, staticData);
     const submittedClinics = await loadSubmittedClinics();
-    applySubmittedClinics(data, submittedClinics);
+    applySubmittedClinics(CLINIC_DATA, submittedClinics);
+    const overrides = await loadClinicOverrides();
+    applyClinicOverrides(CLINIC_DATA, overrides);
+    return;
   }
-  applyClinicOverrides(data, overrides || []);
-  return data;
-}
 
-function clinicDataSignature(data) {
-  const clinics = data && Array.isArray(data.clinics) ? data.clinics : [];
-  return clinics.map(c => [
-    c.id,
-    c.institution_no,
-    c.lat,
-    c.lng,
-    c.prices,
-    c.stock,
-    c.updated_at,
-    c.price_updated_at
-  ].join(":")).join("|");
-}
-
-function refreshClinicDisplay() {
-  updateHeaderNotice();
-  renderMarkers();
-}
-
-function applyClinicFallbackData() {
   console.error("지도 데이터 로드 실패: API와 clinics.json 모두 사용할 수 없습니다.");
   CLINIC_DATA = {
     last_updated: "샘플",
@@ -2344,117 +2151,6 @@ function applyClinicFallbackData() {
   };
 }
 
-async function tryLoadClinicDataFromCache() {
-  const cachedBase = readDataCache(HARUSENSE_CACHE.keys.base, HARUSENSE_CACHE.ttl.baseMs);
-  if (!cachedBase) return false;
-  const cachedOverrides = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs) || [];
-  const merged = await buildMergedClinicData(cachedBase.apiData, cachedBase.staticData, cachedOverrides);
-  if (!merged) return false;
-  CLINIC_DATA = merged;
-  return true;
-}
-
-async function fetchClinicSourcesFromNetwork() {
-  const fetchJson = async url => {
-    try {
-      const resp = await fetch(url, { cache: "default" });
-      if (!resp.ok) return null;
-      const data = await resp.json();
-      return data && Array.isArray(data.clinics) ? data : null;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  const [apiData, staticData] = await Promise.all([
-    fetchJson("/api/clinics"),
-    fetchJson("clinics.json")
-  ]);
-  return { apiData, staticData };
-}
-
-async function fetchClinicOverridesFromNetwork(force) {
-  if (!force) {
-    const cached = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs);
-    if (cached) return cached;
-  }
-  const overrides = await loadClinicOverrides();
-  writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
-  return overrides;
-}
-
-async function revalidateClinicData(options = {}) {
-  const force = options.force === true;
-  const prevSig = clinicDataSignature(CLINIC_DATA);
-
-  if (force) bustClinicCaches("overrides");
-
-  const [{ apiData, staticData }, overrides] = await Promise.all([
-    fetchClinicSourcesFromNetwork(),
-    fetchClinicOverridesFromNetwork(force)
-  ]);
-
-  if (!apiData && !staticData) {
-    if (!CLINIC_DATA.clinics || !CLINIC_DATA.clinics.length) applyClinicFallbackData();
-    return false;
-  }
-
-  writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
-  const merged = await buildMergedClinicData(apiData, staticData, overrides);
-  if (!merged) return false;
-
-  CLINIC_DATA = merged;
-  const changed = prevSig !== clinicDataSignature(CLINIC_DATA);
-  return changed || force;
-}
-
-function revalidateClinicDataInBackground() {
-  revalidateClinicData().then(changed => {
-    if (changed) refreshClinicDisplay();
-  }).catch(() => {});
-}
-
-async function loadData(options = {}) {
-  const force = options.force === true;
-  if (force) bustClinicCaches("overrides");
-  const changed = await revalidateClinicData({ force });
-  return changed;
-}
-
-function applyOverridesInBackground() {
-  loadClinicOverrides()
-    .then(overrides => {
-      writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
-      const prevSig = clinicDataSignature(CLINIC_DATA);
-      applyClinicOverrides(CLINIC_DATA, overrides);
-      if (prevSig !== clinicDataSignature(CLINIC_DATA)) refreshClinicDisplay();
-    })
-    .catch(() => {});
-}
-
-async function bootstrapClinicData() {
-  const hadCache = await tryLoadClinicDataFromCache();
-  if (hadCache) {
-    revalidateClinicDataInBackground();
-    return true;
-  }
-
-  const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
-  if (apiData || staticData) {
-    writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
-    const merged = await buildMergedClinicData(apiData, staticData, []);
-    if (merged) {
-      CLINIC_DATA = merged;
-      applyOverridesInBackground();
-      revalidateClinicDataInBackground();
-      return false;
-    }
-  }
-
-  await revalidateClinicData({ force: false });
-  return false;
-}
-
 // ─────────── Map init ───────────
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -2471,11 +2167,10 @@ function initMap() {
       { featureType: "transit.station", elementType: "labels", stylers: [{ visibility: "on" }] }
     ]
   });
-  bootstrapClinicData().then(() => {
+  loadData().then(() => {
     document.getElementById("loading").style.display = "none";
-    applyI18n();
-    if (appLang === "en") startFxRefresh();
-    refreshClinicDisplay();
+    updateHeaderNotice();
+    renderMarkers();
     initRepresentativeForm();
   });
 }
@@ -2503,10 +2198,10 @@ function renderMarkers() {
       el.className = `marker-wrap${verifiedCls}${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
-        <div class="price-marker">${buildPriceMarkerHtml(clinic, price, key)}</div>
+        <div class="price-marker">${formatPriceShort(price)}원</div>
       `;
     } else {
-      const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
+      const label = clinic.stock && clinic.stock[key] === false ? "재고 없음" : "정보 수집중";
       el.className = `marker-wrap no-price${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
@@ -2531,12 +2226,11 @@ function renderMarkers() {
 
 // ─────────── Detail sheet ───────────
 function openSheet(clinic) {
-  ACTIVE_SHEET_CLINIC = clinic;
   const content = document.getElementById("sheetContent");
   const verifiedBadge = clinic.verified ? `
     <span class="sheet-verified-badge">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-      ${t("verifiedBadge")}
+      원장 직접 검증
     </span>` : "";
 
   const allKeys = [];
@@ -2555,24 +2249,23 @@ function openSheet(clinic) {
     const info = DRUG_INFO[drugKey];
     const isHighlight = key === selectedKey;
     const inStock = clinicStockAvailable(clinic, key);
-    const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? t("stockOn") : t("stockOff")}</span>`;
-    const formatted = formatPriceFull(Number(clinic.prices[key]));
+    const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? "재고 있음" : "재고 없음"}</span>`;
     return `
       <div class="price-row${isHighlight ? " highlight" : ""}">
-        <div class="price-drug">${drugDisplayName(drugKey)}<span class="dose">${dose}</span>${stockBadge}</div>
-        <div class="price-value">${formatted.value}${formatted.suffix}</div>
+        <div class="price-drug">${info.displayName}<span class="dose">${dose}</span>${stockBadge}</div>
+        <div class="price-value">${Number(clinic.prices[key]).toLocaleString()}<span class="won">원</span></div>
       </div>`;
   }).join("");
 
   const phoneClean = (clinic.phone || "").replace(/[^0-9]/g, "");
-  const phoneDisplay = clinic.phone || t("phoneMissing");
+  const phoneDisplay = clinic.phone || "전화번호 미등록";
   const callButton = phoneClean ? `
     <a href="tel:${phoneClean}" class="call-button">
       <span class="call-icon">
         <svg viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.07 15.07 0 0 1-6.59-6.59l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
       </span>
       <span class="call-text">
-        <span class="call-label">${t("callLabel")}</span>
+        <span class="call-label">바로 전화하기</span>
         <span class="call-number">${phoneDisplay}</span>
       </span>
       <span class="call-arrow">›</span>
@@ -2580,15 +2273,15 @@ function openSheet(clinic) {
 
   const priceSection = allKeys.length > 0 ? `
     <div class="price-section-label">
-      <span class="label">${t("priceSection")}</span>
-      <span class="count">${allKeys.length}${t("priceCount")}</span>
+      <span class="label">노출 가격</span>
+      <span class="count">${allKeys.length}개 항목</span>
     </div>
     ${priceRows}
   ` : `
     <div class="info-empty">
       <div class="info-empty-icon">📋</div>
-      <div class="info-empty-title">${t("emptyPriceTitle")}</div>
-      <div class="info-empty-text">${t("emptyPriceText")}</div>
+      <div class="info-empty-title">가격 정보 수집중</div>
+      <div class="info-empty-text">정확한 가격은 의원에 직접 전화로 문의해주세요.</div>
     </div>
   `;
 
@@ -2599,14 +2292,14 @@ function openSheet(clinic) {
   content.innerHTML = `
     <div class="sheet-clinic-header">
       <div class="sheet-name-wrap">
-        <a href="${naverMapUrl}" target="_blank" rel="noopener noreferrer" class="sheet-name-link" title="${t("naverTitle")}">
+        <a href="${naverMapUrl}" target="_blank" rel="noopener noreferrer" class="sheet-name-link" title="네이버 지도에서 ${clinic.name} 보기">
           <h2 class="sheet-name">${clinic.name}<span class="naver-icon" aria-hidden="true">↗</span></h2>
         </a>
         ${verifiedBadge}
       </div>
-      <button class="sheet-close" id="sheetClose" aria-label="Close">×</button>
+      <button class="sheet-close" id="sheetClose" aria-label="닫기">×</button>
     </div>
-    <div class="sheet-name-hint">${t("sheetHint")}</div>
+    <div class="sheet-name-hint">의원 이름을 누르면 네이버 지도에서 상세 정보(주차·진료시간·후기)를 확인하실 수 있습니다</div>
     <div class="sheet-district">${clinic.district || ""}</div>
     <div class="sheet-address">${clinic.address || ""}</div>
     ${callButton}
@@ -2618,29 +2311,10 @@ function openSheet(clinic) {
   document.getElementById("backdrop").classList.add("open");
 }
 function closeSheet() {
-  ACTIVE_SHEET_CLINIC = null;
   document.getElementById("sheet").classList.remove("open");
   document.getElementById("backdrop").classList.remove("open");
 }
 document.getElementById("backdrop").addEventListener("click", closeSheet);
-
-function initLangToggle() {
-  const group = document.querySelector(".lang-toggle");
-  if (!group || group.dataset.bound === "true") return;
-  group.dataset.bound = "true";
-  group.querySelectorAll(".lang-toggle-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const lang = btn.dataset.lang;
-      if (lang && lang !== appLang) setLang(lang);
-    });
-  });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  applyI18n();
-  initLangToggle();
-  window.addEventListener("resize", applyBrandTitle);
-});
 
 // ─────────── Drug/Dose toggle handling ───────────
 function updateDrugGroupStates() {
@@ -2694,9 +2368,7 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbz-ICcd5njyuklOzdJ4tacR620JU32pqJ_dj2otz2xLZJKTDnW1Qt3VBMibaj5rlASdpA/exec";
-/** false = 신규 핀은 운영자 엑셀→clinics.json 만. true = 시트 getSubmittedClinics (나중·자동좌표용). */
-const SUBMITTED_CLINICS_ON_MAP = false;
+const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbxhNVPgOuVNpB44FLUwcHVS-KWbTiZA-Cj7C-HeZ3CGY-wEtBwdVZRg847V0lXdHcdM9g/exec";
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
@@ -2744,7 +2416,7 @@ function renderRepresentativeEditor() {
     document.getElementById("repClinicSub").textContent = `${REP_ACTIVE_INSTITUTION_NO} · 지도 데이터 연결 전`;
     if (submitBtn) submitBtn.hidden = true;
     box.innerHTML = `
-      <p class="rep-help">로그인은 완료되었습니다. 지도·가격 수정은 운영 검수(엑셀 반영) 후 이용 가능합니다. 요양기관번호가 지도 데이터에 등록되면 이 화면에 가격·재고 항목이 표시됩니다.</p>
+      <p class="rep-help">로그인과 비밀번호 변경은 완료되었습니다. 다만 이 계정은 아직 지도에 표시된 요양기관 데이터와 연결되어 있지 않아 가격 수정 항목을 표시할 수 없습니다. 실제 등록된 요양기관 계정으로 로그인하면 가격/재고 수정 항목이 표시됩니다.</p>
     `;
     return;
   }
@@ -2962,8 +2634,7 @@ async function handleRepLogin() {
         showRepView("password");
       } else {
         // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
-        await loadData({ force: true });
-        refreshClinicDisplay();
+        await loadData();
         showRepresentativeEditor(true);
       }
     } else {
@@ -3054,8 +2725,9 @@ async function handleRepSubmit() {
     });
 
     if (data.ok) {
-      await loadData({ force: true });
-      refreshClinicDisplay();
+      await loadData();
+      updateHeaderNotice();
+      renderMarkers();
       renderRepresentativeEditor();
       setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
       if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
@@ -3170,26 +2842,26 @@ function initRepresentativeForm() {
 
   function render(list) {
     if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || CLINIC_DATA.clinics.length === 0) {
-      results.innerHTML = '<div class="search-empty">' + t("searchLoading") + '</div>';
+      results.innerHTML = '<div class="search-empty">지도 데이터를 불러오는 중입니다.<br>잠시 후 다시 시도해주세요.</div>';
       return;
     }
     if (!list.length) {
-      results.innerHTML = '<div class="search-empty">' + t("searchEmpty") + '</div>';
+      results.innerHTML = '<div class="search-empty">검색 결과가 없습니다.</div>';
       return;
     }
     results.innerHTML = list.slice(0, 60).map(c => {
       const ph = isPh(c);
-      const typeCls = ph ? "pharmacy" : "clinic";
+      const t = ph ? "pharmacy" : "clinic";
       const icon = ph ? "💊" : "🏥";
-      const label = ph ? t("searchPharmacy") : t("searchClinic");
+      const label = ph ? "약국" : "병의원";
       const meta = [c.district, c.address].filter(Boolean).join(" · ");
       return '<button class="search-item" data-idx="' + c.__idx + '">' +
-          '<span class="search-item-icon ' + typeCls + '">' + icon + '</span>' +
+          '<span class="search-item-icon ' + t + '">' + icon + '</span>' +
           '<span class="search-item-body">' +
             '<span class="search-item-name">' + (c.name || "") + '</span>' +
             '<span class="search-item-meta">' + meta + '</span>' +
           '</span>' +
-          '<span class="search-type-badge ' + typeCls + '">' + label + '</span>' +
+          '<span class="search-type-badge ' + t + '">' + label + '</span>' +
         '</button>';
     }).join("");
   }
@@ -3239,14 +2911,8 @@ window.initMap = initMap;
 </script>
 
 <!-- Google Maps JavaScript API -->
-<script>
-(function () {
-  var lang = window.__HS_LANG === "en" ? "en" : "ko";
-  var s = document.createElement("script");
-  s.async = true;
-  s.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=" + lang + "&region=KR";
-  document.head.appendChild(s);
-})();
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=ko&region=KR">
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
