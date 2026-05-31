@@ -1,0 +1,16 @@
+{
+  "last_updated": "2026-05-31",
+  "source_note": "Monthly cached public info. Provider-entered and operator-verified data take priority over this file.",
+  "clinics": [
+    {
+      "institution_no": "12339695",
+      "name": "뉴센스의원",
+      "phone": "02-3272-8885",
+      "naver_parking": "주차 정보 준비 중",
+      "parking_source": "naver",
+      "parking_updated_at": "2026-05-31",
+      "naver_url": "",
+      "google_url": ""
+    }
+  ]
+}

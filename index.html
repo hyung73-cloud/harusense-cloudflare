@@ -2335,6 +2335,57 @@ function applyClinicOverrides(data, overrides) {
   return data;
 }
 
+function clinicCacheKeys(clinic) {
+  return [
+    clinic.id,
+    clinic.institution_no,
+    clinic.name ? String(clinic.name).replace(/\s+/g, "") : ""
+  ].filter(Boolean).map(v => String(v).trim());
+}
+
+function applyParkingCache(data, cacheData) {
+  if (!data || !Array.isArray(data.clinics) || !cacheData) return data;
+  const rows = Array.isArray(cacheData) ? cacheData : (Array.isArray(cacheData.clinics) ? cacheData.clinics : []);
+  if (!rows.length) return data;
+
+  const byKey = new Map();
+  rows.forEach(row => {
+    if (!row) return;
+    [row.id, row.institution_no, row.name ? String(row.name).replace(/\s+/g, "") : ""]
+      .filter(Boolean)
+      .forEach(key => byKey.set(String(key).trim(), row));
+  });
+
+  data.clinics = data.clinics.map(clinic => {
+    const match = clinicCacheKeys(clinic).map(key => byKey.get(key)).find(Boolean);
+    if (!match) return clinic;
+    return {
+      ...clinic,
+      cached_phone: firstValue(match.phone, match.cached_phone, match.naver_phone, match.google_phone, clinic.cached_phone),
+      naver_phone: firstValue(match.naver_phone, clinic.naver_phone),
+      google_phone: firstValue(match.google_phone, clinic.google_phone),
+      cached_parking: firstValue(match.parking, match.cached_parking, match.naver_parking, match.google_parking, clinic.cached_parking),
+      naver_parking: firstValue(match.naver_parking, clinic.naver_parking),
+      google_parking: firstValue(match.google_parking, clinic.google_parking),
+      parking_source: firstValue(match.parking_source, match.source, clinic.parking_source),
+      parking_updated_at: firstValue(match.parking_updated_at, match.updated_at, clinic.parking_updated_at),
+      naver_url: firstValue(match.naver_url, clinic.naver_url),
+      google_url: firstValue(match.google_url, clinic.google_url)
+    };
+  });
+  return data;
+}
+
+async function loadParkingCache() {
+  try {
+    const resp = await fetch("/parking-cache.json", { cache: "default" });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (err) {
+    return null;
+  }
+}
+
 function applySubmittedClinics(data, submittedClinics) {
   if (!data || !Array.isArray(data.clinics) || !Array.isArray(submittedClinics)) return data;
   const existingInstitutionNos = new Set(
@@ -2488,28 +2539,75 @@ function googleDirectionsUrl(clinic) {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${clinic.name || ""} ${clinic.address || ""}`.trim())}`;
 }
 
-function parkingText(clinic) {
-  const raw = clinic.parking ?? clinic.parking_status ?? clinic.parking_available ?? clinic.parking_note;
+function firstValue() {
+  for (let i = 0; i < arguments.length; i++) {
+    const v = arguments[i];
+    if (v !== undefined && v !== null && String(v).trim() !== "") return v;
+  }
+  return "";
+}
+
+function displayPhone(clinic) {
+  return firstValue(
+    clinic.phone,
+    clinic.provider_phone,
+    clinic.verified_phone,
+    clinic.naver_phone,
+    clinic.google_phone,
+    clinic.cached_phone
+  );
+}
+
+function parkingSourceLabel(source) {
+  if (!source) return "";
+  const s = String(source).toLowerCase();
+  if (s.includes("provider")) return appLang === "en" ? "provider" : "기관 직접";
+  if (s.includes("operator") || s.includes("verified")) return appLang === "en" ? "verified" : "운영자 검수";
+  if (s.includes("naver")) return appLang === "en" ? "Naver cached" : "네이버 캐시";
+  if (s.includes("google")) return appLang === "en" ? "Google cached" : "구글 캐시";
+  return appLang === "en" ? "cached" : "캐시";
+}
+
+function normalizeParkingValue(raw) {
   if (raw === true || raw === "true" || raw === "yes" || raw === "available" || raw === "가능") {
     return appLang === "en" ? "Parking available" : "주차 가능";
   }
   if (raw === false || raw === "false" || raw === "no" || raw === "unavailable" || raw === "불가") {
     return appLang === "en" ? "Parking not confirmed" : "주차 불가 또는 확인 필요";
   }
-  if (raw) return String(raw);
-  return appLang === "en" ? "Parking info pending" : "주차 정보 확인 중";
+  return raw ? String(raw) : "";
+}
+
+function parkingInfo(clinic) {
+  const sources = [
+    { value: firstValue(clinic.provider_parking, clinic.provider_parking_note), source: "provider" },
+    { value: firstValue(clinic.verified_parking, clinic.operator_parking, clinic.parking, clinic.parking_status, clinic.parking_note), source: "verified" },
+    { value: firstValue(clinic.naver_parking, clinic.google_parking, clinic.cached_parking, clinic.parking_cache, clinic.parking_cache_note), source: firstValue(clinic.parking_source, "cached") }
+  ];
+  for (const item of sources) {
+    const text = normalizeParkingValue(item.value);
+    if (text) return { text, source: parkingSourceLabel(item.source), pending: false };
+  }
+  return { text: appLang === "en" ? "Parking info preparing" : "주차 정보 준비 중", source: "", pending: true };
+}
+
+function parkingText(clinic) {
+  return parkingInfo(clinic).text;
 }
 
 function parkingMetaText(clinic) {
+  const info = parkingInfo(clinic);
+  if (info.pending) return "";
+  const source = info.source ? ` · ${info.source}` : "";
   if (clinic.parking_updated_at) {
     const d = new Date(clinic.parking_updated_at);
     if (Number.isFinite(d.getTime())) {
       return appLang === "en"
-        ? ` · cached ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
-        : ` · 캐시 ${d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })}`;
+        ? `${source} · ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+        : `${source} · ${d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })}`;
     }
   }
-  return "";
+  return source;
 }
 
 function updateHeaderNotice() {
@@ -2585,6 +2683,7 @@ async function buildMergedClinicData(apiData, staticData, overrides) {
     applySubmittedClinics(data, submittedClinics);
   }
   applyClinicOverrides(data, overrides || []);
+  applyParkingCache(data, await loadParkingCache());
   return data;
 }
 
@@ -2902,8 +3001,9 @@ function openSheet(clinic) {
       </div>`;
   }).join("");
 
-  const phoneClean = (clinic.phone || "").replace(/[^0-9]/g, "");
-  const phoneDisplay = clinic.phone || t("phoneMissing");
+  const phoneValue = displayPhone(clinic);
+  const phoneClean = String(phoneValue || "").replace(/[^0-9]/g, "");
+  const phoneDisplay = phoneValue || t("phoneMissing");
   const callButton = phoneClean ? `
     <a href="tel:${phoneClean}" class="call-button">
       <span class="call-icon">
