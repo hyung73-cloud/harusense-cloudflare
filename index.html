@@ -2017,16 +2017,43 @@ function countPharmacies(data) {
   return (data && Array.isArray(data.clinics) ? data.clinics : []).filter(isPharmacy).length;
 }
 
+/** 예전 개발용 clinics.json(샘플의원 A 등) — 운영 지도에서 제외 */
+function isDemoClinic(clinic) {
+  if (!clinic) return true;
+  const id = String(clinic.id || "");
+  const name = String(clinic.name || "");
+  if (/^sample_/i.test(id)) return true;
+  if (/샘플의원/i.test(name)) return true;
+  if (id === "newsense_fallback") return true;
+  if (id === "newsense" && !id.startsWith("clinic_")) return true;
+  return false;
+}
+
+function stripDemoClinics(data) {
+  if (!data || !Array.isArray(data.clinics)) return data;
+  return {
+    ...data,
+    clinics: data.clinics.filter(c => !isDemoClinic(c)),
+  };
+}
+
+function countPinnedClinics(data) {
+  const list = stripDemoClinics(data);
+  if (!list || !Array.isArray(list.clinics)) return 0;
+  return list.clinics.filter(hasValidCoords).length;
+}
+
 function cloneClinicData(data) {
   return JSON.parse(JSON.stringify(data || { clinics: [] }));
 }
 
 function clinicMapStats(data) {
-  const clinics = data && Array.isArray(data.clinics) ? data.clinics : [];
+  const data2 = stripDemoClinics(data);
+  const clinics = data2 && Array.isArray(data2.clinics) ? data2.clinics : [];
   return {
     total: clinics.length,
     pinned: clinics.filter(hasValidCoords).length,
-    pharmacies: countPharmacies(data),
+    pharmacies: countPharmacies(data2),
   };
 }
 
@@ -2077,7 +2104,10 @@ function commitClinicData(candidate, options) {
     ? LAST_STABLE_MAP_DATA
     : CLINIC_DATA;
 
-  const next = unionPreserveClinics(prev, cloneClinicData(candidate));
+  const next = unionPreserveClinics(
+    stripDemoClinics(prev),
+    stripDemoClinics(cloneClinicData(candidate))
+  );
   if (!next) return false;
 
   if (!force && isUnsafeDataRegression(prev, next)) {
@@ -2137,16 +2167,28 @@ function mergeOneClinicRecord(staticClinic, apiClinic) {
 }
 
 function mergeClinicData(apiData, staticData) {
-  const apiClinics = Array.isArray(apiData && apiData.clinics) ? apiData.clinics : [];
-  const staticClinics = Array.isArray(staticData && staticData.clinics) ? staticData.clinics : [];
+  const apiClinics = Array.isArray(apiData && apiData.clinics)
+    ? apiData.clinics.filter(c => !isDemoClinic(c))
+    : [];
+  const staticClinics = Array.isArray(staticData && staticData.clinics)
+    ? staticData.clinics.filter(c => !isDemoClinic(c))
+    : [];
   const byId = new Map();
   const institutionToId = new Map();
 
+  /** 예전 clinics.json id(newsense 등) → 요양기관번호. 엑셀 검수 좌표가 API id와 합쳐지게 함 */
+  const LEGACY_STATIC_ID_TO_INST = { newsense: "12339695" };
+
   staticClinics.forEach(clinic => {
     if (!clinic || !clinic.id) return;
-    byId.set(clinic.id, cloneClinic(clinic));
-    const inst = String(clinic.institution_no || "").trim();
-    if (inst) institutionToId.set(inst, clinic.id);
+    const row = cloneClinic(clinic);
+    let inst = String(row.institution_no || "").trim();
+    if (!inst && LEGACY_STATIC_ID_TO_INST[row.id]) {
+      inst = LEGACY_STATIC_ID_TO_INST[row.id];
+      row.institution_no = inst;
+    }
+    byId.set(row.id, row);
+    if (inst) institutionToId.set(inst, row.id);
   });
 
   apiClinics.forEach(apiClinic => {
@@ -2509,15 +2551,18 @@ function applyClinicFallbackData() {
 
 async function tryLoadStableDisplayCache() {
   const stable = readDataCache(HARUSENSE_CACHE.keys.stable, HARUSENSE_CACHE.ttl.stableMs);
-  if (!stable || clinicMapStats(stable).pinned < 1) return false;
-  return commitClinicData(stable, { force: true });
+  if (!stable || countPinnedClinics(stable) < 1) return false;
+  return commitClinicData(stripDemoClinics(stable), { force: true });
 }
 
 /** 핀이 0개면 캐시 무시하고 네트워크에서 다시 받기 */
 async function ensureMapHasPins() {
-  if (clinicMapStats(CLINIC_DATA).pinned > 0) return true;
+  if (countPinnedClinics(CLINIC_DATA) > 0) return true;
   bustClinicCaches("all");
   const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
+  if (!apiData || countPinnedClinics(apiData) < 1) {
+    console.error("[하루센스] /api/clinics 실데이터 없음 — 샘플 clinics.json만 있으면 지도가 비거나 샘플만 보입니다.");
+  }
   let overrides = [];
   try { overrides = await loadClinicOverrides(); } catch (e) {}
   const merged = await buildMergedClinicData(apiData, staticData, overrides);
@@ -2540,21 +2585,19 @@ async function tryLoadClinicDataFromCache() {
 }
 
 async function fetchClinicSourcesFromNetwork() {
-  const fetchJson = async url => {
+  const fetchJson = async (url, noStore) => {
     try {
-      const resp = await fetch(url, { cache: "default" });
+      const resp = await fetch(url, { cache: noStore ? "no-store" : "default" });
       if (!resp.ok) return null;
       const data = await resp.json();
-      return data && Array.isArray(data.clinics) ? data : null;
+      return data && Array.isArray(data.clinics) ? stripDemoClinics(data) : null;
     } catch (err) {
       return null;
     }
   };
 
-  const [apiData, staticData] = await Promise.all([
-    fetchJson("/api/clinics"),
-    fetchJson("/clinics.json")
-  ]);
+  const apiData = await fetchJson("/api/clinics", true);
+  const staticData = await fetchJson("/clinics.json", false);
   return { apiData, staticData };
 }
 
@@ -2701,6 +2744,7 @@ function renderMarkers() {
   let visibleCount = 0;
 
   CLINIC_DATA.clinics.forEach(clinic => {
+    if (isDemoClinic(clinic)) return;
     if (!clinicMatchesDistrict(clinic)) return;
     if (!hasValidCoords(clinic)) return;
 
