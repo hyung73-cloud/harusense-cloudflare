@@ -1889,11 +1889,23 @@ function setLang(lang) {
   if (lang !== "ko" && lang !== "en") return;
   if (lang === "en") {
     localStorage.setItem("harusense_lang", "en");
-    const q = new URLSearchParams(location.search);
-    const drug = state.drugKey || q.get("drug");
-    const dest = new URL("/en/", location.origin);
-    if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
-    location.href = dest.pathname + dest.search;
+    const path = location.pathname || "/";
+    if (!path.startsWith("/en")) {
+      const q = new URLSearchParams(location.search);
+      const drug = state.drugKey || q.get("drug");
+      const dest = new URL("/en/", location.origin);
+      if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
+      location.href = dest.pathname + dest.search;
+      return;
+    }
+    appLang = "en";
+    document.documentElement.lang = "en";
+    document.documentElement.classList.add("lang-en");
+    applyI18n();
+    updateHeaderNotice();
+    renderMarkers();
+    startFxRefresh();
+    if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
     return;
   }
   appLang = "ko";
@@ -2636,16 +2648,6 @@ function initLangToggle() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  try {
-    if (localStorage.getItem("harusense_lang") === "en") {
-      const dest = new URL("/en/", location.origin);
-      const params = new URLSearchParams(location.search);
-      const drug = params.get("drug");
-      if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
-      location.replace(dest.pathname + dest.search);
-      return;
-    }
-  } catch (e) {}
   applyI18n();
   initLangToggle();
   window.addEventListener("resize", applyBrandTitle);
