@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WQK2X8JV');
+</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
+
+<title>Harusense Guide | Mounjaro & Wegovy Price Map Korea — Treatment & Lifestyle</title>
+<meta name="description" content="English guide to Harusense GLP-1 price map in Korea: physician-reviewed clinic prices, full treatment journey, lifestyle changes, wegovy price korea, mounjaro price korea." />
+<meta name="keywords" content="wegovy korea, mounjaro korea, wegovy price korea, wegovy clinic korea, GLP-1 korea, obesity clinic seoul, harusense guide" />
+<meta name="author" content="Harusense" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+
+<link rel="canonical" href="https://harusense.com/en/guide/" />
+<link rel="alternate" hreflang="en" href="https://harusense.com/en/guide/" />
+<link rel="alternate" hreflang="ko" href="https://harusense.com/guide/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Harusense GLP-1 Price Map" />
+<meta property="og:title" content="Harusense Guide | Mounjaro & Wegovy Korea" />
+<meta property="og:description" content="Physician-reviewed price map, treatment journey, and lifestyle guide for GLP-1 in Seoul." />
+<meta property="og:url" content="https://harusense.com/en/guide/" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:image" content="https://harusense.com/og-image.png" />
+
+<meta name="theme-color" content="#2563eb" />
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "name": "Harusense Guide | Mounjaro & Wegovy Korea",
+      "url": "https://harusense.com/en/guide/",
+      "description": "English guide: price map, treatment journey, lifestyle for GLP-1 in Korea",
+      "inLanguage": "en",
+      "isPartOf": { "@type": "WebSite", "name": "Harusense GLP-1 Price Map", "url": "https://harusense.com/en/" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where can I see Mounjaro prices in Korea?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "On the Harusense English map at https://harusense.com/en/ — compare by clinic and dose (2.5mg–10mg) in Seoul."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where can I see Wegovy prices in Korea?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "On https://harusense.com/en/?drug=wegovy or the Wegovy landing page at /en/wegovy-map/."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What do clinic prices on the map include?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Clinic pins show total cost (consultation + medication at clinic). Pharmacy pins are also total cost. Always confirm by phone before visiting."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --ink: #111827;
+  --ink-2: #374151;
+  --mute: #6b7280;
+  --line: #e5e7eb;
+  --blue: #2563eb;
+  --blue-deep: #1e40af;
+  --blue-soft: #eff6ff;
+  --verified: #059669;
+  --verified-soft: #ecfdf5;
+  --amber: #d97706;
+  --amber-soft: #fffbeb;
+  --rose: #be185d;
+  --rose-soft: #fce7f3;
+  --alert: #dc2626;
+  --alert-bg: #fef2f2;
+  --alert-ink: #991b1b;
+  --font: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+html, body { background: var(--bg); }
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'tnum' 1;
+  line-height: 1.85;
+  letter-spacing: -0.01em;
+}
+
+.page-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.page-header-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.page-brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.page-brand-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--mute);
+  font-weight: 500;
+  margin-top: 2px;
+}
+.page-back {
+  font-size: 13px;
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+article.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px 72px;
+}
+
+/* ── 핵심 요약 (빨강) ── */
+.alert-essential {
+  background: var(--alert-bg);
+  border: 2px solid var(--alert);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 18px rgba(220, 38, 38, 0.08);
+}
+.alert-essential-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--alert);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+.alert-essential ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.alert-essential li {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--alert-ink);
+  line-height: 2;
+  padding-left: 1.1em;
+  position: relative;
+  margin-bottom: 4px;
+}
+.alert-essential li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--alert);
+  font-weight: 900;
+}
+.alert-essential li:last-child { margin-bottom: 0; }
+
+.hero-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 28px 26px 30px;
+  margin-bottom: 28px;
+  box-shadow: 0 1px 3px rgba(17,24,39,0.06);
+}
+.eyebrow {
+  font-size: 12px;
+  color: var(--blue);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.lede {
+  font-size: 16px;
+  color: var(--ink-2);
+  line-height: 2.05;
+  margin-bottom: 22px;
+  font-weight: 500;
+}
+.lede strong { color: var(--ink); font-weight: 700; }
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.cta-btn.primary {
+  background: var(--blue);
+  color: #fff;
+  flex: 1;
+  min-width: 200px;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+}
+.cta-btn.primary:hover { transform: translateY(-1px); }
+.cta-btn.secondary {
+  background: var(--surface-alt);
+  color: var(--blue-deep);
+  border: 1px solid var(--line);
+}
+.cta-btn.secondary:hover { background: var(--blue-soft); }
+
+.section {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 28px 26px 32px;
+  margin-bottom: 22px;
+  box-shadow: 0 1px 3px rgba(17,24,39,0.05);
+}
+.section-loose { padding: 32px 26px 36px; }
+
+h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 18px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.4;
+}
+h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 28px 0 12px;
+  color: var(--ink);
+  line-height: 1.45;
+}
+h3:first-of-type { margin-top: 8px; }
+
+.prose p {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  line-height: 2.1;
+  margin-bottom: 1.25em;
+  font-weight: 450;
+}
+.prose p:last-child { margin-bottom: 0; }
+.prose strong { color: var(--ink); font-weight: 700; }
+.prose ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5em;
+}
+.prose ul li {
+  font-size: 15px;
+  color: var(--ink-2);
+  line-height: 2.05;
+  padding: 6px 0 6px 1.35em;
+  position: relative;
+}
+.prose ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.05em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.pill-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.pill-nav a {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+  text-decoration: none;
+}
+.pill-nav a:hover { background: #dbeafe; }
+
+.chip-fresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--verified);
+  background: var(--verified-soft);
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+.chip-fresh::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+.qa-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line-soft, #f1f3f5);
+}
+.qa-item:last-child { border-bottom: none; padding-bottom: 0; }
+.qa-item:first-child { padding-top: 0; }
+.qa-q {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+  line-height: 1.55;
+}
+.qa-q span { color: var(--blue); margin-right: 6px; }
+.qa-a {
+  font-size: 15px;
+  color: var(--ink-2);
+  line-height: 2.05;
+}
+
+.compare-grid {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 8px;
+}
+@media (min-width: 560px) {
+  .compare-grid { grid-template-columns: 1fr 1fr; }
+}
+.compare-card {
+  background: var(--surface-alt);
+  border-radius: 12px;
+  padding: 18px 18px 20px;
+  border: 1px solid var(--line);
+}
+.compare-card h4 {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+.compare-card p {
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.video-block {
+  margin: 22px 0 8px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0f172a;
+  aspect-ratio: 16 / 9;
+}
+.video-block iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.video-caption {
+  font-size: 13px;
+  color: var(--mute);
+  line-height: 1.8;
+  margin-top: 12px;
+}
+
+.ambient-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: var(--surface-alt);
+  border-radius: 12px;
+  border: 1px dashed var(--line);
+}
+.ambient-bar p {
+  font-size: 13px;
+  color: var(--mute);
+  line-height: 1.7;
+  margin: 0;
+}
+.ambient-toggle {
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ambient-toggle.on { background: var(--blue); }
+#ambientPlayer {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+}
+
+.tip-card {
+  background: var(--amber-soft);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-top: 20px;
+}
+.tip-card p {
+  font-size: 14px;
+  color: #78350f;
+  line-height: 2;
+  margin: 0;
+}
+
+.contact-card {
+  background: var(--verified-soft);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-top: 18px;
+}
+.contact-card a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+.contact-card a:hover { color: var(--verified); text-decoration: underline; }
+.contact-row {
+  font-size: 15px;
+  line-height: 2.2;
+  color: var(--ink-2);
+}
+
+.donate-section {
+  background: linear-gradient(135deg, var(--rose-soft) 0%, #fff1f2 100%);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  margin-bottom: 22px;
+}
+.donate-section p { font-size: 14px; line-height: 2; color: var(--ink-2); margin-bottom: 14px; }
+
+.related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.related a {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  background: var(--surface-alt);
+  border-radius: 999px;
+  color: var(--ink-2);
+  text-decoration: none;
+  border: 1px solid var(--line);
+}
+.related a:hover { background: var(--blue-soft); color: var(--blue-deep); }
+
+.page-footer {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 20px 48px;
+  font-size: 12px;
+  color: var(--mute);
+  line-height: 2;
+  text-align: center;
+}
+.page-footer a { color: var(--mute); }
+
+.trust-hero {
+  background: linear-gradient(135deg, #ecfdf5 0%, var(--blue-soft) 100%);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+}
+.trust-hero-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--verified);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.trust-hero p {
+  font-size: 15px;
+  line-height: 2.05;
+  color: var(--ink-2);
+  margin: 0;
+  font-weight: 500;
+}
+.trust-hero p strong { color: var(--ink); }
+
+.process-list { margin: 8px 0 0; padding: 0; list-style: none; }
+.process-list li {
+  display: flex;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.process-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.process-num {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.process-body h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+.process-body p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 2.1;
+  color: var(--ink-2);
+}
+.process-body p:last-child { margin-bottom: 0; }
+.process-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue-deep);
+  background: var(--blue-soft);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+
+.lifestyle-block {
+  background: var(--surface-alt);
+  border-radius: 14px;
+  padding: 22px 22px 26px;
+  margin: 22px 0;
+  border: 1px solid var(--line);
+}
+.lifestyle-block h3 {
+  margin-top: 0;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lifestyle-steps { counter-reset: ls; list-style: none; padding: 0; margin: 16px 0 0; }
+.lifestyle-steps li {
+  counter-increment: ls;
+  padding: 14px 0 14px 0;
+  border-top: 1px dashed var(--line);
+  font-size: 15px;
+  line-height: 2.1;
+  color: var(--ink-2);
+}
+.lifestyle-steps li:first-child { border-top: none; padding-top: 0; }
+.lifestyle-steps li::before {
+  content: counter(ls, decimal-leading-zero);
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+.lifestyle-steps li strong { color: var(--ink); }
+
+.insight-card {
+  background: var(--verified-soft);
+  border-left: 4px solid var(--verified);
+  border-radius: 0 12px 12px 0;
+  padding: 20px 22px;
+  margin: 24px 0;
+}
+.insight-card p {
+  font-size: 15px;
+  line-height: 2.15;
+  color: var(--ink-2);
+  margin: 0;
+}
+.insight-card strong { color: #047857; }
+
+.quote-lead {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.65;
+  color: var(--ink);
+  margin-bottom: 1.2em;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  article.page { padding: 32px 24px 88px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 22px; }
+  .prose p, .lede { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQK2X8JV" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <a href="/en/" class="page-brand-name">Harusense GLP-1 Price Map</a>
+      <span class="page-brand-sub">Mounjaro & Wegovy · Korea</span>
+    </div>
+    <a href="/en/" class="page-back">← Open map</a>
+  </div>
+</header>
+
+<article class="page">
+
+  <div class="alert-essential">
+    <div class="alert-essential-title">⚠ Before you use the price map</div>
+    <ul>
+      <li>Clinic pins = <strong>total cost</strong> (consultation + medication at the clinic)</li>
+      <li>Pharmacy pins = <strong>total cost</strong></li>
+      <li>Many clinics can issue a prescription only; clinics on the map <strong>usually can</strong> — confirm policy by phone before visiting</li>
+    </ul>
+  </div>
+
+  <div class="hero-card">
+    <div class="eyebrow">Guide · 2026</div>
+    <h1>Mounjaro &amp; Wegovy<br />price map — how to use it</h1>
+    <p class="lede">
+      <strong>Harusense</strong> is more than a price table. With <strong>physician advisory</strong> and <strong>clinic-verified</strong> updates,
+      this guide helps you compare <strong>prices, treatment flow, and lifestyle</strong> for GLP-1 care in Seoul.
+      Scroll down for the full treatment journey and habit-change section.
+    </p>
+    <div class="cta-row">
+      <a href="/en/" class="cta-btn primary">🗺️ Open price map</a>
+      <a href="/en/?drug=mounjaro" class="cta-btn secondary">Mounjaro</a>
+      <a href="/en/?drug=wegovy" class="cta-btn secondary">Wegovy</a>
+    </div>
+  </div>
+
+  <div class="trust-hero">
+    <div class="trust-hero-title">✓ Physician review · clinic-verified prices</div>
+    <p>
+      A <strong>✓ on the map</strong> means the clinic confirmed or updated prices, or passed our review (display may vary).
+      Harusense has <strong>no ads or referral fees</strong>; final care, prescriptions, and cost are always decided by <strong>your doctor and that clinic</strong>.
+    </p>
+  </div>
+
+  <nav class="pill-nav" aria-label="On this page">
+    <a href="#read-price">Prices</a>
+    <a href="#trust-detail">Review</a>
+    <a href="#journey">Treatment</a>
+    <a href="#lifestyle">Lifestyle</a>
+    <a href="#mounjaro-map">Mounjaro</a>
+    <a href="#wegovy-map">Wegovy</a>
+    <a href="#clinical-faq">Clinical Q&amp;A</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+
+  <section class="section section-loose" id="read-price">
+    <h2>How to read the map</h2>
+    <div class="prose">
+      <p>
+        Map prices are <strong>not drug-only</strong>. <strong>Clinic</strong> pins show <strong>total cost</strong>:
+        consultation plus buying that dose at the clinic. <strong>Pharmacy</strong> pins are also <strong>total cost</strong> (dispensing included).
+      </p>
+      <p>
+        Same dose, different clinic — fees, packages, stock, and discounts vary a lot.
+        Harusense shows <strong>Mounjaro</strong> and <strong>Wegovy</strong> by area and dose so you can compare side by side in Seoul.
+      </p>
+      <ul>
+        <li>✓: price confirmed or updated by the clinic (when available)</li>
+        <li>Green dot: that dose was updated recently (select the dose on the map)</li>
+        <li>Before visit: call to confirm final price, stock, and prescription policy</li>
+      </ul>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>🏥 Clinic pins</h4>
+        <p><strong>Total cost</strong> including visit and in-clinic medication. May differ from “prescription only, fill at pharmacy.”</p>
+      </div>
+      <div class="compare-card">
+        <h4>💊 Pharmacy pins</h4>
+        <p><strong>Total cost</strong> for dispensing. Valid prescription required; price and stock vary by pharmacy.</p>
+      </div>
+    </div>
+    <div class="tip-card">
+      <p>
+        If you only need a <strong>prescription</strong>, many clinics can issue one under Korean law, but policies differ.
+        <strong>Call before you go</strong>, even for clinics already on the map.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-loose" id="mounjaro-map">
+    <h2>Mounjaro price map (Korea)</h2>
+    <div class="chip-fresh">By dose · by area</div>
+    <div class="prose">
+      <p>
+        <strong>Mounjaro (tirzepatide)</strong> is a dual GLP-1/GIP incretin therapy.
+        On Harusense you can compare <strong>2.5 · 5 · 7.5 · 10 mg</strong> across clinics in Mapo, Seodaemun, Yeongdeungpo, Gangseo, Yongsan, and nearby Seoul areas.
+      </p>
+      <p>
+        Mounjaro is usually out-of-pocket; prices vary widely. Shortlist on the map, then <strong>call 2–3 clinics</strong> to confirm total cost, stock, and next visit.
+      </p>
+      <h3>Quick workflow</h3>
+      <ul>
+        <li>① Pick area and dose (e.g. 5 mg) on the map</li>
+        <li>② Compare pins and note clinics you like</li>
+        <li>③ Call: total cost, stock, in-clinic vs prescription-only</li>
+        <li>④ Visit and decide with your doctor</li>
+      </ul>
+    </div>
+    <a href="/en/mounjaro-map/" class="cta-btn primary" style="display:flex;margin-top:8px;">Mounjaro map (SEO page)</a>
+    <a href="/en/?drug=mounjaro" class="cta-btn secondary" style="display:flex;margin-top:8px;">Open interactive map</a>
+  </section>
+
+  <section class="section section-loose" id="wegovy-map">
+    <h2>Wegovy price map (Korea)</h2>
+    <div class="chip-fresh">Pen doses · by area</div>
+    <div class="prose">
+      <p>
+        <strong>Wegovy (semaglutide)</strong> is also mostly out-of-pocket in Korea.
+        Switch among <strong>0.25 · 0.5 · 1.0 · 1.7 · 2.4 mg</strong> to see how prices spread in the same neighborhood.
+      </p>
+      <p>
+        Interest in higher Wegovy doses and new formulations is growing in 2026.
+        <strong>Approval, supply, and pricing change over time</strong> — check this guide and the live map together.
+      </p>
+      <h3>Wegovy vs Mounjaro?</h3>
+      <p>
+        Neither is “always better.” Goals, maintenance plan, side effects, budget, and titration differ by person.
+        Harusense does not push one brand — we provide a <strong>transparent comparison map</strong>.
+      </p>
+    </div>
+    <a href="/en/wegovy-map/" class="cta-btn primary" style="display:flex;margin-top:8px;">Wegovy map (SEO page)</a>
+    <a href="/en/?drug=wegovy" class="cta-btn secondary" style="display:flex;margin-top:8px;">Open interactive map</a>
+  </section>
+
+  <section class="section section-loose" id="fresh">
+    <h2>Stay current — check again before you go</h2>
+    <div class="prose">
+      <p>
+        GLP-1 pricing, stock, and approval news <strong>change often.</strong>
+        We update via clinic logins, review, and phone checks — but we <strong>do not guarantee live stock.</strong>
+      </p>
+      <p>
+        Market notes here are <strong>reference as of May 2026</strong>. Medical decisions belong with your doctor.
+        Pregnancy, breastfeeding, and some conditions need specialist care.
+      </p>
+      <ul>
+        <li>Map: updated when clinics edit prices</li>
+        <li>New clinics/pharmacies: added after spreadsheet review</li>
+        <li>Day of visit: always reconfirm with the clinic or pharmacy</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="video">
+    <h2>Short break — watch</h2>
+    <div class="prose">
+      <p>Prefer video? Below is a light overview of incretin therapy and obesity care (reference only).</p>
+    </div>
+    <div class="video-block">
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/3CopAlQrzxM?rel=0&modestbranding=1"
+        title="Reference video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+    <p class="video-caption">
+      External reference only. Treatment and prescriptions are between you and your doctor.
+    </p>
+    <div class="ambient-bar">
+      <p>Optional calm background audio while you read.</p>
+      <button type="button" class="ambient-toggle" id="ambientToggle" aria-pressed="false">Turn on ambient</button>
+    </div>
+    <div id="ambientPlayer" aria-hidden="true"></div>
+  </section>
+
+  <section class="section section-loose" id="trust-detail">
+    <h2>Why a physician-reviewed price map</h2>
+    <div class="prose">
+      <p class="quote-lead">
+        In obesity care, <strong>“still stable a year later”</strong> matters more than “kg in 3 months.”
+        Harusense shares <strong>treatment and lifestyle context</strong>, not prices alone.
+      </p>
+      <p>
+        GLP-1 prices in Korea vary a lot; ads and middlemen can add cost.
+        With physician advisory, we help patients <strong>see fair price information</strong> without ranking or pushing one clinic.
+        You compare; we do not book for you.
+      </p>
+      <h3>How data gets on the map</h3>
+      <ul>
+        <li>Review: spreadsheet + phone check before pins and base prices go live</li>
+        <li>Clinic login: staff update price/stock → map refresh</li>
+        <li>✓: clinic confirmed (per map UI)</li>
+        <li>Corrections: email or phone — we review, fix, or remove</li>
+      </ul>
+      <p>
+        Text and numbers here are updated through <strong>first half of 2026</strong>.
+        Re-check the map <strong>right before</strong> your visit.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-loose" id="journey">
+    <h2>Full treatment path — first visit to maintenance</h2>
+    <div class="prose">
+      <p>
+        Obesity care covers <strong>starting</strong>, <strong>tapering</strong>, and <strong>stopping</strong> medication.
+        Below is a typical flow from specialty clinics — <strong>reference only</strong>; your path follows your doctor’s plan.
+      </p>
+    </div>
+    <ol class="process-list">
+      <li>
+        <div class="process-num">01</div>
+        <div class="process-body">
+          <span class="process-tag">Initial</span>
+          <h3>First visit &amp; assessment</h3>
+          <p>
+            Review contraindications, conditions (diabetes, BP, thyroid, pancreas, etc.), meds, and family history.
+            Height, weight, waist, BMI; labs when needed.
+          </p>
+          <p>
+            Goal: <strong>what fits you now</strong>, not “one best drug.”
+            Harusense helps compare cost later — it does not prescribe.
+          </p>
+        </div>
+      </li>
+      <li>
+        <div class="process-num">02</div>
+        <div class="process-body">
+          <span class="process-tag">Reduction</span>
+          <h3>Early weight-loss phase</h3>
+          <p>
+            Appetite stabilizes; night eating and binges often ease; early weight response is tracked.
+            Nausea, constipation, reflux — managed alongside meal rhythm.
+          </p>
+          <p>
+            Early response shapes <strong>dose and maintenance</strong> later.
+            Map prices help budget the first month/pen; packages and labs may be extra.
+          </p>
+        </div>
+      </li>
+      <li>
+        <div class="process-num">03</div>
+        <div class="process-body">
+          <span class="process-tag">Maintenance</span>
+          <h3>Maintenance — the core phase</h3>
+          <p>
+            For many, <strong>keeping weight off is harder than losing it.</strong>
+            Protect muscle; lock in new eating and movement habits.
+          </p>
+          <p>
+            Protein, sleep, stress, strength + cardio matter here.
+            Medication alone without habit change raises regain risk after stop.
+          </p>
+        </div>
+      </li>
+      <li>
+        <div class="process-num">04</div>
+        <div class="process-body">
+          <span class="process-tag">Plateau</span>
+          <h3>Plateau</h3>
+          <p>
+            Weight flat for days or weeks is often <strong>not failure</strong> — the body finding a new set point.
+          </p>
+          <p>
+            Revisit dose, meal order, sleep, strength work, stress; adjust with your doctor.
+            How you handle plateau drives long-term outcome.
+          </p>
+        </div>
+      </li>
+      <li>
+        <div class="process-num">05</div>
+        <div class="process-body">
+          <span class="process-tag">Tapering</span>
+          <h3>Tapering</h3>
+          <p>
+            When weight and appetite are stable, dose or interval is reduced <strong>gradually</strong>.
+            Sudden stop is often discouraged.
+          </p>
+          <p>
+            Oral add-ons or intermittent use vary by person.
+            Build skills to manage <strong>without injections</strong> over time.
+          </p>
+        </div>
+      </li>
+      <li>
+        <div class="process-num">06</div>
+        <div class="process-body">
+          <span class="process-tag">After</span>
+          <h3>After treatment ends</h3>
+          <p>
+            <strong>Self-management</strong> continues after taper or stop.
+            Regain? Discuss follow-up or restart with your clinic.
+          </p>
+          <p>
+            Harusense stays useful for price and clinic lookup whenever you need it again.
+          </p>
+        </div>
+      </li>
+    </ol>
+    <div class="insight-card">
+      <p>
+        <strong>Obesity is chronic.</strong> Like hypertension or diabetes, it needs ongoing check-ins and lifestyle work —
+        visits should review weight, appetite, side effects, and habits each time, not become routine only.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-loose" id="lifestyle">
+    <h2>Lifestyle changes — what to fix with the medication</h2>
+    <div class="prose">
+      <p>
+        GLP-1 drugs (Mounjaro, Wegovy, etc.) blunt appetite strongly, but <strong>medication alone is not enough.</strong>
+        They buy time to build habits. Use that window for the steps below — key to maintenance and avoiding regain.
+      </p>
+    </div>
+
+    <div class="lifestyle-block">
+      <h3>🥗 Eating</h3>
+      <ol class="lifestyle-steps">
+        <li>
+          <strong>Vegetables → protein → carbs</strong> order. Fiber first often smooths glucose and insulin after carbs.
+        </li>
+        <li>
+          <strong>Slower gastric emptying</strong>: GLP-1 keeps you full longer. Practice stopping before “stuffed” — it helps after you taper off.
+        </li>
+        <li>
+          <strong>Protein every meal</strong> to limit muscle loss in loss and maintenance phases.
+        </li>
+        <li>
+          <strong>Night eating, alcohol, ultra-processed food</strong> — tackle habits that return quickly after stop.
+        </li>
+        <li>
+          <strong>Short logs</strong> (photo, note, 3-day average weight) help you and your doctor.
+        </li>
+      </ol>
+    </div>
+
+    <div class="lifestyle-block">
+      <h3>🚶 Movement</h3>
+      <ol class="lifestyle-steps">
+        <li>
+          Pick something <strong>daily</strong> — stairs, walks, commute steps often beat “gym 3× only.”
+        </li>
+        <li>
+          <strong>Zone 2 walking</strong>: can talk, slightly breathless (~60–70% max heart rate). Good for fat use and insulin sensitivity in many studies.
+        </li>
+        <li>
+          <strong>5–10 min strength before cardio</strong> — squats, lunges, push-ups, then walk or bike (adjust for joints).
+        </li>
+        <li>
+          In <strong>maintenance</strong>, raise strength share — scale weight alone hides muscle loss.
+        </li>
+        <li>
+          Aim for <strong>~7 hours sleep</strong>; short sleep can worsen appetite and insulin resistance.
+        </li>
+      </ol>
+    </div>
+
+    <div class="insight-card">
+      <p>
+        <strong>Visceral fat in Korea.</strong> Normal BMI with belly fat still risks prediabetes and fatty liver.
+        Labs (fasting glucose, HbA1c, triglycerides, liver enzymes) matter.
+        Zone 2 walks plus light strength often help visceral fat — set goals with your doctor.
+      </p>
+    </div>
+
+    <div class="prose">
+      <h3>Beyond the number on the scale</h3>
+      <p>
+        Less night snacking, easier stairs, better checkup numbers, managing weight without injections — that is real success.
+      </p>
+      <p>
+        Harusense focuses on <strong>transparent prices</strong>; care choices stay with <strong>you and your doctor</strong>.
+      </p>
+      <h3>Why treatment length differs</h3>
+      <p>
+        Appetite pattern, stress, sleep, binge tendency, comorbidities, and home/work life all change the timeline.
+        Some need only 2–3 months of injections; others 6–12+ months of maintenance and taper.
+        <strong>There is no single answer</strong> — plan it in clinic.
+      </p>
+      <p>
+        Many clinics plan <strong>3–6 months loss + maintenance/taper</strong>.
+        Rushing off medication without a solid maintenance phase often leads to regain.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-loose" id="clinical-faq">
+    <h2>Treatment &amp; maintenance — common questions</h2>
+
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Can I stop as soon as I lose weight?</div>
+      <div class="qa-a">
+        Usually you <strong>taper</strong> after weight and appetite stabilize.
+        Abrupt stop is often discouraged; without habits, weight tends to return.
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Do I need injections forever?</div>
+      <div class="qa-a">
+        No. Many aim for maintenance without drugs.
+        With comorbidities, <strong>intermittent</strong> use is sometimes discussed.
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Will appetite return after stop?</div>
+      <div class="qa-a">
+        Drug effect fades, but <strong>meal pace, portions, and order</strong> you practiced often remain — why tapering takes time.
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Can I lose weight without exercise?</div>
+      <div class="qa-a">
+        Scale may drop, but <strong>muscle loss and regain</strong> risk is higher without light strength + walking. See lifestyle section above.
+      </div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Why is maintenance so important?</div>
+      <div class="qa-a">
+        Holding a lower weight for a while resets body and eating norms.
+        Skipping maintenance and stopping fast often leads to regain.
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-loose" id="faq">
+    <h2>FAQ — using Harusense</h2>
+
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Is Harusense a booking or referral platform?</div>
+      <div class="qa-a">
+        No. We do not rank clinics or book visits.
+        This is a <strong>reference price map</strong> for Mounjaro and Wegovy in Korea; you choose where to go.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Who sets prices?</div>
+      <div class="qa-a">
+        Each clinic and pharmacy sets its own fees.
+        Harusense does not set prices; clinic-edited numbers are shown under their responsibility.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> Can map price differ from my bill?</div>
+      <div class="qa-a">
+        Yes — consult fees, labs, packages, stock, and discounts change the total.
+        <strong>Call before visiting</strong> for the most accurate quote.
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q"><span>Q.</span> How do clinics update or remove listings?</div>
+      <div class="qa-a">
+        Registered staff use <strong>clinic login</strong> on the map footer.
+        For errors or removal, contact us below — we review and update.
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Contact · corrections</h2>
+    <div class="prose">
+      <p>
+        Harusense is a <strong>non-ad, non-referral price map</strong>.
+        Clinics that do not want to be listed may request removal.
+      </p>
+    </div>
+    <div class="contact-card">
+      <div class="contact-row">📧 <a href="mailto:2youngj2@naver.com">2youngj2@naver.com</a></div>
+      <div class="contact-row">📞 <a href="tel:01074050724">010-7405-0724</a></div>
+    </div>
+    <p class="prose" style="margin-top:12px;font-size:14px;color:var(--mute);">
+      <a href="/guide/">한국어 이용안내 (Korean guide)</a>
+    </p>
+  </section>
+
+  <section class="donate-section">
+    <h2 style="font-size:18px;margin-bottom:12px;border:none;">Support the project</h2>
+    <p>
+      Optional donations help cover servers and data upkeep. (KakaoPay / Toss — coming soon)
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>Related pages</h2>
+    <div class="related">
+      <a href="/en/">English price map</a>
+      <a href="/en/guide/#journey">Treatment journey</a>
+      <a href="/en/guide/#lifestyle">Lifestyle</a>
+      <a href="/en/mounjaro-map/">Mounjaro Korea landing</a>
+      <a href="/en/wegovy-map/">Wegovy Korea landing</a>
+      <a href="/guide/">한국어 guide</a>
+    </div>
+  </section>
+
+</article>
+
+<footer class="page-footer">
+  © Harusense GLP-1 Price Map · physician-reviewed price information<br />
+  General information only — not medical advice or prescription.<br />
+  <a href="mailto:2youngj2@naver.com">2youngj2@naver.com</a> · <a href="tel:01074050724">010-7405-0724</a>
+</footer>
+
+<script>
+(function () {
+  const toggle = document.getElementById("ambientToggle");
+  const playerHost = document.getElementById("ambientPlayer");
+  if (!toggle || !playerHost) return;
+
+  let iframe = null;
+  const AMBIENT_SRC = "https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk";
+
+  toggle.addEventListener("click", function () {
+    const on = toggle.classList.toggle("on");
+    toggle.setAttribute("aria-pressed", on ? "true" : "false");
+    toggle.textContent = on ? "Turn off ambient" : "Turn on ambient";
+    if (on) {
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.src = AMBIENT_SRC;
+        iframe.title = "Ambient audio";
+        iframe.allow = "autoplay";
+        playerHost.appendChild(iframe);
+      }
+    } else if (iframe) {
+      iframe.remove();
+      iframe = null;
+    }
+  });
+})();
+</script>
+</body>
+</html>
