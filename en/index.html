@@ -526,49 +526,89 @@ body {
   margin-bottom: 14px;
 }
 
-/* Call button */
-.call-button {
+/* Action buttons */
+.sheet-action-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.sheet-action-row.single { grid-template-columns: 1fr; }
+.call-button,
+.direction-button {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
   background: var(--blue);
   color: #fff;
-  padding: 16px 18px;
+  padding: 14px 14px;
   border-radius: 12px;
   text-decoration: none;
-  margin-bottom: 18px;
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
   transition: transform 0.1s ease, box-shadow 0.15s ease;
   font-family: inherit;
+  min-width: 0;
 }
-.call-button:active {
+.direction-button {
+  background: #111827;
+  box-shadow: 0 4px 14px rgba(17, 24, 39, 0.18);
+}
+.call-button:active,
+.direction-button:active {
   transform: scale(0.98);
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
-.call-icon {
-  width: 44px; height: 44px;
+.call-icon,
+.direction-icon {
+  width: 38px; height: 38px;
   background: rgba(255,255,255,0.18);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.call-icon svg { width: 22px; height: 22px; fill: #fff; }
-.call-text { flex: 1; min-width: 0; }
-.call-label {
+.call-icon svg,
+.direction-icon svg { width: 20px; height: 20px; fill: #fff; }
+.call-text,
+.direction-text { flex: 1; min-width: 0; }
+.call-label,
+.direction-label {
   font-size: 11px;
   font-weight: 500;
   opacity: 0.88;
   letter-spacing: 0.02em;
   margin-bottom: 1px;
 }
-.call-number {
-  font-size: 19px;
+.call-number,
+.direction-title {
+  display: block;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .call-arrow { font-size: 20px; opacity: 0.85; }
+.parking-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.parking-label { font-weight: 700; color: var(--ink); flex-shrink: 0; }
+.parking-meta { color: var(--mute); }
+@media (max-width: 380px) {
+  .sheet-action-row { grid-template-columns: 1fr; }
+}
 
 /* Price table */
 .price-section-label {
@@ -2431,6 +2471,37 @@ function buildPriceMarkerHtml(clinic, price, doseKey) {
   return `<span class="price-marker-text">${formatMarkerPrice(price)}</span>${dotHtml}`;
 }
 
+function googleDirectionsUrl(clinic) {
+  if (hasValidCoords(clinic)) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${Number(clinic.lat)},${Number(clinic.lng)}`;
+  }
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${clinic.name || ""} ${clinic.address || ""}`.trim())}`;
+}
+
+function parkingText(clinic) {
+  const raw = clinic.parking ?? clinic.parking_status ?? clinic.parking_available ?? clinic.parking_note;
+  if (raw === true || raw === "true" || raw === "yes" || raw === "available" || raw === "가능") {
+    return appLang === "en" ? "Parking available" : "주차 가능";
+  }
+  if (raw === false || raw === "false" || raw === "no" || raw === "unavailable" || raw === "불가") {
+    return appLang === "en" ? "Parking not confirmed" : "주차 불가 또는 확인 필요";
+  }
+  if (raw) return String(raw);
+  return appLang === "en" ? "Parking info pending" : "주차 정보 확인 중";
+}
+
+function parkingMetaText(clinic) {
+  if (clinic.parking_updated_at) {
+    const d = new Date(clinic.parking_updated_at);
+    if (Number.isFinite(d.getTime())) {
+      return appLang === "en"
+        ? ` · cached ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+        : ` · 캐시 ${d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })}`;
+    }
+  }
+  return "";
+}
+
 function updateHeaderNotice() {
   const el = document.getElementById("headerNotice");
   if (!el) return;
@@ -2830,6 +2901,21 @@ function openSheet(clinic) {
       </span>
       <span class="call-arrow">›</span>
     </a>` : "";
+  const directionButton = `
+    <a href="${googleDirectionsUrl(clinic)}" target="_blank" rel="noopener noreferrer" class="direction-button">
+      <span class="direction-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2 4 20l8-3 8 3-8-18zm0 5.3 3.8 8.7-3.8-1.4L8.2 16 12 7.3z"/></svg>
+      </span>
+      <span class="direction-text">
+        <span class="direction-label">${appLang === "en" ? "Directions" : "길찾기"}</span>
+        <span class="direction-title">${appLang === "en" ? "Google Maps" : "구글맵"}</span>
+      </span>
+    </a>`;
+  const parkingRow = `
+    <div class="parking-row">
+      <span class="parking-label">${appLang === "en" ? "Parking" : "주차"}</span>
+      <span>${parkingText(clinic)}<span class="parking-meta">${parkingMetaText(clinic)}</span></span>
+    </div>`;
 
   const priceSection = allKeys.length > 0 ? `
     <div class="price-section-label">
@@ -2862,7 +2948,11 @@ function openSheet(clinic) {
     <div class="sheet-name-hint">${t("sheetHint")}</div>
     <div class="sheet-district">${clinic.district || ""}</div>
     <div class="sheet-address">${clinic.address || ""}</div>
-    ${callButton}
+    <div class="sheet-action-row${callButton ? "" : " single"}">
+      ${callButton || ""}
+      ${directionButton}
+    </div>
+    ${parkingRow}
     ${priceSection}
     ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
   `;
