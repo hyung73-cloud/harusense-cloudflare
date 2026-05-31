@@ -413,12 +413,21 @@ body {
   background: var(--surface);
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow-lg);
-  transform: translateY(100%);
-  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1);
+  transform: translateY(calc(100% + 28px));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease, visibility 0s linear 0.32s;
   max-height: 82vh;
   display: flex; flex-direction: column;
 }
-.detail-sheet.open { transform: translateY(0); }
+.detail-sheet.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease;
+}
 .sheet-handle {
   width: 40px; height: 4px;
   background: var(--line);
