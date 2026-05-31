@@ -2068,6 +2068,12 @@ function isUnsafeDataRegression(prev, next) {
 }
 
 /** 새 병합 결과에도 이전에 지도에 있던 기관은 id 기준으로 유지·합침 */
+/**
+ * Harusense data ownership rule:
+ * - Preserve reviewed map pins: lat/lng, pharmacy type, and verified display must not disappear.
+ * - Let live data win for prices and stock: /api/clinics and getClinicOverrides are newer than stable cache.
+ * - Keep Places/geocoding disabled until operations are stable.
+ */
 function unionPreserveClinics(prevData, nextData) {
   if (!prevData || !Array.isArray(prevData.clinics) || !prevData.clinics.length) {
     return nextData ? cloneClinicData(nextData) : null;
@@ -2087,7 +2093,7 @@ function unionPreserveClinics(prevData, nextData) {
       byId.set(id, cloneClinic(prev));
       return;
     }
-    byId.set(id, mergeOneClinicRecord(byId.get(id), prev));
+    byId.set(id, mergeOneClinicRecord(prev, byId.get(id)));
   });
   return {
     last_updated: nextData.last_updated || prevData.last_updated || "",
