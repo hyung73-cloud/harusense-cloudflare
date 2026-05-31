@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-<script>
-(function () {
-  var l = localStorage.getItem("harusense_lang") || "ko";
-  if (l !== "ko" && l !== "en") l = "ko";
-  window.__HS_LANG = l;
-  document.documentElement.lang = l === "en" ? "en" : "ko";
-  if (l === "en") document.documentElement.classList.add("lang-en");
-})();
-</script>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -16,7 +7,7 @@
 <!-- ─────────── Primary SEO Meta ─────────── -->
 <title>하루센스 GLP-1 가격지도 | 마운자로·위고비 가격 비교</title>
 <meta name="description" content="하루센스 GLP-1 가격지도. 마운자로, 위고비 등 인크레틴 치료제 가격정보를 지도에서 한눈에 비교하세요. 원장 자문 기반의 의료 가격정보 서비스입니다." />
-<meta name="keywords" content="GLP-1 가격지도, 마운자로 가격지도, 위고비 가격지도, 다이어트주사 가격지도, GLP-1 지도, 마운자로 지도, 위고비 지도, 다이어트주사 지도, 마운자로 가격, 위고비 가격, 다이어트 주사 가격, GLP-1 가격, 마운자로 처방, 위고비 처방, 마포 마운자로, 신촌 마운자로, 이대역 위고비, 영등포 다이어트 주사, 강서 마운자로, 용산 위고비, 비만 클리닉, 마운자로 최저가, 위고비 최저가" />
+<meta name="keywords" content="GLP-1 가격지도, 마운자로 가격지도, 위고비 가격지도, 마운자로 가격, 위고비 가격, 하루센스" />
 <meta name="author" content="하루센스" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 <meta name="googlebot" content="index, follow" />
@@ -1480,9 +1471,10 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 <div class="empty-state" id="emptyState" data-i18n="emptyState">선택한 용량의 가격 정보가 있는 의원이 없습니다</div>
 
 <nav class="site-footer-nav" aria-label="주요 페이지">
-  <a href="/mounjaro/" class="footer-chip" data-i18n="footerMounjaro">마운자로</a>
-  <a href="/wegovy/" class="footer-chip" data-i18n="footerWegovy">위고비</a>
+  <a href="/?drug=mounjaro" class="footer-chip" data-i18n="footerMounjaro">마운자로</a>
+  <a href="/?drug=wegovy" class="footer-chip" data-i18n="footerWegovy">위고비</a>
   <a href="/guide/" class="footer-chip" data-i18n="footerGuide">하루센스 이용안내</a>
+  <a href="/en/" class="footer-chip" id="footerEnLink">English</a>
   <button class="footer-chip" id="repOpenBtn" type="button" data-i18n="footerAdmin">관계자 로그인</button>
 </nav>
 
@@ -1628,15 +1620,15 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 
 <!-- SEO content -->
 <div class="seo-content" aria-hidden="true">
-  <h1>GLP-1 가격지도 | 마운자로·위고비 가격 비교</h1>
-  <h2>하루센스 GLP-1 가격지도 — 인크레틴 치료제 가격정보</h2>
-  <p>하루센스 GLP-1 가격지도는 마운자로, 위고비 등 인크레틴 치료제 가격정보를 지도에서 비교할 수 있는 서비스입니다. 마운자로 가격지도, 위고비 가격지도를 한 곳에서 비교할 수 있습니다. 서울 마포구, 서대문구, 영등포구, 강서구, 용산구 지역 의원의 GLP-1 다이어트 주사 가격을 지도에서 한눈에 확인하세요.</p>
+  <h1>GLP-1 Price Map Korea | Mounjaro & Wegovy Prices</h1>
+  <h2>Harusense — incretin therapy pricing in Seoul</h2>
+  <p>Harusense is an interactive price map for Mounjaro (tirzepatide) and Wegovy (semaglutide) at clinics and pharmacies in Seoul, Korea. Compare wegovy price korea and mounjaro price korea by dose and neighborhood before you call or visit.</p>
 
-  <h2>마운자로 가격지도</h2>
-  <p>마운자로(Tirzepatide) 가격지도에서는 의원별 마운자로 가격을 용량별(2.5mg, 5mg, 7.5mg, 10mg)로 비교할 수 있습니다. 마운자로는 일라이 릴리에서 개발한 GLP-1/GIP 이중 작용제로, 비만 및 2형 당뇨병 치료에 사용됩니다. 비급여 의약품이라 의원마다 가격이 다르므로, 마운자로 가격지도를 통해 우리 동네 의원의 가격을 미리 확인하는 것이 좋습니다.</p>
+  <h2>Mounjaro price map Korea</h2>
+  <p>Compare Mounjaro clinic prices in Korea by dose: 2.5mg, 5mg, 7.5mg, 10mg. Listed clinic prices typically include consultation plus in-clinic medication as total cost. Always confirm by phone before visiting.</p>
 
-  <h2>위고비 가격지도</h2>
-  <p>위고비(Semaglutide) 가격지도에서는 의원별 위고비 가격을 용량별(0.25mg, 0.5mg, 1.0mg, 1.7mg, 2.4mg)로 비교할 수 있습니다. 위고비는 노보 노디스크에서 개발한 GLP-1 단일 작용제로, 마운자로와 함께 GLP-1 계열 다이어트 주사의 양대 산맥을 이룹니다. 위고비 가격지도에서 의원별 가격을 비교하여 합리적인 선택을 하실 수 있습니다.</p>
+  <h2>Wegovy price map Korea</h2>
+  <p>Compare Wegovy clinic korea listings by pen dose: 0.25mg through 2.4mg. Prices vary widely between clinics; Harusense shows physician-reviewed pins where available.</p>
 
   <h2>GLP-1 가격지도가 필요한 이유</h2>
   <p>GLP-1 다이어트 주사는 비급여 의약품이라 의원마다 가격 편차가 매우 큽니다. 같은 마운자로 2.5mg이라도 의원에 따라 27만원에서 40만원까지 차이가 날 수 있습니다. GLP-1 가격지도는 이런 가격 편차를 시각적으로 보여주어 환자가 합리적인 선택을 할 수 있도록 돕습니다.</p>
@@ -1895,18 +1887,24 @@ function startFxRefresh() {
 
 function setLang(lang) {
   if (lang !== "ko" && lang !== "en") return;
-  appLang = lang;
-  localStorage.setItem("harusense_lang", lang);
-  document.documentElement.lang = lang === "en" ? "en" : "ko";
-  document.documentElement.classList.toggle("lang-en", lang === "en");
+  if (lang === "en") {
+    localStorage.setItem("harusense_lang", "en");
+    const q = new URLSearchParams(location.search);
+    const drug = state.drugKey || q.get("drug");
+    const dest = new URL("/en/", location.origin);
+    if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
+    location.href = dest.pathname + dest.search;
+    return;
+  }
+  appLang = "ko";
+  localStorage.setItem("harusense_lang", "ko");
+  document.documentElement.lang = "ko";
+  document.documentElement.classList.remove("lang-en");
   applyI18n();
   updateHeaderNotice();
   renderMarkers();
-  if (lang === "en") startFxRefresh();
-  else {
-    if (FX_REFRESH_TIMER) { clearInterval(FX_REFRESH_TIMER); FX_REFRESH_TIMER = null; }
-    if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
-  }
+  if (FX_REFRESH_TIMER) { clearInterval(FX_REFRESH_TIMER); FX_REFRESH_TIMER = null; }
+  if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
 }
 
 function krwToUsd(krw) {
@@ -2369,7 +2367,7 @@ async function fetchClinicSourcesFromNetwork() {
 
   const [apiData, staticData] = await Promise.all([
     fetchJson("/api/clinics"),
-    fetchJson("clinics.json")
+    fetchJson("/clinics.json")
   ]);
   return { apiData, staticData };
 }
@@ -2638,9 +2636,30 @@ function initLangToggle() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  try {
+    if (localStorage.getItem("harusense_lang") === "en") {
+      const dest = new URL("/en/", location.origin);
+      const params = new URLSearchParams(location.search);
+      const drug = params.get("drug");
+      if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
+      location.replace(dest.pathname + dest.search);
+      return;
+    }
+  } catch (e) {}
   applyI18n();
   initLangToggle();
   window.addEventListener("resize", applyBrandTitle);
+  const params = new URLSearchParams(location.search);
+  const drug = params.get("drug");
+  if (drug === "wegovy") {
+    state.drugKey = "wegovy";
+    state.dose = "0.25mg";
+    updateDrugGroupStates();
+  } else if (drug === "mounjaro") {
+    state.drugKey = "mounjaro";
+    state.dose = "2.5mg";
+    updateDrugGroupStates();
+  }
 });
 
 // ─────────── Drug/Dose toggle handling ───────────
@@ -2655,6 +2674,15 @@ function updateDrugGroupStates() {
 }
 
 document.getElementById("drugToggleBar").addEventListener("click", (e) => {
+  const group = e.target.closest(".drug-group");
+  if (group && !e.target.closest(".dose-btn")) {
+    state.drugKey = group.dataset.drug;
+    const first = group.querySelector(".dose-btn");
+    if (first) state.dose = first.dataset.dose;
+    updateDrugGroupStates();
+    renderMarkers();
+    return;
+  }
   const btn = e.target.closest(".dose-btn");
   if (!btn) return;
   state.drugKey = btn.dataset.drug;
