@@ -2654,7 +2654,7 @@ function updateHeaderNotice() {
 }
 
 // ─────────── Data cache (stale-while-revalidate) ───────────
-const HARUSENSE_DATA_CACHE_VERSION = 2;
+const HARUSENSE_DATA_CACHE_VERSION = 3;
 const HARUSENSE_CACHE = {
   version: HARUSENSE_DATA_CACHE_VERSION,
   keys: {
@@ -2783,7 +2783,6 @@ async function ensureMapHasPins() {
 }
 
 async function tryLoadClinicDataFromCache() {
-  if (await tryLoadStableDisplayCache()) return true;
   const cachedBase = readDataCache(HARUSENSE_CACHE.keys.base, HARUSENSE_CACHE.ttl.baseMs);
   if (!cachedBase) return false;
   const cachedOverrides = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs) || [];
@@ -2854,7 +2853,7 @@ async function revalidateClinicData(options = {}) {
 
 function revalidateClinicDataInBackground() {
   revalidateClinicData().then(changed => {
-    if (changed) refreshClinicDisplay();
+    if (changed || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
   }).catch(() => {});
 }
 
@@ -2880,10 +2879,9 @@ function applyOverridesInBackground() {
 }
 
 async function bootstrapClinicData() {
-  const hadStable = await tryLoadStableDisplayCache();
-  if (hadStable) {
+  const changed = await revalidateClinicData({ force: true });
+  if (changed && countPinnedClinics(CLINIC_DATA) > 0) {
     applyOverridesInBackground();
-    revalidateClinicDataInBackground();
     return true;
   }
 
@@ -2904,7 +2902,12 @@ async function bootstrapClinicData() {
     }
   }
 
-  await revalidateClinicData({ force: false });
+  const hadStable = await tryLoadStableDisplayCache();
+  if (hadStable) {
+    revalidateClinicDataInBackground();
+    return true;
+  }
+
   return false;
 }
 
