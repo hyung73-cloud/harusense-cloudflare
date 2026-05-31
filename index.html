@@ -1955,6 +1955,8 @@ let state = {
   districtFilter: "all",
 };
 let CLINIC_DATA = { clinics: [] };
+/** 화면에 올라온 핀 스냅샷 (아래 commitClinicData·캐시 블록과 함께 동작) */
+let LAST_STABLE_MAP_DATA = null;
 let map = null;
 let markers = [];
 
@@ -2083,12 +2085,20 @@ function commitClinicData(candidate, options) {
     return false;
   }
 
-  CLINIC_DATA = next;
-  if (clinicMapStats(next).pinned > 0) {
-    LAST_STABLE_MAP_DATA = cloneClinicData(next);
-    writeDataCache(HARUSENSE_CACHE.keys.stable, LAST_STABLE_MAP_DATA);
+  const nextStats = clinicMapStats(next);
+  const prevStats = clinicMapStats(prev);
+  if (nextStats.pinned === 0 && prevStats.pinned > 0) {
+    return false;
   }
-  return true;
+
+  CLINIC_DATA = next;
+  if (nextStats.pinned > 0) {
+    LAST_STABLE_MAP_DATA = cloneClinicData(next);
+    try {
+      writeDataCache(HARUSENSE_CACHE.keys.stable, LAST_STABLE_MAP_DATA);
+    } catch (e) { /* 캐시 실패해도 지도는 표시 */ }
+  }
+  return nextStats.pinned > 0;
 }
 
 /** clinics.json(검수) 좌표·약국 type·가격 키를 API 병합 시 보호 */
@@ -2406,9 +2416,6 @@ const HARUSENSE_CACHE = {
   }
 };
 
-/** 화면에 한 번이라도 올라온 핀·기관 정보 — 네트워크/병합 실패로 줄어들지 않게 보관 */
-let LAST_STABLE_MAP_DATA = null;
-
 function readDataCache(storageKey, ttlMs) {
   try {
     const raw = localStorage.getItem(storageKey);
@@ -2440,6 +2447,9 @@ function bustClinicCaches(scope = "all") {
   }
   if (scope === "all" || scope === "base") {
     localStorage.removeItem(HARUSENSE_CACHE.keys.base);
+  }
+  if (scope === "all" || scope === "stable") {
+    localStorage.removeItem(HARUSENSE_CACHE.keys.stable);
   }
 }
 
@@ -2499,8 +2509,24 @@ function applyClinicFallbackData() {
 
 async function tryLoadStableDisplayCache() {
   const stable = readDataCache(HARUSENSE_CACHE.keys.stable, HARUSENSE_CACHE.ttl.stableMs);
-  if (!stable || !stable.clinics || !stable.clinics.length) return false;
+  if (!stable || clinicMapStats(stable).pinned < 1) return false;
   return commitClinicData(stable, { force: true });
+}
+
+/** 핀이 0개면 캐시 무시하고 네트워크에서 다시 받기 */
+async function ensureMapHasPins() {
+  if (clinicMapStats(CLINIC_DATA).pinned > 0) return true;
+  bustClinicCaches("all");
+  const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
+  let overrides = [];
+  try { overrides = await loadClinicOverrides(); } catch (e) {}
+  const merged = await buildMergedClinicData(apiData, staticData, overrides);
+  if (merged && commitClinicData(merged, { force: true })) return true;
+  if (LAST_STABLE_MAP_DATA && clinicMapStats(LAST_STABLE_MAP_DATA).pinned > 0) {
+    return commitClinicData(LAST_STABLE_MAP_DATA, { force: true });
+  }
+  applyClinicFallbackData();
+  return clinicMapStats(CLINIC_DATA).pinned > 0;
 }
 
 async function tryLoadClinicDataFromCache() {
@@ -2647,13 +2673,22 @@ function initMap() {
       { featureType: "transit.station", elementType: "labels", stylers: [{ visibility: "on" }] }
     ]
   });
-  bootstrapClinicData().then(() => {
-    document.getElementById("loading").style.display = "none";
-    applyI18n();
-    if (appLang === "en") startFxRefresh();
-    refreshClinicDisplay();
-    initRepresentativeForm();
-  });
+  bootstrapClinicData()
+    .then(() => ensureMapHasPins())
+    .then(() => {
+      document.getElementById("loading").style.display = "none";
+      applyI18n();
+      if (appLang === "en") startFxRefresh();
+      refreshClinicDisplay();
+      initRepresentativeForm();
+    })
+    .catch(err => {
+      console.error("[하루센스] 지도 데이터 로드 오류", err);
+      ensureMapHasPins().finally(() => {
+        document.getElementById("loading").style.display = "none";
+        refreshClinicDisplay();
+      });
+    });
 }
 
 // ─────────── Render markers ───────────
