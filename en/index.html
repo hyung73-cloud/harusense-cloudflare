@@ -2654,7 +2654,7 @@ function updateHeaderNotice() {
 }
 
 // ─────────── Data cache (stale-while-revalidate) ───────────
-const HARUSENSE_DATA_CACHE_VERSION = 3;
+const HARUSENSE_DATA_CACHE_VERSION = 4;
 const HARUSENSE_CACHE = {
   version: HARUSENSE_DATA_CACHE_VERSION,
   keys: {
@@ -2663,7 +2663,7 @@ const HARUSENSE_CACHE = {
     stable: "harusense_cache_stable_pins_v1"
   },
   ttl: {
-    baseMs: 30 * 60 * 1000,
+    baseMs: 10 * 60 * 1000,
     overridesMs: 5 * 60 * 1000,
     stableMs: 7 * 24 * 60 * 60 * 1000
   }
@@ -2879,14 +2879,16 @@ function applyOverridesInBackground() {
 }
 
 async function bootstrapClinicData() {
-  const changed = await revalidateClinicData({ force: true });
-  if (changed && countPinnedClinics(CLINIC_DATA) > 0) {
+  const hadCache = await tryLoadClinicDataFromCache();
+  if (hadCache) {
     applyOverridesInBackground();
+    revalidateClinicDataInBackground();
     return true;
   }
 
-  const hadCache = await tryLoadClinicDataFromCache();
-  if (hadCache) {
+  const changed = await revalidateClinicData({ force: true });
+  if (changed && countPinnedClinics(CLINIC_DATA) > 0) {
+    applyOverridesInBackground();
     revalidateClinicDataInBackground();
     return true;
   }
