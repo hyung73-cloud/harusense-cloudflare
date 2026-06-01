@@ -2412,6 +2412,56 @@ function applyParkingCache(data, cacheData) {
   return data;
 }
 
+function applyPriceCache(data, cacheData) {
+  if (!data || !Array.isArray(data.clinics) || !cacheData) return data;
+  const rows = Array.isArray(cacheData) ? cacheData : (Array.isArray(cacheData.clinics) ? cacheData.clinics : []);
+  if (!rows.length) return data;
+
+  const byKey = new Map();
+  rows.forEach(row => {
+    if (!row) return;
+    [row.id, row.institution_no, row.name ? String(row.name).replace(/\s+/g, "") : ""]
+      .filter(Boolean)
+      .forEach(key => byKey.set(String(key).trim(), row));
+  });
+
+  data.clinics = data.clinics.map(clinic => {
+    const match = clinicCacheKeys(clinic).map(key => byKey.get(key)).find(Boolean);
+    if (!match) return clinic;
+    const prices = { ...(clinic.prices || {}) };
+    const stock = { ...(clinic.stock || {}) };
+    const price_updated_at = { ...(clinic.price_updated_at || {}) };
+    Object.entries(match.prices || {}).forEach(([key, value]) => {
+      if (prices[key] == null || prices[key] === "") prices[key] = value;
+    });
+    Object.entries(match.stock || {}).forEach(([key, value]) => {
+      if (stock[key] == null) stock[key] = value;
+    });
+    Object.entries(match.price_updated_at || {}).forEach(([key, value]) => {
+      if (!price_updated_at[key]) price_updated_at[key] = value;
+    });
+    return {
+      ...clinic,
+      prices,
+      stock,
+      price_updated_at,
+      updated_at: firstValue(match.updated_at, match.price_updated_at, clinic.updated_at),
+      price_cache_updated_at: cacheData.updated_at || match.updated_at || clinic.price_cache_updated_at
+    };
+  });
+  return data;
+}
+
+async function loadPriceCache() {
+  try {
+    const resp = await fetch("/price-cache.json", { cache: "default" });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (err) {
+    return null;
+  }
+}
+
 async function loadParkingCache() {
   try {
     const resp = await fetch("/parking-cache.json", { cache: "default" });
@@ -2714,6 +2764,7 @@ function bustClinicCaches(scope = "all") {
 async function buildMergedClinicData(apiData, staticData, overrides) {
   if (!apiData && !staticData) return null;
   const data = mergeClinicData(apiData, staticData);
+  applyPriceCache(data, await loadPriceCache());
   if (SUBMITTED_CLINICS_ON_MAP) {
     const submittedClinics = await loadSubmittedClinics();
     applySubmittedClinics(data, submittedClinics);
@@ -2812,9 +2863,22 @@ async function fetchClinicSourcesFromNetwork() {
     }
   };
 
-  const apiData = await fetchJson("/api/clinics", true);
-  const staticData = await fetchJson("/clinics.json", false);
+  const [apiData, staticData] = await Promise.all([
+    fetchJson("/api/clinics", true),
+    fetchJson("/clinics.json", false)
+  ]);
   return { apiData, staticData };
+}
+
+async function fetchClinicStaticSourceFromNetwork() {
+  try {
+    const resp = await fetch("/clinics.json", { cache: "default" });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    return data && Array.isArray(data.clinics) ? stripDemoClinics(data) : null;
+  } catch (err) {
+    return null;
+  }
 }
 
 async function fetchClinicOverridesFromNetwork(force) {
@@ -2893,6 +2957,16 @@ async function bootstrapClinicData() {
     applyOverridesInBackground();
     revalidateClinicDataInBackground();
     return true;
+  }
+
+  const fastStaticData = await fetchClinicStaticSourceFromNetwork();
+  if (fastStaticData) {
+    const fastMerged = await buildMergedClinicData(null, fastStaticData, []);
+    if (fastMerged && commitClinicData(fastMerged, { force: true })) {
+      writeDataCache(HARUSENSE_CACHE.keys.base, { apiData: null, staticData: fastStaticData });
+      revalidateClinicDataInBackground();
+      return true;
+    }
   }
 
   const changed = await revalidateClinicData({ force: true });
