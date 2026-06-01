@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WQK2X8JV');
+</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
 <!-- ─────────── Primary SEO Meta ─────────── -->
 <title>하루센스 GLP-1 가격지도 | 마운자로·위고비 가격 비교</title>
 <meta name="description" content="하루센스 GLP-1 가격지도. 마운자로, 위고비 등 인크레틴 치료제 가격정보를 지도에서 한눈에 비교하세요. 원장 자문 기반의 의료 가격정보 서비스입니다." />
-<meta name="keywords" content="GLP-1 가격지도, 마운자로 가격지도, 위고비 가격지도, 마운자로 가격, 위고비 가격, 하루센스" />
+<meta name="keywords" content="GLP-1 가격지도, 마운자로 가격지도, 위고비 가격지도, 다이어트주사 가격지도, GLP-1 지도, 마운자로 지도, 위고비 지도, 다이어트주사 지도, 마운자로 가격, 위고비 가격, 다이어트 주사 가격, GLP-1 가격, 마운자로 처방, 위고비 처방, 마포 마운자로, 신촌 마운자로, 이대역 위고비, 영등포 다이어트 주사, 강서 마운자로, 용산 위고비, 비만 클리닉, 마운자로 최저가, 위고비 최저가" />
 <meta name="author" content="하루센스" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 <meta name="googlebot" content="index, follow" />
 
 <link rel="canonical" href="https://harusense.com/" />
 <link rel="alternate" hreflang="ko" href="https://harusense.com/" />
-<link rel="alternate" hreflang="en" href="https://harusense.com/en/" />
 <link rel="alternate" hreflang="x-default" href="https://harusense.com/" />
 
 <meta property="og:type" content="website" />
@@ -37,6 +45,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="하루센스" />
 <meta name="format-detection" content="telephone=yes" />
+<!-- Google AdSense - harusense.com site verification -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9604706788897071"
+     crossorigin="anonymous"></script>
+
 
 <!-- Favicon - multi-format for all browsers/devices -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -132,7 +144,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -413,21 +425,12 @@ body {
   background: var(--surface);
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow-lg);
-  transform: translateY(calc(100% + 28px));
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease, visibility 0s linear 0.32s;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1);
   max-height: 82vh;
   display: flex; flex-direction: column;
 }
-.detail-sheet.open {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease;
-}
+.detail-sheet.open { transform: translateY(0); }
 .sheet-handle {
   width: 40px; height: 4px;
   background: var(--line);
@@ -527,89 +530,49 @@ body {
   margin-bottom: 14px;
 }
 
-/* Action buttons */
-.sheet-action-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.sheet-action-row.single { grid-template-columns: 1fr; }
-.call-button,
-.direction-button {
+/* Call button */
+.call-button {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
   background: var(--blue);
   color: #fff;
-  padding: 14px 14px;
+  padding: 16px 18px;
   border-radius: 12px;
   text-decoration: none;
+  margin-bottom: 18px;
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
   transition: transform 0.1s ease, box-shadow 0.15s ease;
   font-family: inherit;
-  min-width: 0;
 }
-.direction-button {
-  background: #111827;
-  box-shadow: 0 4px 14px rgba(17, 24, 39, 0.18);
-}
-.call-button:active,
-.direction-button:active {
+.call-button:active {
   transform: scale(0.98);
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
-.call-icon,
-.direction-icon {
-  width: 38px; height: 38px;
+.call-icon {
+  width: 44px; height: 44px;
   background: rgba(255,255,255,0.18);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.call-icon svg,
-.direction-icon svg { width: 20px; height: 20px; fill: #fff; }
-.call-text,
-.direction-text { flex: 1; min-width: 0; }
-.call-label,
-.direction-label {
+.call-icon svg { width: 22px; height: 22px; fill: #fff; }
+.call-text { flex: 1; min-width: 0; }
+.call-label {
   font-size: 11px;
   font-weight: 500;
   opacity: 0.88;
   letter-spacing: 0.02em;
   margin-bottom: 1px;
 }
-.call-number,
-.direction-title {
-  display: block;
-  font-size: 15px;
+.call-number {
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .call-arrow { font-size: 20px; opacity: 0.85; }
-.parking-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 16px;
-  padding: 10px 12px;
-  background: #f8fafc;
-  border: 1px solid var(--line-soft);
-  border-radius: 10px;
-  color: var(--ink-2);
-  font-size: 12.5px;
-  line-height: 1.45;
-}
-.parking-label { font-weight: 700; color: var(--ink); flex-shrink: 0; }
-.parking-meta { color: var(--mute); }
-@media (max-width: 380px) {
-  .sheet-action-row { grid-template-columns: 1fr; }
-}
 
 /* Price table */
 .price-section-label {
@@ -935,22 +898,18 @@ body {
   box-shadow: 0 2px 8px rgba(30,64,175,0.4), 0 0 0 3px rgba(37,99,235,0.2);
 }
 .marker-wrap.no-price .marker-dot {
-  background: var(--blue);
-  border-color: #fff;
-  box-shadow: 0 2px 6px rgba(37,99,235,0.25), 0 0 0 2px rgba(37,99,235,0.18);
-  width: 13px;
-  height: 13px;
-  left: -6.5px;
-  top: -6.5px;
+  background: #9ca3af;
+  box-shadow: 0 2px 4px rgba(17,24,39,0.2);
+  width: 11px;
+  height: 11px;
+  left: -5.5px;
+  top: -5.5px;
 }
 .price-marker {
   position: absolute;
   left: 50%;
   bottom: 14px;
   transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   background: var(--blue);
   color: #fff;
   border-radius: 8px;
@@ -966,42 +925,6 @@ body {
   border: 1.5px solid #fff;
   text-align: center;
   z-index: 2;
-}
-.price-update-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 1px 4px rgba(34,197,94,0.5);
-  flex-shrink: 0;
-  animation: priceUpdatePulse 2.5s ease-in-out infinite;
-}
-@keyframes priceUpdatePulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.12); opacity: 0.82; }
-}
-.price-update-tip {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 10px);
-  transform: translateX(-50%) translateY(6px);
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: rgba(17,24,39,0.92);
-  color: #f9fafb;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.35;
-  white-space: nowrap;
-  box-shadow: 0 8px 20px rgba(17,24,39,0.22);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 5;
-}
-.marker-wrap:hover .price-update-tip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 .price-marker::after {
   content: '';
@@ -1028,67 +951,20 @@ body {
   font-weight: 700;
   font-size: 11px;
 }
-
-
-/* Pharmacy markers */
+/* ─── 약국 마커 — 주황 + 캡슐 아이콘 ─── */
 .marker-wrap.pharmacy .marker-dot {
-  background: #e89a6a;
-  box-shadow: 0 2px 6px rgba(17,24,39,0.18), 0 0 0 1px rgba(232,154,106,0.28);
+  background: #f59e0b;
+  box-shadow: 0 2px 6px rgba(245,158,11,0.35), 0 0 0 1px rgba(245,158,11,0.3);
 }
-.marker-wrap.pharmacy .price-marker {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: #e89a6a;
-  color: #fff;
-  border-color: rgba(255,255,255,0.95);
-  padding: 5px 10px 5px 6px;
-  box-shadow: 0 3px 10px rgba(193,106,62,0.22), 0 1px 2px rgba(17,24,39,0.08);
+.marker-wrap.pharmacy .price-marker { background: #f59e0b; }
+.marker-wrap.pharmacy .price-marker::after { border-top-color: #f59e0b; }
+.marker-wrap.pharmacy:hover .price-marker { box-shadow: 0 6px 18px rgba(245,158,11,0.5); }
+.price-marker .pill-icon {
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  vertical-align: -2px;
 }
-.marker-wrap.pharmacy .price-marker::after {
-  border-top-color: #e89a6a;
-}
-.marker-wrap.pharmacy .price-marker::before {
-  content: '💊';
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24), 0 1px 3px rgba(30,64,175,0.24);
-}
-.marker-wrap.pharmacy:hover .price-marker {
-  box-shadow: 0 6px 16px rgba(193,106,62,0.28), 0 1px 2px rgba(17,24,39,0.08);
-}
-.marker-wrap.pharmacy.verified .marker-dot,
-.marker-wrap.pharmacy.verified .price-marker {
-  background: #e89a6a;
-}
-.marker-wrap.pharmacy.verified .price-marker::after {
-  border-top-color: #e89a6a;
-}
-.marker-wrap.pharmacy.verified .price-marker::before {
-  content: '💊';
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24), 0 1px 3px rgba(30,64,175,0.24);
-}
-
 /* Gray label for clinics without selected dose price */
 .info-marker {
   position: absolute;
@@ -1096,19 +972,19 @@ body {
   bottom: 11px;
   transform: translateX(-50%);
   background: #fff;
-  color: var(--blue-deep);
-  border: 2px solid var(--blue);
+  color: #6b7280;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   padding: 3px 7px;
   font-family: var(--font);
   font-size: 10.5px;
-  font-weight: 700;
+  font-weight: 500;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.16), 0 1px 3px rgba(17,24,39,0.08);
+  box-shadow: 0 1px 4px rgba(17,24,39,0.1);
   cursor: pointer;
   letter-spacing: -0.005em;
   z-index: 2;
-  opacity: 0.95;
+  opacity: 0.85;
   transition: opacity 0.12s ease, transform 0.12s ease;
 }
 .info-marker::after {
@@ -1120,19 +996,7 @@ body {
   width: 0; height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 4px solid var(--blue);
-}
-.marker-wrap.pharmacy.no-price .marker-dot {
-  background: #e89a6a;
-  box-shadow: 0 2px 6px rgba(193,106,62,0.2), 0 0 0 2px rgba(232,154,106,0.22);
-}
-.marker-wrap.pharmacy.no-price .info-marker {
-  color: #a8562e;
-  border-color: #e89a6a;
-  box-shadow: 0 2px 8px rgba(193,106,62,0.16), 0 1px 3px rgba(17,24,39,0.08);
-}
-.marker-wrap.pharmacy.no-price .info-marker::after {
-  border-top-color: #e89a6a;
+  border-top: 4px solid #d1d5db;
 }
 .marker-wrap.no-price:hover .info-marker {
   opacity: 1;
@@ -1160,330 +1024,26 @@ body {
   }
   .sheet-handle { display: none; }
 }
-
-/* ═════════ 병의원/약국검색 버튼 (헤더 우측 작게) ═════════ */
-.clinic-search-btn{
-  display:inline-flex; align-items:center; gap:4px;
-  flex-shrink:0; margin-left:8px;
-  padding:4px 9px;
-  font-family:inherit; font-size:11px; font-weight:500; line-height:1;
-  color:#9ca3af; background:transparent;
-  border:1px solid var(--line); border-radius:999px;
-  cursor:pointer; letter-spacing:-0.01em; white-space:nowrap;
-  transition:color 0.12s ease, border-color 0.12s ease;
-}
-.clinic-search-btn svg{ width:11px; height:11px; flex-shrink:0; }
-.clinic-search-btn:hover{ color:var(--ink-2); border-color:var(--mute); }
-
-/* ═════════ 병의원/약국 검색 모달 (아래에서 올라오는 시트) ═════════ */
-.search-backdrop{
-  position:fixed; inset:0; background:rgba(17,24,39,0.4);
-  z-index:1700; opacity:0; pointer-events:none;
-  transition:opacity 0.22s ease;
-  backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
-}
-.search-backdrop.open{ opacity:1; pointer-events:auto; }
-.search-modal{
-  position:fixed; left:0; right:0; bottom:0; z-index:1750;
-  background:var(--surface); border-radius:20px 20px 0 0;
-  box-shadow:var(--shadow-lg);
-  transform:translateY(100%);
-  transition:transform 0.32s cubic-bezier(0.32,0.72,0.36,1);
-  height:80vh; max-height:80vh; display:flex; flex-direction:column;
-}
-.search-modal.open{ transform:translateY(0); }
-.search-bar{
-  display:flex; align-items:center; gap:8px;
-  padding:16px 16px 12px; border-bottom:1px solid var(--line); flex-shrink:0;
-}
-.search-input-box{
-  flex:1; display:flex; align-items:center; gap:8px;
-  height:44px; padding:0 12px;
-  background:var(--line-soft); border:1px solid var(--line); border-radius:12px;
-}
-.search-input-box svg{ width:18px; height:18px; color:var(--mute); flex-shrink:0; }
-.search-input-box input{
-  flex:1; min-width:0; border:none; background:transparent;
-  font-family:inherit; font-size:16px; color:var(--ink); outline:none;
-}
-.search-cancel{
-  flex-shrink:0; border:none; background:transparent;
-  font-family:inherit; font-size:14px; font-weight:600; color:var(--blue);
-  cursor:pointer; padding:4px 6px;
-}
-.search-results{
-  flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
-  padding:6px 8px 24px;
-}
-.search-item{
-  display:flex; align-items:center; gap:10px;
-  width:100%; text-align:left;
-  padding:13px 12px; border:none; background:transparent;
-  border-radius:12px; cursor:pointer; font-family:inherit;
-  border-bottom:1px solid var(--line-soft);
-}
-.search-item:hover{ background:var(--blue-soft); }
-.search-item:last-child{ border-bottom:none; }
-.search-item-icon{
-  width:34px; height:34px; flex-shrink:0; border-radius:50%;
-  display:flex; align-items:center; justify-content:center; font-size:16px;
-}
-.search-item-icon.clinic{ background:var(--blue-soft); }
-.search-item-icon.pharmacy{ background:#fdf0e7; }
-.search-item-body{ flex:1; min-width:0; }
-.search-item-name{
-  font-size:15px; font-weight:600; color:var(--ink); letter-spacing:-0.01em;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.search-item-meta{
-  font-size:12px; color:var(--mute); margin-top:2px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.search-type-badge{
-  flex-shrink:0; padding:3px 8px; border-radius:999px;
-  font-size:11px; font-weight:600; white-space:nowrap;
-}
-.search-type-badge.clinic{ background:var(--blue-soft); color:var(--blue-deep); }
-.search-type-badge.pharmacy{ background:#fdf0e7; color:#c2693a; }
-.search-empty{ text-align:center; padding:40px 16px; color:var(--mute); font-size:13px; line-height:1.6; }
-@media (min-width:768px){
-  .search-modal{
-    max-width:440px; left:50%; right:auto; bottom:20px;
-    transform:translateX(-50%) translateY(120%);
-    border-radius:16px; height:auto; max-height:calc(100vh - 130px);
-  }
-  .search-modal.open{ transform:translateX(-50%) translateY(0); }
-}
-
-/* ─────────── Language toggle + FX chip (header top-right) ─────────── */
-.header-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
-  flex-shrink: 0;
-  min-width: 0;
-}
-.fx-chip {
-  display: none;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  max-width: min(46vw, 280px);
-  padding: 3px 8px 3px 5px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
-  border: 1px solid #bae6fd;
-  white-space: nowrap;
-  overflow: hidden;
-  line-height: 1.2;
-}
-.fx-chip.visible { display: inline-flex; }
-.fx-chip-pill {
-  flex-shrink: 0;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: #0ea5e9;
-  color: #fff;
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.fx-chip-line {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 9.5px;
-  font-weight: 600;
-  color: #0369a1;
-  font-variant-numeric: tabular-nums;
-}
-.fx-chip-line em {
-  font-style: normal;
-  font-weight: 700;
-  color: #047857;
-}
-.fx-chip-line .fx-sep {
-  margin: 0 3px;
-  color: #94a3b8;
-  font-weight: 500;
-}
-.lang-toggle {
-  display: inline-flex;
-  padding: 2px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--line-soft);
-  font-family: inherit;
-  flex-shrink: 0;
-}
-.lang-toggle-btn {
-  border: none;
-  background: transparent;
-  padding: 4px 9px;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--mute);
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
-}
-.lang-toggle-btn.active {
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: var(--shadow-sm);
-}
-.price-krw-hint {
-  display: block;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--mute);
-  margin-top: 2px;
-}
-
-/* ─────────── English — lighter, cleaner UI ─────────── */
-html.lang-en {
-  --bg: #fbfcfd;
-  --surface: #ffffff;
-  --ink: #0f172a;
-  --ink-2: #334155;
-  --mute: #94a3b8;
-  --line: #e8ecf1;
-  --line-soft: #f4f6f8;
-  --surface-alt: #f8fafc;
-  --blue: #3b82f6;
-  --blue-deep: #2563eb;
-  --blue-soft: #f0f7ff;
-  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
-  --shadow-md: 0 4px 14px rgba(15,23,42,0.06);
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-}
-html.lang-en .header {
-  padding: 9px 14px 8px;
-  border-bottom-color: #eef1f5;
-  box-shadow: 0 1px 0 rgba(15,23,42,0.03);
-}
-html.lang-en .brand-sub { display: none; }
-html.lang-en .header-top { align-items: flex-start; }
-html.lang-en .brand {
-  flex: 1 1 auto;
-  min-width: 0;
-  padding-right: 6px;
-}
-html.lang-en .brand-name {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #0f172a;
-  white-space: normal;
-  line-height: 1.2;
-}
-html.lang-en .drug-group {
-  border-radius: 8px;
-  border-color: #e8ecf1;
-}
-html.lang-en .drug-group.active {
-  box-shadow: 0 0 0 1px var(--blue), 0 1px 4px rgba(59,130,246,0.12);
-}
-html.lang-en .drug-label {
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-html.lang-en .dose-btn {
-  padding: 6px 9px;
-  font-size: 11.5px;
-}
-html.lang-en .chip {
-  padding: 5px 11px;
-  font-size: 11.5px;
-  font-weight: 500;
-  border-color: #e8ecf1;
-}
-html.lang-en .chip.active {
-  background: #0f172a;
-  border-color: #0f172a;
-}
-html.lang-en .clinic-search-btn {
-  font-size: 10.5px;
-  padding: 4px 8px;
-  border-color: #e8ecf1;
-  color: #64748b;
-}
-html.lang-en .header-notice {
-  border-color: #e8ecf1;
-  background: rgba(255,255,255,0.92);
-  box-shadow: 0 4px 14px rgba(15,23,42,0.06);
-}
-html.lang-en .price-marker {
-  font-size: 12px;
-  padding: 5px 9px;
-  border-radius: 7px;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-html.lang-en .detail-sheet {
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 -8px 40px rgba(15,23,42,0.12);
-}
-html.lang-en .site-footer-nav {
-  background: rgba(255,255,255,0.98);
-  border-top-color: #eef1f5;
-}
-html.lang-en .footer-chip {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: #64748b;
-}
-html.lang-en .fx-chip { max-width: min(50vw, 300px); }
-@media (max-width: 480px) {
-  html.lang-en .brand-name { font-size: 13px; }
-  html.lang-en .clinic-search-btn span { display: none; }
-  html.lang-en .clinic-search-btn { padding: 4px 7px; margin-left: 0; }
-  .fx-chip { max-width: min(54vw, 220px); padding: 2px 6px 2px 4px; }
-  .fx-chip-line { font-size: 8.5px; }
-  .fx-chip-pill { font-size: 7.5px; padding: 2px 5px; }
-  .header-actions { gap: 4px; }
-}
-@media (max-width: 380px) {
-  .lang-toggle-btn { padding: 4px 7px; font-size: 9px; }
-}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQK2X8JV"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <header class="header">
   <div class="header-top">
     <div class="brand">
-      <span class="brand-name" data-i18n="brandTitle">하루센스 GLP-1 가격지도</span>
-      <span class="brand-sub" data-i18n="brandSub">인크레틴 치료제 가격정보</span>
-    </div>
-    <div class="header-actions">
-      <div class="fx-chip" id="fxBanner" aria-live="polite">
-        <span class="fx-chip-pill" data-i18n="fxLiveShort">FX</span>
-        <span class="fx-chip-line" id="fxChipLine"></span>
-      </div>
-      <div class="lang-toggle" role="group" aria-label="Language">
-        <button type="button" class="lang-toggle-btn active" data-lang="ko" id="langKo">KOR</button>
-        <button type="button" class="lang-toggle-btn" data-lang="en" id="langEn">ENG</button>
-      </div>
-      <button type="button" class="clinic-search-btn" onclick="openClinicSearch()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="7"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <span data-i18n="searchBtn">병의원/약국검색</span>
-      </button>
+      <span class="brand-name">하루센스 GLP-1 가격지도</span>
+      <span class="brand-sub">인크레틴 치료제 가격정보</span>
     </div>
   </div>
 
   <!-- Drug + Dose toggle -->
   <div class="drug-toggle-bar" id="drugToggleBar">
     <div class="drug-group active" data-drug="mounjaro">
-      <div class="drug-label" data-i18n="drugMounjaroShort">마000</div>
+      <div class="drug-label">마000</div>
       <div class="dose-buttons">
         <button class="dose-btn selected" data-drug="mounjaro" data-dose="2.5mg">2.5mg</button>
         <button class="dose-btn" data-drug="mounjaro" data-dose="5mg">5mg</button>
@@ -1492,7 +1052,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
       </div>
     </div>
     <div class="drug-group" data-drug="wegovy">
-      <div class="drug-label" data-i18n="drugWegovyShort">위00</div>
+      <div class="drug-label">위00</div>
       <div class="dose-buttons">
         <button class="dose-btn" data-drug="wegovy" data-dose="0.25mg">0.25mg</button>
         <button class="dose-btn" data-drug="wegovy" data-dose="0.5mg">0.5mg</button>
@@ -1505,18 +1065,21 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 
   <!-- District chips -->
   <div class="district-bar" id="districtBar">
-    <button class="chip active" data-district="all" data-i18n="districtAll">전 지역</button>
-    <button class="chip" data-district="마포구" data-i18n="districtMapo">마포</button>
-    <button class="chip" data-district="서대문구" data-i18n="districtSeodaemun">서대문</button>
-    <button class="chip" data-district="영등포구" data-i18n="districtYeongdeungpo">영등포</button>
-    <button class="chip" data-district="강서구" data-i18n="districtGangseo">강서</button>
-    <button class="chip" data-district="용산구" data-i18n="districtYongsan">용산</button>
-    <button class="chip" data-district="관악구" data-i18n="districtGwanak">관악</button>
-    <button class="chip" data-district="동작구" data-i18n="districtDongjak">동작</button>
-    <button class="chip" data-district="종로구" data-i18n="districtJongno">종로</button>
-    <button class="chip" data-district="양천구" data-i18n="districtYangcheon">양천</button>
-    <button class="chip" data-district="노원구" data-i18n="districtNowon">노원</button>
-    <button class="chip" data-district="고양시" data-i18n="districtGoyang">고양</button>
+    <button class="chip active" data-district="all">전 지역</button>
+    <button class="chip" data-district="마포구">마포</button>
+    <button class="chip" data-district="서대문구">서대문</button>
+    <button class="chip" data-district="영등포구">영등포</button>
+    <button class="chip" data-district="강서구">강서</button>
+    <button class="chip" data-district="용산구">용산</button>
+    <button class="chip" data-district="관악구">관악</button>
+    <button class="chip" data-district="동작구">동작</button>
+    <button class="chip" data-district="종로구">종로</button>
+    <button class="chip" data-district="양천구">양천</button>
+    <button class="chip" data-district="노원구">노원</button>
+    <button class="chip" data-district="고양시">고양</button>
+    <button class="chip" data-district="광진구">광진</button>
+    <button class="chip" data-district="서초구">서초</button>
+    <button class="chip" data-district="강동구">강동</button>
   </div>
   <div class="header-notice" id="headerNotice">
     <span class="notice-verified">✓ 원장 자문</span>
@@ -1525,19 +1088,18 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 </header>
 
 <div class="loading" id="loading">
-  <div class="loading-text"><span data-i18n="loading">데이터를 불러오는 중</span><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+  <div class="loading-text">데이터를 불러오는 중<span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
 </div>
 
 <div id="map"></div>
 
-<div class="empty-state" id="emptyState" data-i18n="emptyState">선택한 용량의 가격 정보가 있는 의원이 없습니다</div>
+<div class="empty-state" id="emptyState">선택한 용량의 가격 정보가 있는 의원이 없습니다</div>
 
 <nav class="site-footer-nav" aria-label="주요 페이지">
-  <a href="/mounjaro/" class="footer-chip" data-i18n="footerMounjaro">마운자로</a>
-  <a href="/wegovy/" class="footer-chip" data-i18n="footerWegovy">위고비</a>
-  <a href="/guide/" class="footer-chip" data-i18n="footerGuide">하루센스 이용안내</a>
-  <a href="/en/" class="footer-chip" id="footerEnLink">English</a>
-  <button class="footer-chip" id="repOpenBtn" type="button" data-i18n="footerAdmin">관계자 로그인</button>
+  <a href="/mounjaro/" class="footer-chip">마운자로</a>
+  <a href="/wegovy/" class="footer-chip">위고비</a>
+  <a href="/guide/" class="footer-chip">하루센스 이용안내</a>
+  <button class="footer-chip" id="repOpenBtn" type="button">관계자 로그인</button>
 </nav>
 
 <!-- 요양기관 관계자 수정 — 전체화면 모달 -->
@@ -1561,7 +1123,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
         <label for="repPassword">비밀번호</label>
         <input id="repPassword" type="password" autocomplete="off" />
       </div>
-      <p class="rep-help">아직 계정을 발급받지 않은 요양기관은 수정 권한을 신청해주세요. 신청서를 제출하면 하루센스가 확인 후 보통 6시간 이내에 아이디와 임시 비밀번호를 안내드립니다.</p>
+      <p class="rep-help">아직 계정을 발급받지 않은 요양기관은 수정 권한을 신청해주세요. 하루센스가 확인 후 보통 6시간 이내에 아이디와 임시 비밀번호를 안내드립니다.</p>
       <div class="rep-message" id="repLoginMessage"></div>
     </div>
     <div class="rep-modal-footer">
@@ -1581,7 +1143,6 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     </div>
     <div class="rep-modal-body">
       <p class="rep-help">요양기관 대표번호 또는 담당자 연락처로 확인 후, 요양기관번호를 아이디로 사용하고 임시 비밀번호를 안내드립니다.</p>
-      <div class="rep-message" id="repRequestTopMessage"></div>
       <div class="rep-field">
         <label for="repRequestClinicName">요양기관명</label>
         <input id="repRequestClinicName" autocomplete="organization" />
@@ -1603,7 +1164,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
         <select id="repRequestRole">
           <option value="">선택해주세요</option>
           <option value="원장">원장</option>
-          <option value="실장">실장</option>
+          <option value="약사">약사</option>
           <option value="직원">직원</option>
           <option value="기타 관계자">기타 관계자</option>
         </select>
@@ -1625,33 +1186,6 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="rep-modal-footer">
       <button class="rep-button" id="repRequestSubmitBtn" type="button">신청 제출</button>
       <button class="rep-button secondary" id="repRequestBackBtn" type="button">로그인으로 돌아가기</button>
-    </div>
-  </div>
-
-  <!-- 최초 비밀번호 변경 화면 -->
-  <div id="repPasswordView" hidden>
-    <div class="rep-modal-header">
-      <div>
-        <div class="rep-modal-title">비밀번호 변경</div>
-        <div class="rep-modal-sub">최초 로그인 후 새 비밀번호를 설정해주세요</div>
-      </div>
-      <button class="rep-modal-close" id="repCloseBtn4" type="button" aria-label="닫기">×</button>
-    </div>
-    <div class="rep-modal-body">
-      <p class="rep-help">보안을 위해 임시 비밀번호를 새 비밀번호로 변경해야 정보 수정 화면으로 이동할 수 있습니다.</p>
-      <div class="rep-field">
-        <label for="repNewPassword">새 비밀번호</label>
-        <input id="repNewPassword" type="password" autocomplete="new-password" />
-      </div>
-      <div class="rep-field">
-        <label for="repNewPasswordConfirm">새 비밀번호 확인</label>
-        <input id="repNewPasswordConfirm" type="password" autocomplete="new-password" />
-      </div>
-      <div class="rep-message" id="repPasswordMessage"></div>
-    </div>
-    <div class="rep-modal-footer">
-      <button class="rep-button" id="repPasswordSubmitBtn" type="button">비밀번호 변경</button>
-      <button class="rep-button secondary" id="repPasswordBackBtn" type="button">로그인으로 돌아가기</button>
     </div>
   </div>
 
@@ -1682,15 +1216,15 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 
 <!-- SEO content -->
 <div class="seo-content" aria-hidden="true">
-  <h1>GLP-1 Price Map Korea | Mounjaro & Wegovy Prices</h1>
-  <h2>Harusense — incretin therapy pricing in Seoul</h2>
-  <p>Harusense is an interactive price map for Mounjaro (tirzepatide) and Wegovy (semaglutide) at clinics and pharmacies in Seoul, Korea. Compare wegovy price korea and mounjaro price korea by dose and neighborhood before you call or visit.</p>
+  <h1>GLP-1 가격지도 | 마운자로·위고비 가격 비교</h1>
+  <h2>하루센스 GLP-1 가격지도 — 인크레틴 치료제 가격정보</h2>
+  <p>하루센스 GLP-1 가격지도는 마운자로, 위고비 등 인크레틴 치료제 가격정보를 지도에서 비교할 수 있는 서비스입니다. 마운자로 가격지도, 위고비 가격지도를 한 곳에서 비교할 수 있습니다. 서울 마포구, 서대문구, 영등포구, 강서구, 용산구 지역 의원의 GLP-1 다이어트 주사 가격을 지도에서 한눈에 확인하세요.</p>
 
-  <h2>Mounjaro price map Korea</h2>
-  <p>Compare Mounjaro clinic prices in Korea by dose: 2.5mg, 5mg, 7.5mg, 10mg. Listed clinic prices typically include consultation plus in-clinic medication as total cost. Always confirm by phone before visiting.</p>
+  <h2>마운자로 가격지도</h2>
+  <p>마운자로(Tirzepatide) 가격지도에서는 의원별 마운자로 가격을 용량별(2.5mg, 5mg, 7.5mg, 10mg)로 비교할 수 있습니다. 마운자로는 일라이 릴리에서 개발한 GLP-1/GIP 이중 작용제로, 비만 및 2형 당뇨병 치료에 사용됩니다. 비급여 의약품이라 의원마다 가격이 다르므로, 마운자로 가격지도를 통해 우리 동네 의원의 가격을 미리 확인하는 것이 좋습니다.</p>
 
-  <h2>Wegovy price map Korea</h2>
-  <p>Compare Wegovy clinic korea listings by pen dose: 0.25mg through 2.4mg. Prices vary widely between clinics; Harusense shows physician-reviewed pins where available.</p>
+  <h2>위고비 가격지도</h2>
+  <p>위고비(Semaglutide) 가격지도에서는 의원별 위고비 가격을 용량별(0.25mg, 0.5mg, 1.0mg, 1.7mg, 2.4mg)로 비교할 수 있습니다. 위고비는 노보 노디스크에서 개발한 GLP-1 단일 작용제로, 마운자로와 함께 GLP-1 계열 다이어트 주사의 양대 산맥을 이룹니다. 위고비 가격지도에서 의원별 가격을 비교하여 합리적인 선택을 하실 수 있습니다.</p>
 
   <h2>GLP-1 가격지도가 필요한 이유</h2>
   <p>GLP-1 다이어트 주사는 비급여 의약품이라 의원마다 가격 편차가 매우 큽니다. 같은 마운자로 2.5mg이라도 의원에 따라 27만원에서 40만원까지 차이가 날 수 있습니다. GLP-1 가격지도는 이런 가격 편차를 시각적으로 보여주어 환자가 합리적인 선택을 할 수 있도록 돕습니다.</p>
@@ -1715,300 +1249,22 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   <p>공개된 정보를 기반으로 큐레이션하며, 원장 직접 검증 의원은 ✓ 표시로 구분됩니다. 정확한 가격은 의원에 직접 전화로 확인하시는 것이 가장 빠르고 확실합니다.</p>
 </div>
 
-<!-- ═════════ 병의원/약국 검색 모달 ═════════ -->
-<div class="search-backdrop" id="searchBackdrop"></div>
-<div class="search-modal" id="searchModal">
-  <div class="search-bar">
-    <div class="search-input-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="7"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <input id="searchInput" type="text" data-i18n-placeholder="searchPlaceholder" placeholder="병의원·약국 이름·지역 검색" autocomplete="off" />
-    </div>
-    <button class="search-cancel" id="searchCancel" type="button" data-i18n="searchCancel">취소</button>
-  </div>
-  <div class="search-results" id="searchResults"></div>
-</div>
-
 <script>
-// ─────────── i18n + FX ───────────
-const I18N = {
-  ko: {
-    brandTitle: "하루센스 GLP-1 가격지도",
-    brandSub: "인크레틴 치료제 가격정보",
-    searchBtn: "병의원/약국검색",
-    loading: "데이터를 불러오는 중",
-    emptyState: "선택한 용량의 가격 정보가 있는 의원이 없습니다",
-    footerMounjaro: "마운자로",
-    footerWegovy: "위고비",
-    footerGuide: "하루센스 이용안내",
-    footerAdmin: "관계자 로그인",
-    searchPlaceholder: "병의원·약국 이름·지역 검색",
-    searchCancel: "취소",
-    districtAll: "전 지역",
-    districtMapo: "마포", districtSeodaemun: "서대문", districtYeongdeungpo: "영등포",
-    districtGangseo: "강서", districtYongsan: "용산", districtGwanak: "관악",
-    districtDongjak: "동작", districtJongno: "종로", districtYangcheon: "양천",
-    districtNowon: "노원", districtGoyang: "고양",
-    drugMounjaroShort: "마000", drugWegovyShort: "위00",
-    noticeVerified: "✓ 원장 자문",
-    noticeCallBefore: "방문 전 전화 확인 권장",
-    updateChecking: "업데이트 확인 중",
-    updateJustNow: "방금 업데이트",
-    updateMinAgo: "분 전 업데이트",
-    updateHourAgo: "시간 전 업데이트",
-    updateDayAgo: "일 전 업데이트",
-    updateSuffix: " 업데이트",
-    markerNoStock: "재고 없음",
-    markerCollecting: "정보 수집중",
-    verifiedBadge: "원장 직접 검증",
-    stockOn: "재고 있음", stockOff: "재고 없음",
-    callLabel: "바로 전화하기",
-    phoneMissing: "전화번호 미등록",
-    priceSection: "노출 가격",
-    priceCount: "개 항목",
-    emptyPriceTitle: "가격 정보 수집중",
-    emptyPriceText: "정확한 가격은 의원에 직접 전화로 문의해주세요.",
-    sheetHint: "의원 이름을 누르면 네이버 지도에서 상세 정보(주차·진료시간·후기)를 확인하실 수 있습니다",
-    naverTitle: "네이버 지도에서 보기",
-    searchLoading: "지도 데이터를 불러오는 중입니다.<br>잠시 후 다시 시도해주세요.",
-    searchEmpty: "검색 결과가 없습니다.",
-    searchPharmacy: "약국", searchClinic: "병의원",
-    fxLive: "실시간 환율",
-    fxLiveShort: "FX",
-    fxLoading: "환율 불러오는 중…",
-    fxRate: "1 USD = ₩{rate}",
-    fxUpdated: "환율 갱신: <em>{time}</em>",
-    fxUpdatedShort: "환율 {time}",
-    won: "원"
-  },
-  en: {
-    brandTitle: "Harusense GLP-1 Price Map",
-    brandTitleShort: "Harusense GLP-1 Map",
-    brandSub: "Incretin therapy pricing",
-    searchBtn: "Search",
-    loading: "Loading map data",
-    emptyState: "No clinics with pricing for this dose",
-    footerMounjaro: "Mounjaro",
-    footerWegovy: "Wegovy",
-    footerGuide: "Guide",
-    footerAdmin: "Provider login",
-    searchPlaceholder: "Search clinic, pharmacy, or area",
-    searchCancel: "Cancel",
-    districtAll: "All areas",
-    districtMapo: "Mapo", districtSeodaemun: "Seodaemun", districtYeongdeungpo: "Yeongdeungpo",
-    districtGangseo: "Gangseo", districtYongsan: "Yongsan", districtGwanak: "Gwanak",
-    districtDongjak: "Dongjak", districtJongno: "Jongno", districtYangcheon: "Yangcheon",
-    districtNowon: "Nowon", districtGoyang: "Goyang",
-    drugMounjaroShort: "Mounjaro", drugWegovyShort: "Wegovy",
-    noticeVerified: "✓ Physician verified",
-    noticeCallBefore: "Call ahead before visiting",
-    updateChecking: "Checking updates",
-    updateJustNow: "Updated just now",
-    updateMinAgo: " min ago",
-    updateHourAgo: " hr ago",
-    updateDayAgo: " days ago",
-    updateSuffix: " ago",
-    markerNoStock: "Out of stock",
-    markerCollecting: "Collecting info",
-    verifiedBadge: "Physician verified",
-    stockOn: "In stock", stockOff: "Out of stock",
-    callLabel: "Call now",
-    phoneMissing: "No phone listed",
-    priceSection: "Listed prices",
-    priceCount: " items",
-    emptyPriceTitle: "Price being collected",
-    emptyPriceText: "Please call the clinic for the most accurate quote.",
-    sheetHint: "Tap the clinic name to open Naver Maps for hours, parking & reviews",
-    naverTitle: "Open in Naver Maps",
-    searchLoading: "Loading map data.<br>Please try again shortly.",
-    searchEmpty: "No results found.",
-    searchPharmacy: "Pharmacy", searchClinic: "Clinic",
-    fxLive: "Live FX",
-    fxLiveShort: "FX",
-    fxLoading: "Fetching exchange rate…",
-    fxRate: "1 USD = ₩{rate}",
-    fxUpdated: "FX updated: <em>{time}</em>",
-    fxUpdatedShort: "FX {time}",
-    won: ""
-  }
-};
-
-let appLang = window.__HS_LANG || "ko";
-let fx = { krwPerUsd: null, updatedAt: null, loading: false };
-let FX_REFRESH_TIMER = null;
-let ACTIVE_SHEET_CLINIC = null;
-
-function t(key, vars) {
-  let s = (I18N[appLang] && I18N[appLang][key]) || I18N.ko[key] || key;
-  if (vars) Object.keys(vars).forEach(k => { s = s.replace("{" + k + "}", vars[k]); });
-  return s;
-}
-
-function applyBrandTitle() {
-  const el = document.querySelector(".brand-name[data-i18n='brandTitle']");
-  if (!el) return;
-  const useShort = appLang === "en" && window.matchMedia("(max-width: 480px)").matches;
-  el.textContent = useShort && I18N.en.brandTitleShort ? I18N.en.brandTitleShort : t("brandTitle");
-}
-
-function applyI18n() {
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    if (key === "brandTitle") return;
-    if (key) el.textContent = t(key);
-  });
-  applyBrandTitle();
-  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-    el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
-  });
-  document.getElementById("langKo")?.classList.toggle("active", appLang === "ko");
-  document.getElementById("langEn")?.classList.toggle("active", appLang === "en");
-  if (appLang === "en") {
-    document.title = "Harusense GLP-1 Price Map | Mounjaro & Wegovy in Seoul";
-  } else {
-    document.title = "하루센스 GLP-1 가격지도 | 마운자로·위고비 가격 비교";
-  }
-  updateFxBanner();
-}
-
-function formatFxTime(date) {
-  if (!date) return "—";
-  if (appLang === "en") {
-    return date.toLocaleString("en-US", {
-      timeZone: "Asia/Seoul",
-      month: "short", day: "numeric",
-      hour: "numeric", minute: "2-digit",
-      hour12: true
-    }) + " KST";
-  }
-  return date.toLocaleString("ko-KR", {
-    timeZone: "Asia/Seoul",
-    month: "long", day: "numeric",
-    hour: "numeric", minute: "2-digit",
-    hour12: false
-  });
-}
-
-function updateFxBanner() {
-  const banner = document.getElementById("fxBanner");
-  const lineEl = document.getElementById("fxChipLine");
-  if (!banner || !lineEl) return;
-  banner.classList.toggle("visible", appLang === "en");
-  if (appLang !== "en") return;
-  if (fx.loading) {
-    lineEl.textContent = t("fxLoading");
-    return;
-  }
-  if (fx.krwPerUsd) {
-    const rate = fx.krwPerUsd.toLocaleString("en-US", { maximumFractionDigits: 2 });
-    const time = formatFxTime(fx.updatedAt);
-    lineEl.innerHTML = `1 USD = ₩${rate}<span class="fx-sep">·</span><em>${time}</em>`;
-  } else {
-    lineEl.textContent = t("fxLoading");
-  }
-}
-
-async function fetchExchangeRate() {
-  fx.loading = true;
-  updateFxBanner();
-  try {
-    const resp = await fetch("https://open.er-api.com/v6/latest/USD", { cache: "no-store" });
-    const data = await resp.json();
-    if (data.result === "success" && data.rates && data.rates.KRW) {
-      fx.krwPerUsd = data.rates.KRW;
-      fx.updatedAt = data.time_last_update_utc ? new Date(data.time_last_update_utc) : new Date();
-    } else throw new Error("fx");
-  } catch (_) {
-    try {
-      const resp = await fetch("https://api.frankfurter.app/latest?from=USD&to=KRW", { cache: "no-store" });
-      const data = await resp.json();
-      if (data.rates && data.rates.KRW) {
-        fx.krwPerUsd = data.rates.KRW;
-        fx.updatedAt = new Date();
-      } else throw new Error("fx2");
-    } catch (__) {
-      if (!fx.krwPerUsd) fx.krwPerUsd = 1380;
-      if (!fx.updatedAt) fx.updatedAt = new Date();
-    }
-  }
-  fx.loading = false;
-  updateFxBanner();
-  updateHeaderNotice();
-  renderMarkers();
-  if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
-}
-
-function startFxRefresh() {
-  if (FX_REFRESH_TIMER) clearInterval(FX_REFRESH_TIMER);
-  if (appLang !== "en") return;
-  fetchExchangeRate();
-  FX_REFRESH_TIMER = setInterval(fetchExchangeRate, 30 * 60 * 1000);
-}
-
-function setLang(lang) {
-  if (lang !== "ko" && lang !== "en") return;
-  if (lang === "en") {
-    localStorage.setItem("harusense_lang", "en");
-    const path = location.pathname || "/";
-    if (!path.startsWith("/en")) {
-      const q = new URLSearchParams(location.search);
-      const drug = state.drugKey || q.get("drug");
-      const dest = new URL("/en/", location.origin);
-      if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
-      location.href = dest.pathname + dest.search;
-      return;
-    }
-    appLang = "en";
-    document.documentElement.lang = "en";
-    document.documentElement.classList.add("lang-en");
-    applyI18n();
-    updateHeaderNotice();
-    renderMarkers();
-    startFxRefresh();
-    if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
-    return;
-  }
-  appLang = "ko";
-  localStorage.setItem("harusense_lang", "ko");
-  document.documentElement.lang = "ko";
-  document.documentElement.classList.remove("lang-en");
-  applyI18n();
-  updateHeaderNotice();
-  renderMarkers();
-  if (FX_REFRESH_TIMER) { clearInterval(FX_REFRESH_TIMER); FX_REFRESH_TIMER = null; }
-  if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
-}
-
-function krwToUsd(krw) {
-  const rate = fx.krwPerUsd || 1380;
-  return krw / rate;
-}
-
 // ─────────── Drug labels (internal mapping) ───────────
 const DRUG_INFO = {
   mounjaro: {
     displayName: "마000",
-    displayNameEn: "Mounjaro",
     fullName: "마운자로",
     doses: ["2.5mg", "5mg", "7.5mg", "10mg"],
     keyPrefix: "mounjaro"
   },
   wegovy: {
     displayName: "위00",
-    displayNameEn: "Wegovy",
     fullName: "위고비",
     doses: ["0.25mg", "0.5mg", "1.0mg", "1.7mg", "2.4mg"],
     keyPrefix: "wegovy"
   }
 };
-
-function drugDisplayName(drugKey) {
-  const info = DRUG_INFO[drugKey];
-  if (!info) return drugKey;
-  return appLang === "en" ? info.displayNameEn : info.displayName;
-}
 
 // ─────────── State ───────────
 let state = {
@@ -2017,8 +1273,6 @@ let state = {
   districtFilter: "all",
 };
 let CLINIC_DATA = { clinics: [] };
-/** 화면에 올라온 핀 스냅샷 (아래 commitClinicData·캐시 블록과 함께 동작) */
-let LAST_STABLE_MAP_DATA = null;
 let map = null;
 let markers = [];
 
@@ -2027,30 +1281,11 @@ function priceKey(drugKey, dose) {
   return `${drugKey}_${dose}`;
 }
 function formatPriceShort(v) {
-  if (appLang === "en") {
-    const usd = krwToUsd(v);
-    if (usd >= 1000) return "$" + (usd / 1000).toFixed(1).replace(/\.0$/, "") + "k";
-    return "$" + Math.round(usd);
-  }
   if (v >= 10000) {
     const man = v / 10000;
     return (man % 1 === 0 ? man.toFixed(0) : man.toFixed(1)) + "만";
   }
   return v.toLocaleString();
-}
-
-function formatPriceFull(v) {
-  if (appLang === "en") {
-    const usd = Math.round(krwToUsd(v));
-    const krwHint = `<span class="price-krw-hint">≈ ₩${Number(v).toLocaleString("en-US")}</span>`;
-    return { value: "$" + usd.toLocaleString("en-US"), suffix: krwHint };
-  }
-  return { value: Number(v).toLocaleString(), suffix: `<span class="won">${t("won")}</span>` };
-}
-
-function formatMarkerPrice(v) {
-  if (appLang === "en") return formatPriceShort(v);
-  return formatPriceShort(v) + "원";
 }
 function clinicStockAvailable(clinic, key) {
   return !(clinic.stock && clinic.stock[key] === false);
@@ -2060,432 +1295,6 @@ function clinicHasSelectedPrice(clinic) {
   const v = clinic.prices && clinic.prices[key];
   return clinicStockAvailable(clinic, key) && v != null && v !== "" && Number.isFinite(Number(v));
 }
-
-
-
-function isPharmacy(clinic) {
-  return clinic.type === "pharmacy" || String(clinic.id || "").startsWith("pharmacy_");
-}
-
-function hasValidCoords(clinic) {
-  return clinic && Number.isFinite(Number(clinic.lat)) && Number.isFinite(Number(clinic.lng));
-}
-
-function cloneClinic(clinic) {
-  return JSON.parse(JSON.stringify(clinic || {}));
-}
-
-function countPharmacies(data) {
-  return (data && Array.isArray(data.clinics) ? data.clinics : []).filter(isPharmacy).length;
-}
-
-/** 예전 개발용 clinics.json(샘플의원 A 등) — 운영 지도에서 제외 */
-function isDemoClinic(clinic) {
-  if (!clinic) return true;
-  const id = String(clinic.id || "");
-  const name = String(clinic.name || "");
-  if (/^sample_/i.test(id)) return true;
-  if (/샘플의원/i.test(name)) return true;
-  if (id === "newsense_fallback") return true;
-  if (id === "newsense" && !id.startsWith("clinic_")) return true;
-  return false;
-}
-
-function stripDemoClinics(data) {
-  if (!data || !Array.isArray(data.clinics)) return data;
-  return {
-    ...data,
-    clinics: data.clinics.filter(c => !isDemoClinic(c)),
-  };
-}
-
-function countPinnedClinics(data) {
-  const list = stripDemoClinics(data);
-  if (!list || !Array.isArray(list.clinics)) return 0;
-  return list.clinics.filter(hasValidCoords).length;
-}
-
-function cloneClinicData(data) {
-  return JSON.parse(JSON.stringify(data || { clinics: [] }));
-}
-
-function stripVolatilePriceData(data) {
-  const cloned = cloneClinicData(data);
-  if (!cloned || !Array.isArray(cloned.clinics)) return cloned;
-  cloned.clinics = cloned.clinics.map(clinic => {
-    const safe = cloneClinic(clinic);
-    safe.prices = {};
-    safe.stock = {};
-    safe.price_updated_at = {};
-    delete safe.updated_by;
-    return safe;
-  });
-  return cloned;
-}
-
-function clinicMapStats(data) {
-  const data2 = stripDemoClinics(data);
-  const clinics = data2 && Array.isArray(data2.clinics) ? data2.clinics : [];
-  return {
-    total: clinics.length,
-    pinned: clinics.filter(hasValidCoords).length,
-    pharmacies: countPharmacies(data2),
-  };
-}
-
-function isUnsafeDataRegression(prev, next) {
-  if (!prev || !prev.clinics || !prev.clinics.length) return false;
-  const p = clinicMapStats(prev);
-  const n = clinicMapStats(next);
-  if (p.pinned >= 3 && n.pinned < Math.max(3, Math.floor(p.pinned * 0.9))) return true;
-  if (p.pharmacies >= 2 && n.pharmacies < Math.max(1, Math.floor(p.pharmacies * 0.7))) return true;
-  if (p.total >= 5 && n.total < Math.floor(p.total * 0.85)) return true;
-  return false;
-}
-
-/** 새 병합 결과에도 이전에 지도에 있던 기관은 id 기준으로 유지·합침 */
-/**
- * Harusense data ownership rule:
- * - Preserve reviewed map pins: lat/lng, pharmacy type, and verified display must not disappear.
- * - Let live data win for prices and stock: /api/clinics and getClinicOverrides are newer than stable cache.
- * - Keep Places/geocoding disabled until operations are stable.
- */
-function unionPreserveClinics(prevData, nextData) {
-  if (!prevData || !Array.isArray(prevData.clinics) || !prevData.clinics.length) {
-    return nextData ? cloneClinicData(nextData) : null;
-  }
-  if (!nextData || !Array.isArray(nextData.clinics)) {
-    return cloneClinicData(prevData);
-  }
-  const byId = new Map();
-  nextData.clinics.forEach(c => {
-    if (!c || !c.id) return;
-    byId.set(String(c.id), cloneClinic(c));
-  });
-  prevData.clinics.forEach(prev => {
-    if (!prev || !prev.id || !hasValidCoords(prev)) return;
-    const id = String(prev.id);
-    if (!byId.has(id)) {
-      byId.set(id, cloneClinic(prev));
-      return;
-    }
-    byId.set(id, mergeOneClinicRecord(prev, byId.get(id)));
-  });
-  return {
-    last_updated: nextData.last_updated || prevData.last_updated || "",
-    version: nextData.version || prevData.version || "stable-union",
-    clinics: Array.from(byId.values()),
-  };
-}
-
-function commitClinicData(candidate, options) {
-  const force = options && options.force === true;
-  if (!candidate || !Array.isArray(candidate.clinics)) return false;
-
-  const prev = (LAST_STABLE_MAP_DATA && LAST_STABLE_MAP_DATA.clinics.length)
-    ? LAST_STABLE_MAP_DATA
-    : CLINIC_DATA;
-
-  const next = unionPreserveClinics(
-    stripDemoClinics(prev),
-    stripDemoClinics(cloneClinicData(candidate))
-  );
-  if (!next) return false;
-
-  if (!force && isUnsafeDataRegression(prev, next)) {
-    console.warn("[하루센스] 지도 핀·기관 정보 축소 감지 — 화면 데이터 유지");
-    return false;
-  }
-
-  const nextStats = clinicMapStats(next);
-  const prevStats = clinicMapStats(prev);
-  if (nextStats.pinned === 0 && prevStats.pinned > 0) {
-    return false;
-  }
-  // Pharmacy pins are reviewed static map assets. Block large drops even during forced refreshes.
-  if (prevStats.pharmacies >= 2 && nextStats.pharmacies < Math.max(1, Math.floor(prevStats.pharmacies * 0.7))) {
-    console.warn("[Harusense] Pharmacy pin regression blocked.");
-    return false;
-  }
-
-  CLINIC_DATA = next;
-  if (nextStats.pinned > 0) {
-    LAST_STABLE_MAP_DATA = cloneClinicData(next);
-    try {
-      writeDataCache(HARUSENSE_CACHE.keys.stable, stripVolatilePriceData(LAST_STABLE_MAP_DATA));
-    } catch (e) { /* 캐시 실패해도 지도는 표시 */ }
-  }
-  return nextStats.pinned > 0;
-}
-
-/** clinics.json(검수) 좌표·약국 type·가격 키를 API 병합 시 보호 */
-function mergeOneClinicRecord(staticClinic, apiClinic) {
-  const s = staticClinic || {};
-  const a = apiClinic || {};
-  const out = {
-    ...s,
-    ...a,
-    type: a.type || s.type,
-    prices: { ...(s.prices || {}), ...(a.prices || {}) },
-    stock: { ...(s.stock || {}), ...(a.stock || {}) },
-    price_updated_at: { ...(s.price_updated_at || {}), ...(a.price_updated_at || {}) },
-  };
-
-  if (hasValidCoords(s)) {
-    out.lat = Number(s.lat);
-    out.lng = Number(s.lng);
-  } else if (hasValidCoords(a)) {
-    out.lat = Number(a.lat);
-    out.lng = Number(a.lng);
-  }
-  if (
-    s.type === "pharmacy" || String(s.id || "").startsWith("pharmacy_") ||
-    a.type === "pharmacy" || String(a.id || "").startsWith("pharmacy_")
-  ) {
-    out.type = "pharmacy";
-  }
-  if (s.verified) {
-    if (s.name) out.name = s.name;
-    if (s.address) out.address = s.address;
-    if (s.district) out.district = s.district;
-    if (s.phone) out.phone = s.phone;
-  }
-  return out;
-}
-
-function mergeClinicData(apiData, staticData) {
-  const apiClinics = Array.isArray(apiData && apiData.clinics)
-    ? apiData.clinics.filter(c => !isDemoClinic(c))
-    : [];
-  const staticClinics = Array.isArray(staticData && staticData.clinics)
-    ? staticData.clinics.filter(c => !isDemoClinic(c))
-    : [];
-  const byId = new Map();
-  const institutionToId = new Map();
-
-  /** 예전 clinics.json id(newsense 등) → 요양기관번호. 엑셀 검수 좌표가 API id와 합쳐지게 함 */
-  const LEGACY_STATIC_ID_TO_INST = { newsense: "12339695" };
-
-  staticClinics.forEach(clinic => {
-    if (!clinic || !clinic.id) return;
-    const row = cloneClinic(clinic);
-    let inst = String(row.institution_no || "").trim();
-    if (!inst && LEGACY_STATIC_ID_TO_INST[row.id]) {
-      inst = LEGACY_STATIC_ID_TO_INST[row.id];
-      row.institution_no = inst;
-    }
-    byId.set(row.id, row);
-    if (inst) institutionToId.set(inst, row.id);
-  });
-
-  apiClinics.forEach(apiClinic => {
-    if (!apiClinic || !apiClinic.id) return;
-    const inst = String(apiClinic.institution_no || "").trim();
-    let targetId = apiClinic.id;
-
-    if (byId.has(apiClinic.id)) {
-      targetId = apiClinic.id;
-    } else if (inst && institutionToId.has(inst)) {
-      targetId = institutionToId.get(inst);
-    }
-
-    const staticClinic = byId.get(targetId) || byId.get(apiClinic.id) || {};
-    const merged = mergeOneClinicRecord(staticClinic, { ...apiClinic, id: targetId });
-    byId.set(targetId, merged);
-    if (inst) institutionToId.set(inst, targetId);
-    if (apiClinic.id !== targetId) byId.delete(apiClinic.id);
-  });
-
-  return {
-    last_updated: (apiData && apiData.last_updated) || (staticData && staticData.last_updated) || "",
-    version: "api-d1-plus-excel-json-protected",
-    clinics: Array.from(byId.values())
-  };
-}
-
-function normalizePriceItems(items) {
-  if (!items || typeof items !== "object") return {};
-  const normalized = {};
-  Object.entries(items).forEach(([key, value]) => {
-    if (!key) return;
-    if (value && typeof value === "object" && ("price" in value || "in_stock" in value)) {
-      normalized[key] = {
-        price: value.price === "" || value.price == null ? "" : Number(value.price),
-        in_stock: value.in_stock !== false
-      };
-    } else {
-      normalized[key] = {
-        price: value === "" || value == null ? "" : Number(value),
-        in_stock: true
-      };
-    }
-  });
-  return normalized;
-}
-
-function applyClinicOverrides(data, overrides) {
-  if (!data || !Array.isArray(data.clinics) || !Array.isArray(overrides)) return data;
-  const byInstitution = new Map();
-  overrides.forEach(update => {
-    if (!update || !update.institution_no) return;
-    byInstitution.set(String(update.institution_no).trim(), update);
-  });
-  if (!byInstitution.size) return data;
-
-  data.clinics = data.clinics.map(clinic => {
-    const institutionNo = String(clinic.institution_no || "").trim();
-    const update = byInstitution.get(institutionNo);
-    if (!update) return clinic;
-
-    const items = normalizePriceItems(update.items);
-    const prices = { ...(clinic.prices || {}) };
-    const stock = { ...(clinic.stock || {}) };
-    const price_updated_at = { ...(clinic.price_updated_at || {}) };
-    const touchedAt = update.updated_at || new Date().toISOString();
-    Object.entries(items).forEach(([key, item]) => {
-      const prevPrice = clinic.prices && clinic.prices[key] != null ? Number(clinic.prices[key]) : null;
-      const prevStock = clinic.stock && clinic.stock[key] === false;
-      if (item.price !== "" && Number.isFinite(Number(item.price))) {
-        const newPrice = Number(item.price);
-        prices[key] = newPrice;
-        const newStock = item.in_stock !== false;
-        stock[key] = newStock;
-        if (prevPrice !== newPrice || prevStock !== !newStock) {
-          price_updated_at[key] = touchedAt;
-        }
-      } else {
-        stock[key] = item.in_stock !== false;
-      }
-    });
-
-    return {
-      ...clinic,
-      prices,
-      stock,
-      price_updated_at,
-      updated_at: update.updated_at || clinic.updated_at,
-      updated_by: update.institution_no || clinic.updated_by
-    };
-  });
-
-  return data;
-}
-
-function clinicCacheKeys(clinic) {
-  return [
-    clinic.id,
-    clinic.institution_no,
-    clinic.name ? String(clinic.name).replace(/\s+/g, "") : ""
-  ].filter(Boolean).map(v => String(v).trim());
-}
-
-function applyParkingCache(data, cacheData) {
-  if (!data || !Array.isArray(data.clinics) || !cacheData) return data;
-  const rows = Array.isArray(cacheData) ? cacheData : (Array.isArray(cacheData.clinics) ? cacheData.clinics : []);
-  if (!rows.length) return data;
-
-  const byKey = new Map();
-  rows.forEach(row => {
-    if (!row) return;
-    [row.id, row.institution_no, row.name ? String(row.name).replace(/\s+/g, "") : ""]
-      .filter(Boolean)
-      .forEach(key => byKey.set(String(key).trim(), row));
-  });
-
-  data.clinics = data.clinics.map(clinic => {
-    const match = clinicCacheKeys(clinic).map(key => byKey.get(key)).find(Boolean);
-    if (!match) return clinic;
-    return {
-      ...clinic,
-      cached_phone: firstValue(match.phone, match.cached_phone, match.naver_phone, match.google_phone, clinic.cached_phone),
-      naver_phone: firstValue(match.naver_phone, clinic.naver_phone),
-      google_phone: firstValue(match.google_phone, clinic.google_phone),
-      cached_parking: firstValue(match.parking, match.cached_parking, match.naver_parking, match.google_parking, clinic.cached_parking),
-      naver_parking: firstValue(match.naver_parking, clinic.naver_parking),
-      google_parking: firstValue(match.google_parking, clinic.google_parking),
-      parking_source: firstValue(match.parking_source, match.source, clinic.parking_source),
-      parking_updated_at: firstValue(match.parking_updated_at, match.updated_at, clinic.parking_updated_at),
-      naver_url: firstValue(match.naver_url, clinic.naver_url),
-      google_url: firstValue(match.google_url, clinic.google_url)
-    };
-  });
-  return data;
-}
-
-async function loadParkingCache() {
-  try {
-    const resp = await fetch("/parking-cache.json", { cache: "default" });
-    if (!resp.ok) return null;
-    return await resp.json();
-  } catch (err) {
-    return null;
-  }
-}
-
-function applySubmittedClinics(data, submittedClinics) {
-  if (!data || !Array.isArray(data.clinics) || !Array.isArray(submittedClinics)) return data;
-  const existingInstitutionNos = new Set(
-    data.clinics
-      .map(clinic => String(clinic.institution_no || "").trim())
-      .filter(Boolean)
-  );
-  const existingIds = new Set(
-    data.clinics
-      .map(clinic => String(clinic.id || "").trim())
-      .filter(Boolean)
-  );
-
-  submittedClinics.forEach(clinic => {
-    if (!clinic || !clinic.institution_no || !clinic.lat || !clinic.lng) return;
-    const institutionNo = String(clinic.institution_no).trim();
-    const id = String(clinic.id || `submitted_${institutionNo}`).trim();
-
-    // 이미 검수되어 지도에 있는 요양기관은 좌표/표시정보를 절대 흔들지 않습니다.
-    if (existingInstitutionNos.has(institutionNo) || existingIds.has(id)) return;
-
-    data.clinics.push({
-      id,
-      type: clinic.type || "clinic",
-      name: clinic.name || "신규 요양기관",
-      district: clinic.district || "",
-      address: clinic.address || "",
-      lat: Number(clinic.lat),
-      lng: Number(clinic.lng),
-      phone: clinic.phone || "",
-      institution_no: institutionNo,
-      verified: false,
-      prices: clinic.prices || {},
-      stock: clinic.stock || {},
-      updated_at: clinic.updated_at || "",
-      notes: clinic.notes || "요양기관 관계자 신청으로 추가"
-    });
-    existingInstitutionNos.add(institutionNo);
-    existingIds.add(id);
-  });
-
-  return data;
-}
-
-async function loadSubmittedClinics() {
-  try {
-    const data = await accountApi("getSubmittedClinics");
-    if (data && data.ok && Array.isArray(data.clinics)) return data.clinics;
-  } catch (err) {
-    console.info("신규 신청 요양기관 로드 실패, 기존 지도 데이터만 사용합니다.");
-  }
-  return [];
-}
-
-async function loadClinicOverrides() {
-  try {
-    const data = await accountApi("getClinicOverrides");
-    if (data && data.ok && Array.isArray(data.updates)) return data.updates;
-  } catch (err) {
-    console.info("요양기관 수정값 로드 실패, 기본 지도 데이터만 사용합니다.");
-  }
-  return [];
-}
-
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
@@ -2499,427 +1308,73 @@ function latestClinicUpdatedAt() {
   return new Date(Math.max(...times));
 }
 function formatRelativeUpdateTime(date) {
-  if (!date) return t("updateChecking");
+  if (!date) return "업데이트 확인 중";
 
   const diffMs = Date.now() - date.getTime();
   const diffMin = Math.max(0, Math.floor(diffMs / 60000));
-  if (appLang === "en") {
-    if (diffMin < 1) return t("updateJustNow");
-    if (diffMin < 60) return diffMin + t("updateMinAgo");
-    const diffHour = Math.floor(diffMin / 60);
-    if (diffHour < 24) return diffHour + t("updateHourAgo");
-    const diffDay = Math.floor(diffHour / 24);
-    if (diffDay < 7) return diffDay + t("updateDayAgo");
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + t("updateSuffix");
-  }
-  if (diffMin < 1) return t("updateJustNow");
-  if (diffMin < 60) return `${diffMin}${t("updateMinAgo")}`;
+  if (diffMin < 1) return "방금 업데이트";
+  if (diffMin < 60) return `${diffMin}분 전 업데이트`;
 
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour}${t("updateHourAgo")}`;
+  if (diffHour < 24) return `${diffHour}시간 전 업데이트`;
 
   const diffDay = Math.floor(diffHour / 24);
-  if (diffDay < 7) return `${diffDay}${t("updateDayAgo")}`;
+  if (diffDay < 7) return `${diffDay}일 전 업데이트`;
 
   return date.toLocaleDateString("ko-KR", {
     month: "long",
     day: "numeric"
-  }) + t("updateSuffix");
+  }) + " 업데이트";
 }
-
-const PRICE_UPDATE_DOT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
-
-function getPriceUpdatedAt(clinic, doseKey) {
-  if (!clinic || !doseKey) return null;
-  const raw = clinic.price_updated_at && clinic.price_updated_at[doseKey];
-  if (raw) {
-    const d = new Date(raw);
-    if (Number.isFinite(d.getTime())) return d;
-  }
-  return null;
-}
-
-function isRecentPriceUpdate(clinic, doseKey) {
-  const at = getPriceUpdatedAt(clinic, doseKey);
-  if (!at) return false;
-  return Date.now() - at.getTime() <= PRICE_UPDATE_DOT_MAX_AGE_MS;
-}
-
-function getPriceUpdateTooltip(clinic, doseKey) {
-  const at = getPriceUpdatedAt(clinic, doseKey);
-  if (!at) return "";
-  const rel = formatRelativeUpdateTime(at);
-  if (appLang === "en") {
-    if (clinic.updated_by) return `Clinic updated · ${rel}`;
-    if (clinic.verified) return `Doctor verified · ${rel}`;
-    return `Recently updated · ${rel}`;
-  }
-  if (clinic.updated_by) return `의원에서 직접 수정 · ${rel}`;
-  if (clinic.verified) return `원장 확인 가격 · ${rel}`;
-  return `최근 반영 · ${rel}`;
-}
-
-function buildPriceMarkerHtml(clinic, price, doseKey) {
-  const showDot = isRecentPriceUpdate(clinic, doseKey);
-  const tip = showDot ? getPriceUpdateTooltip(clinic, doseKey) : "";
-  const dotHtml = showDot
-    ? `<span class="price-update-dot" aria-hidden="true"></span><span class="price-update-tip">${tip}</span>`
-    : "";
-  return `<span class="price-marker-text">${formatMarkerPrice(price)}</span>${dotHtml}`;
-}
-
-function googleDirectionsUrl(clinic) {
-  if (hasValidCoords(clinic)) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${Number(clinic.lat)},${Number(clinic.lng)}`;
-  }
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${clinic.name || ""} ${clinic.address || ""}`.trim())}`;
-}
-
-function firstValue() {
-  for (let i = 0; i < arguments.length; i++) {
-    const v = arguments[i];
-    if (v !== undefined && v !== null && String(v).trim() !== "") return v;
-  }
-  return "";
-}
-
-function displayPhone(clinic) {
-  return firstValue(
-    clinic.phone,
-    clinic.provider_phone,
-    clinic.verified_phone,
-    clinic.naver_phone,
-    clinic.google_phone,
-    clinic.cached_phone
-  );
-}
-
-function parkingSourceLabel(source) {
-  if (!source) return "";
-  const s = String(source).toLowerCase();
-  if (s.includes("provider")) return appLang === "en" ? "provider" : "기관 직접";
-  if (s.includes("operator") || s.includes("verified")) return appLang === "en" ? "verified" : "운영자 검수";
-  if (s.includes("naver")) return appLang === "en" ? "Naver cached" : "네이버 캐시";
-  if (s.includes("google")) return appLang === "en" ? "Google cached" : "구글 캐시";
-  return appLang === "en" ? "cached" : "캐시";
-}
-
-function normalizeParkingValue(raw) {
-  if (raw === true || raw === "true" || raw === "yes" || raw === "available" || raw === "가능") {
-    return appLang === "en" ? "Parking available" : "주차 가능";
-  }
-  if (raw === false || raw === "false" || raw === "no" || raw === "unavailable" || raw === "불가") {
-    return appLang === "en" ? "Parking not confirmed" : "주차 불가 또는 확인 필요";
-  }
-  return raw ? String(raw) : "";
-}
-
-function parkingInfo(clinic) {
-  const sources = [
-    { value: firstValue(clinic.provider_parking, clinic.provider_parking_note), source: "provider" },
-    { value: firstValue(clinic.verified_parking, clinic.operator_parking, clinic.parking, clinic.parking_status, clinic.parking_note), source: "verified" },
-    { value: firstValue(clinic.naver_parking, clinic.google_parking, clinic.cached_parking, clinic.parking_cache, clinic.parking_cache_note), source: firstValue(clinic.parking_source, "cached") }
-  ];
-  for (const item of sources) {
-    const text = normalizeParkingValue(item.value);
-    if (text) return { text, source: parkingSourceLabel(item.source), pending: false };
-  }
-  return { text: appLang === "en" ? "Parking info preparing" : "주차 정보 준비 중", source: "", pending: true };
-}
-
-function parkingText(clinic) {
-  return parkingInfo(clinic).text;
-}
-
-function parkingMetaText(clinic) {
-  const info = parkingInfo(clinic);
-  if (info.pending) return "";
-  const source = info.source ? ` · ${info.source}` : "";
-  if (clinic.parking_updated_at) {
-    const d = new Date(clinic.parking_updated_at);
-    if (Number.isFinite(d.getTime())) {
-      return appLang === "en"
-        ? `${source} · ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
-        : `${source} · ${d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })}`;
-    }
-  }
-  return source;
-}
-
 function updateHeaderNotice() {
   const el = document.getElementById("headerNotice");
   if (!el) return;
 
-  const clinicUpdate = formatRelativeUpdateTime(latestClinicUpdatedAt());
-
   el.innerHTML = `
-    <span class="notice-verified">${t("noticeVerified")}</span>
-    <span class="notice-meta">${clinicUpdate} · ${t("noticeCallBefore")}</span>
+    <span class="notice-verified">✓ 원장 자문</span>
+    <span class="notice-meta">${formatRelativeUpdateTime(latestClinicUpdatedAt())} · 방문 전 전화 확인 권장</span>
   `;
 }
 
-// ─────────── Data cache (stale-while-revalidate) ───────────
-const HARUSENSE_DATA_CACHE_VERSION = 4;
-const HARUSENSE_CACHE = {
-  version: HARUSENSE_DATA_CACHE_VERSION,
-  keys: {
-    base: "harusense_cache_base_v1",
-    overrides: "harusense_cache_overrides_v1",
-    stable: "harusense_cache_stable_pins_v1"
-  },
-  ttl: {
-    baseMs: 10 * 60 * 1000,
-    overridesMs: 5 * 60 * 1000,
-    stableMs: 7 * 24 * 60 * 60 * 1000
-  }
-};
-
-function readDataCache(storageKey, ttlMs) {
+// ─────────── Data loading ───────────
+// DB(/api/clinics)가 유일한 진실의 원천(single source of truth).
+// 실패 시에만 정적 clinics.json으로 폴백.
+async function loadData() {
   try {
-    const raw = localStorage.getItem(storageKey);
-    if (!raw) return null;
-    const packet = JSON.parse(raw);
-    if (!packet || packet.version !== HARUSENSE_DATA_CACHE_VERSION) return null;
-    if (Date.now() - packet.savedAt > ttlMs) return null;
-    return packet.payload;
-  } catch (err) {
-    return null;
-  }
-}
-
-function writeDataCache(storageKey, payload) {
-  try {
-    localStorage.setItem(storageKey, JSON.stringify({
-      version: HARUSENSE_DATA_CACHE_VERSION,
-      savedAt: Date.now(),
-      payload
-    }));
-  } catch (err) {
-    console.info("브라우저 저장 공간 부족 — 캐시를 건너뜁니다.");
-  }
-}
-
-function bustClinicCaches(scope = "all") {
-  if (scope === "all" || scope === "overrides") {
-    localStorage.removeItem(HARUSENSE_CACHE.keys.overrides);
-  }
-  if (scope === "all" || scope === "base") {
-    localStorage.removeItem(HARUSENSE_CACHE.keys.base);
-  }
-  if (scope === "all" || scope === "stable") {
-    localStorage.removeItem(HARUSENSE_CACHE.keys.stable);
-  }
-}
-
-async function buildMergedClinicData(apiData, staticData, overrides) {
-  if (!apiData && !staticData) return null;
-  const data = mergeClinicData(apiData, staticData);
-  if (SUBMITTED_CLINICS_ON_MAP) {
-    const submittedClinics = await loadSubmittedClinics();
-    applySubmittedClinics(data, submittedClinics);
-  }
-  applyClinicOverrides(data, overrides || []);
-  applyParkingCache(data, await loadParkingCache());
-  return data;
-}
-
-function clinicDataSignature(data) {
-  const clinics = data && Array.isArray(data.clinics) ? data.clinics : [];
-  return clinics.map(c => [
-    c.id,
-    c.institution_no,
-    c.lat,
-    c.lng,
-    c.prices,
-    c.stock,
-    c.updated_at,
-    c.price_updated_at
-  ].join(":")).join("|");
-}
-
-function refreshClinicDisplay() {
-  updateHeaderNotice();
-  renderMarkers();
-}
-
-function applyClinicFallbackData() {
-  if (LAST_STABLE_MAP_DATA && LAST_STABLE_MAP_DATA.clinics && LAST_STABLE_MAP_DATA.clinics.length) {
-    commitClinicData(LAST_STABLE_MAP_DATA, { force: true });
-    return;
-  }
-  console.error("지도 데이터 로드 실패: API와 clinics.json 모두 사용할 수 없습니다.");
-  CLINIC_DATA = {
-    last_updated: "샘플",
-    clinics: [{
-      id: "newsense_fallback",
-      name: "뉴센스의원",
-      district: "마포구",
-      address: "서울 마포구 신촌로 170 이대푸르지오시티 3층",
-      lat: 37.5563294,
-      lng: 126.9442987,
-      phone: "02-3272-8885",
-      verified: true,
-      prices: { "mounjaro_2.5mg": 280000 },
-      stock: {},
-      notes: "데이터 로드 실패 — 폴백 정보"
-    }]
-  };
-}
-
-async function tryLoadStableDisplayCache() {
-  const stable = readDataCache(HARUSENSE_CACHE.keys.stable, HARUSENSE_CACHE.ttl.stableMs);
-  if (!stable || countPinnedClinics(stable) < 1) return false;
-  return commitClinicData(stripDemoClinics(stable), { force: true });
-}
-
-/** 핀이 0개면 캐시 무시하고 네트워크에서 다시 받기 */
-async function ensureMapHasPins() {
-  if (countPinnedClinics(CLINIC_DATA) > 0) return true;
-  bustClinicCaches("all");
-  const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
-  if (!apiData || countPinnedClinics(apiData) < 1) {
-    console.error("[하루센스] /api/clinics 실데이터 없음 — 샘플 clinics.json만 있으면 지도가 비거나 샘플만 보입니다.");
-  }
-  let overrides = [];
-  try { overrides = await loadClinicOverrides(); } catch (e) {}
-  const merged = await buildMergedClinicData(apiData, staticData, overrides);
-  if (merged && commitClinicData(merged, { force: true })) return true;
-  if (LAST_STABLE_MAP_DATA && clinicMapStats(LAST_STABLE_MAP_DATA).pinned > 0) {
-    return commitClinicData(LAST_STABLE_MAP_DATA, { force: true });
-  }
-  applyClinicFallbackData();
-  return clinicMapStats(CLINIC_DATA).pinned > 0;
-}
-
-async function tryLoadClinicDataFromCache() {
-  const cachedBase = readDataCache(HARUSENSE_CACHE.keys.base, HARUSENSE_CACHE.ttl.baseMs);
-  if (!cachedBase) return false;
-  const cachedOverrides = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs) || [];
-  const merged = await buildMergedClinicData(cachedBase.apiData, cachedBase.staticData, cachedOverrides);
-  if (!merged) return false;
-  return commitClinicData(merged, { force: true });
-}
-
-async function fetchClinicSourcesFromNetwork() {
-  const fetchJson = async (url, noStore) => {
-    try {
-      const resp = await fetch(url, { cache: noStore ? "no-store" : "default" });
-      if (!resp.ok) return null;
-      const data = await resp.json();
-      return data && Array.isArray(data.clinics) ? stripDemoClinics(data) : null;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  const apiData = await fetchJson("/api/clinics", true);
-  const staticData = await fetchJson("/clinics.json", false);
-  return { apiData, staticData };
-}
-
-async function fetchClinicOverridesFromNetwork(force) {
-  if (!force) {
-    const cached = readDataCache(HARUSENSE_CACHE.keys.overrides, HARUSENSE_CACHE.ttl.overridesMs);
-    if (cached) return cached;
-  }
-  const overrides = await loadClinicOverrides();
-  writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
-  return overrides;
-}
-
-async function revalidateClinicData(options = {}) {
-  const force = options.force === true;
-  const prevSig = clinicDataSignature(CLINIC_DATA);
-
-  if (force) bustClinicCaches("overrides");
-
-  const [{ apiData, staticData }, overrides] = await Promise.all([
-    fetchClinicSourcesFromNetwork(),
-    fetchClinicOverridesFromNetwork(force)
-  ]);
-
-  if (!apiData && !staticData) {
-    if (!CLINIC_DATA.clinics || !CLINIC_DATA.clinics.length) applyClinicFallbackData();
-    return false;
-  }
-
-  const merged = await buildMergedClinicData(apiData, staticData, overrides);
-  if (!merged) return false;
-
-  if (apiData || staticData) {
-    const probe = await buildMergedClinicData(apiData, staticData, []);
-    const ref = LAST_STABLE_MAP_DATA || CLINIC_DATA;
-    if (!probe || !isUnsafeDataRegression(ref, probe)) {
-      writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
-    }
-  }
-
-  const committed = commitClinicData(merged, { force });
-  if (!committed) return false;
-  const changed = prevSig !== clinicDataSignature(CLINIC_DATA);
-  return changed || force;
-}
-
-function revalidateClinicDataInBackground() {
-  revalidateClinicData().then(changed => {
-    if (changed || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
-  }).catch(() => {});
-}
-
-async function loadData(options = {}) {
-  const force = options.force === true;
-  if (force) bustClinicCaches("overrides");
-  const changed = await revalidateClinicData({ force });
-  return changed;
-}
-
-function applyOverridesInBackground() {
-  loadClinicOverrides()
-    .then(overrides => {
-      writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
-      const prevSig = clinicDataSignature(CLINIC_DATA);
-      const next = cloneClinicData(CLINIC_DATA);
-      applyClinicOverrides(next, overrides);
-      if (commitClinicData(next, { force: true }) && prevSig !== clinicDataSignature(CLINIC_DATA)) {
-        refreshClinicDisplay();
+    const apiResp = await fetch("/api/clinics?ts=" + Date.now(), { cache: "no-store" });
+    if (apiResp.ok) {
+      const data = await apiResp.json();
+      if (data && Array.isArray(data.clinics)) {
+        CLINIC_DATA = data;
+        return;
       }
-    })
-    .catch(() => {});
-}
-
-async function bootstrapClinicData() {
-  const hadCache = await tryLoadClinicDataFromCache();
-  if (hadCache) {
-    applyOverridesInBackground();
-    revalidateClinicDataInBackground();
-    return true;
-  }
-
-  const changed = await revalidateClinicData({ force: true });
-  if (changed && countPinnedClinics(CLINIC_DATA) > 0) {
-    applyOverridesInBackground();
-    revalidateClinicDataInBackground();
-    return true;
-  }
-
-  const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
-  if (apiData || staticData) {
-    const merged = await buildMergedClinicData(apiData, staticData, []);
-    if (merged && commitClinicData(merged, { force: true })) {
-      writeDataCache(HARUSENSE_CACHE.keys.base, { apiData, staticData });
-      applyOverridesInBackground();
-      revalidateClinicDataInBackground();
-      return false;
     }
+  } catch (apiErr) {
+    console.info("API 데이터 로드 실패, clinics.json으로 폴백합니다.");
   }
-
-  const hadStable = await tryLoadStableDisplayCache();
-  if (hadStable) {
-    revalidateClinicDataInBackground();
-    return true;
+  try {
+    const resp = await fetch("clinics.json?ts=" + Date.now(), { cache: "no-store" });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    CLINIC_DATA = await resp.json();
+  } catch (err) {
+    console.error("clinics.json 로드 실패:", err);
+    CLINIC_DATA = {
+      last_updated: "샘플",
+      clinics: [{
+        id: "newsense_fallback",
+        name: "뉴센스의원",
+        district: "마포구",
+        address: "서울 마포구 신촌로 170 이대푸르지오시티 3층",
+        lat: 37.5563294,
+        lng: 126.9442987,
+        phone: "02-3272-8885",
+        verified: true,
+        prices: { "mounjaro_2.5mg": 280000 },
+        stock: {},
+        notes: "데이터 로드 실패 — 폴백 정보"
+      }]
+    };
   }
-
-  return false;
 }
 
 // ─────────── Map init ───────────
@@ -2938,22 +1393,12 @@ function initMap() {
       { featureType: "transit.station", elementType: "labels", stylers: [{ visibility: "on" }] }
     ]
   });
-  bootstrapClinicData()
-    .then(() => ensureMapHasPins())
-    .then(() => {
-      document.getElementById("loading").style.display = "none";
-      applyI18n();
-      if (appLang === "en") startFxRefresh();
-      refreshClinicDisplay();
-      initRepresentativeForm();
-    })
-    .catch(err => {
-      console.error("[하루센스] 지도 데이터 로드 오류", err);
-      ensureMapHasPins().finally(() => {
-        document.getElementById("loading").style.display = "none";
-        refreshClinicDisplay();
-      });
-    });
+  loadData().then(() => {
+    document.getElementById("loading").style.display = "none";
+    updateHeaderNotice();
+    renderMarkers();
+    initRepresentativeForm();
+  });
 }
 
 // ─────────── Render markers ───────────
@@ -2966,13 +1411,13 @@ function renderMarkers() {
   let visibleCount = 0;
 
   CLINIC_DATA.clinics.forEach(clinic => {
-    if (isDemoClinic(clinic)) return;
     if (!clinicMatchesDistrict(clinic)) return;
-    if (!hasValidCoords(clinic)) return;
 
     const hasPrice = clinicHasSelectedPrice(clinic);
+    const isPharmacy = clinic.type === "pharmacy" || (clinic.name || "").endsWith("약국");
     const verifiedCls = clinic.verified ? " verified" : "";
-    const pharmacyCls = isPharmacy(clinic) ? " pharmacy" : "";
+    const pharmacyCls = isPharmacy ? " pharmacy" : "";
+    const pillSvg = `<svg class="pill-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" fill="#fff"/><rect x="2.5" y="8.5" width="9.5" height="7" rx="3.5" fill="#ffe6b3"/><line x1="12" y1="8.5" x2="12" y2="15.5" stroke="#f59e0b" stroke-width="1.4"/></svg>`;
 
     const el = document.createElement("div");
 
@@ -2981,10 +1426,10 @@ function renderMarkers() {
       el.className = `marker-wrap${verifiedCls}${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
-        <div class="price-marker">${buildPriceMarkerHtml(clinic, price, key)}</div>
+        <div class="price-marker">${isPharmacy ? pillSvg : ""}${formatPriceShort(price)}원</div>
       `;
     } else {
-      const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
+      const label = clinic.stock && clinic.stock[key] === false ? "재고 없음" : "정보 수집중";
       el.className = `marker-wrap no-price${pharmacyCls}`;
       el.innerHTML = `
         <div class="marker-dot"></div>
@@ -3009,12 +1454,11 @@ function renderMarkers() {
 
 // ─────────── Detail sheet ───────────
 function openSheet(clinic) {
-  ACTIVE_SHEET_CLINIC = clinic;
   const content = document.getElementById("sheetContent");
   const verifiedBadge = clinic.verified ? `
     <span class="sheet-verified-badge">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-      ${t("verifiedBadge")}
+      원장 직접 검증
     </span>` : "";
 
   const allKeys = [];
@@ -3033,56 +1477,39 @@ function openSheet(clinic) {
     const info = DRUG_INFO[drugKey];
     const isHighlight = key === selectedKey;
     const inStock = clinicStockAvailable(clinic, key);
-    const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? t("stockOn") : t("stockOff")}</span>`;
-    const formatted = formatPriceFull(Number(clinic.prices[key]));
+    const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? "재고 있음" : "재고 없음"}</span>`;
     return `
       <div class="price-row${isHighlight ? " highlight" : ""}">
-        <div class="price-drug">${drugDisplayName(drugKey)}<span class="dose">${dose}</span>${stockBadge}</div>
-        <div class="price-value">${formatted.value}${formatted.suffix}</div>
+        <div class="price-drug">${info.displayName}<span class="dose">${dose}</span>${stockBadge}</div>
+        <div class="price-value">${Number(clinic.prices[key]).toLocaleString()}<span class="won">원</span></div>
       </div>`;
   }).join("");
 
-  const phoneValue = displayPhone(clinic);
-  const phoneClean = String(phoneValue || "").replace(/[^0-9]/g, "");
-  const phoneDisplay = phoneValue || t("phoneMissing");
+  const phoneClean = (clinic.phone || "").replace(/[^0-9]/g, "");
+  const phoneDisplay = clinic.phone || "전화번호 미등록";
   const callButton = phoneClean ? `
     <a href="tel:${phoneClean}" class="call-button">
       <span class="call-icon">
         <svg viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-2.2 2.2a15.07 15.07 0 0 1-6.59-6.59l2.2-2.21a1 1 0 0 0 .25-1.02A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
       </span>
       <span class="call-text">
-        <span class="call-label">${t("callLabel")}</span>
+        <span class="call-label">바로 전화하기</span>
         <span class="call-number">${phoneDisplay}</span>
       </span>
       <span class="call-arrow">›</span>
     </a>` : "";
-  const directionButton = `
-    <a href="${googleDirectionsUrl(clinic)}" target="_blank" rel="noopener noreferrer" class="direction-button">
-      <span class="direction-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2 4 20l8-3 8 3-8-18zm0 5.3 3.8 8.7-3.8-1.4L8.2 16 12 7.3z"/></svg>
-      </span>
-      <span class="direction-text">
-        <span class="direction-label">${appLang === "en" ? "Directions" : "길찾기"}</span>
-        <span class="direction-title">${appLang === "en" ? "Google Maps" : "구글맵"}</span>
-      </span>
-    </a>`;
-  const parkingRow = `
-    <div class="parking-row">
-      <span class="parking-label">${appLang === "en" ? "Parking" : "주차"}</span>
-      <span>${parkingText(clinic)}<span class="parking-meta">${parkingMetaText(clinic)}</span></span>
-    </div>`;
 
   const priceSection = allKeys.length > 0 ? `
     <div class="price-section-label">
-      <span class="label">${t("priceSection")}</span>
-      <span class="count">${allKeys.length}${t("priceCount")}</span>
+      <span class="label">노출 가격</span>
+      <span class="count">${allKeys.length}개 항목</span>
     </div>
     ${priceRows}
   ` : `
     <div class="info-empty">
       <div class="info-empty-icon">📋</div>
-      <div class="info-empty-title">${t("emptyPriceTitle")}</div>
-      <div class="info-empty-text">${t("emptyPriceText")}</div>
+      <div class="info-empty-title">가격 정보 수집중</div>
+      <div class="info-empty-text">정확한 가격은 의원에 직접 전화로 문의해주세요.</div>
     </div>
   `;
 
@@ -3093,21 +1520,17 @@ function openSheet(clinic) {
   content.innerHTML = `
     <div class="sheet-clinic-header">
       <div class="sheet-name-wrap">
-        <a href="${naverMapUrl}" target="_blank" rel="noopener noreferrer" class="sheet-name-link" title="${t("naverTitle")}">
+        <a href="${naverMapUrl}" target="_blank" rel="noopener noreferrer" class="sheet-name-link" title="네이버 지도에서 ${clinic.name} 보기">
           <h2 class="sheet-name">${clinic.name}<span class="naver-icon" aria-hidden="true">↗</span></h2>
         </a>
         ${verifiedBadge}
       </div>
-      <button class="sheet-close" id="sheetClose" aria-label="Close">×</button>
+      <button class="sheet-close" id="sheetClose" aria-label="닫기">×</button>
     </div>
-    <div class="sheet-name-hint">${t("sheetHint")}</div>
+    <div class="sheet-name-hint">의원 이름을 누르면 네이버 지도에서 상세 정보(주차·진료시간·후기)를 확인하실 수 있습니다</div>
     <div class="sheet-district">${clinic.district || ""}</div>
     <div class="sheet-address">${clinic.address || ""}</div>
-    <div class="sheet-action-row${callButton ? "" : " single"}">
-      ${callButton || ""}
-      ${directionButton}
-    </div>
-    ${parkingRow}
+    ${callButton}
     ${priceSection}
     ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
   `;
@@ -3116,40 +1539,10 @@ function openSheet(clinic) {
   document.getElementById("backdrop").classList.add("open");
 }
 function closeSheet() {
-  ACTIVE_SHEET_CLINIC = null;
   document.getElementById("sheet").classList.remove("open");
   document.getElementById("backdrop").classList.remove("open");
 }
 document.getElementById("backdrop").addEventListener("click", closeSheet);
-
-function initLangToggle() {
-  const group = document.querySelector(".lang-toggle");
-  if (!group || group.dataset.bound === "true") return;
-  group.dataset.bound = "true";
-  group.querySelectorAll(".lang-toggle-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const lang = btn.dataset.lang;
-      if (lang && lang !== appLang) setLang(lang);
-    });
-  });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  applyI18n();
-  initLangToggle();
-  window.addEventListener("resize", applyBrandTitle);
-  const params = new URLSearchParams(location.search);
-  const drug = params.get("drug");
-  if (drug === "wegovy") {
-    state.drugKey = "wegovy";
-    state.dose = "0.25mg";
-    updateDrugGroupStates();
-  } else if (drug === "mounjaro") {
-    state.drugKey = "mounjaro";
-    state.dose = "2.5mg";
-    updateDrugGroupStates();
-  }
-});
 
 // ─────────── Drug/Dose toggle handling ───────────
 function updateDrugGroupStates() {
@@ -3163,15 +1556,6 @@ function updateDrugGroupStates() {
 }
 
 document.getElementById("drugToggleBar").addEventListener("click", (e) => {
-  const group = e.target.closest(".drug-group");
-  if (group && !e.target.closest(".dose-btn")) {
-    state.drugKey = group.dataset.drug;
-    const first = group.querySelector(".dose-btn");
-    if (first) state.dose = first.dataset.dose;
-    updateDrugGroupStates();
-    renderMarkers();
-    return;
-  }
   const btn = e.target.closest(".dose-btn");
   if (!btn) return;
   state.drugKey = btn.dataset.drug;
@@ -3210,15 +1594,9 @@ if (guideTabsEl) {
 
 // ─────────── 요양기관 관계자 수정 (DB 기반) ───────────
 const REP_LOGIN_KEY = "harusense_rep_login";
-const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
-const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbz-ICcd5njyuklOzdJ4tacR620JU32pqJ_dj2otz2xLZJKTDnW1Qt3VBMibaj5rlASdpA/exec";
-/** false = 신규 핀은 운영자 엑셀→clinics.json 만. true = 시트 getSubmittedClinics (나중·자동좌표용). */
-const SUBMITTED_CLINICS_ON_MAP = false;
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
-let REP_CLOSE_TIMER = null;
 const REP_KEYS = [
   { drug: "mounjaro", dose: "2.5mg" },
   { drug: "mounjaro", dose: "5mg" },
@@ -3234,8 +1612,7 @@ const REP_KEYS = [
 // 로그인한 요양기관을 DB 데이터에서 찾기 (요양기관번호 기준)
 function representativeClinic() {
   return (CLINIC_DATA.clinics || []).find(
-    c => (c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO) ||
-      (c.id && String(c.id) === REP_ACTIVE_INSTITUTION_NO)
+    c => c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO
   ) || null;
 }
 
@@ -3255,18 +1632,7 @@ function setStockButton(button, inStock) {
 function renderRepresentativeEditor() {
   const clinic = representativeClinic();
   const box = document.getElementById("repPriceFields");
-  const submitBtn = document.getElementById("repSubmitBtn");
-  if (!box) return;
-  if (!clinic) {
-    document.getElementById("repClinicTitle").textContent = "계정 확인 완료";
-    document.getElementById("repClinicSub").textContent = `${REP_ACTIVE_INSTITUTION_NO} · 지도 데이터 연결 전`;
-    if (submitBtn) submitBtn.hidden = true;
-    box.innerHTML = `
-      <p class="rep-help">로그인은 완료되었습니다. 지도·가격 수정은 운영 검수(엑셀 반영) 후 이용 가능합니다. 요양기관번호가 지도 데이터에 등록되면 이 화면에 가격·재고 항목이 표시됩니다.</p>
-    `;
-    return;
-  }
-  if (submitBtn) submitBtn.hidden = false;
+  if (!clinic || !box) return;
   document.getElementById("repClinicTitle").textContent = `${clinic.name} 정보 수정`;
   document.getElementById("repClinicSub").textContent = `${clinic.address || ""} · ${clinic.phone || "전화번호 미등록"}`;
   const groups = ["mounjaro", "wegovy"].map(drug => {
@@ -3296,21 +1662,15 @@ function openRepModal() {
 function closeRepModal() {
   document.getElementById("repModalBackdrop").classList.remove("open");
   document.getElementById("repModal").classList.remove("open");
-  if (REP_CLOSE_TIMER) {
-    clearTimeout(REP_CLOSE_TIMER);
-    REP_CLOSE_TIMER = null;
-  }
 }
 // 로그인 / 신청 / 수정 뷰 전환
 function showRepView(view) {
   const loginView = document.getElementById("repLoginView");
   const requestView = document.getElementById("repRequestView");
-  const passwordView = document.getElementById("repPasswordView");
   const editView = document.getElementById("repEditView");
-  if (!loginView || !requestView || !passwordView || !editView) return;
+  if (!loginView || !requestView || !editView) return;
   loginView.hidden = view !== "login";
   requestView.hidden = view !== "request";
-  passwordView.hidden = view !== "password";
   editView.hidden = view !== "edit";
   if (view === "edit") renderRepresentativeEditor();
 }
@@ -3346,7 +1706,6 @@ function resetRepresentativeRequest() {
   document.getElementById("repRequestRole").value = "";
   document.getElementById("repRequestConfirm").checked = false;
   setRepMessage("repRequestMessage", "");
-  setRepMessage("repRequestTopMessage", "");
 }
 
 async function handleRepresentativeRequest() {
@@ -3365,22 +1724,13 @@ async function handleRepresentativeRequest() {
   }
 
   setRepMessage("repRequestMessage", "신청을 접수하는 중입니다...", "");
-  setRepMessage("repRequestTopMessage", "신청을 접수하는 중입니다...", "");
-  submitRepresentativeRequestToGoogleForm(payload);
+
+  submitRepresentativeRequestByForm(payload);
   resetRepresentativeRequest();
-  const successMessage = "신청이 접수되었습니다. 하루센스에서 확인 후 보통 6시간 이내에 안내드립니다.";
-  setRepMessage("repRequestMessage", successMessage, "success");
-  setRepMessage("repRequestTopMessage", successMessage, "success");
-  const requestBody = document.querySelector("#repRequestView .rep-modal-body");
-  if (requestBody) requestBody.scrollTo({ top: 0, behavior: "smooth" });
-  if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
-  REP_CLOSE_TIMER = setTimeout(() => {
-    closeRepModal();
-    showRepView("login");
-  }, 7000);
+  setRepMessage("repRequestMessage", "신청이 접수되었습니다. 하루센스에서 확인 후 보통 6시간 이내에 안내드립니다.", "success");
 }
 
-function submitRepresentativeRequestToGoogleForm(payload) {
+function submitRepresentativeRequestByForm(payload) {
   let iframe = document.getElementById("repRequestSubmitFrame");
   if (!iframe) {
     iframe = document.createElement("iframe");
@@ -3392,21 +1742,22 @@ function submitRepresentativeRequestToGoogleForm(payload) {
 
   const form = document.createElement("form");
   form.method = "POST";
-  form.action = GOOGLE_FORM_RESPONSE_URL;
+  form.action = "https://formsubmit.co/hyung73@gmail.com";
   form.target = "repRequestSubmitFrame";
   form.style.display = "none";
 
   const fields = {
-    "entry.185814939": payload.clinic_name,
-    "entry.1209405268": payload.clinic_phone,
-    "entry.1574040771": payload.institution_no,
-    "entry.896388470": payload.manager_name,
-    "entry.1298534737": payload.manager_role,
-    "entry.1687426707": payload.manager_mobile,
-    "entry.1052378561": payload.manager_email,
-    "entry.423525017": "본인은 해당 요양기관의 관계자이며, 입력한 정보가 사실과 다름없음을 확인합니다.",
-    "fvv": "1",
-    "pageHistory": "0"
+    _subject: `[하루센스] 요양기관 정보 수정 권한 신청 - ${payload.clinic_name}`,
+    _template: "table",
+    _captcha: "false",
+    요양기관명: payload.clinic_name,
+    요양기관_대표번호: payload.clinic_phone,
+    요양기관번호: payload.institution_no,
+    담당자_이름: payload.manager_name,
+    담당자_직책: payload.manager_role,
+    담당자_연락처: payload.manager_mobile,
+    담당자_이메일: payload.manager_email,
+    관계자_확인: "동의"
   };
 
   Object.entries(fields).forEach(([name, value]) => {
@@ -3422,34 +1773,6 @@ function submitRepresentativeRequestToGoogleForm(payload) {
   setTimeout(() => form.remove(), 1000);
 }
 
-function accountApi(action, params = {}) {
-  return new Promise((resolve, reject) => {
-    const callbackName = `harusenseAccountCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const script = document.createElement("script");
-    const query = new URLSearchParams({ action, callback: callbackName, ...params });
-    const cleanup = () => {
-      delete window[callbackName];
-      script.remove();
-    };
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error("timeout"));
-    }, 12000);
-    window[callbackName] = data => {
-      clearTimeout(timer);
-      cleanup();
-      resolve(data);
-    };
-    script.onerror = () => {
-      clearTimeout(timer);
-      cleanup();
-      reject(new Error("network"));
-    };
-    script.src = `${ACCOUNT_API_URL}?${query.toString()}`;
-    document.body.appendChild(script);
-  });
-}
-
 // 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
 async function handleRepLogin() {
   const id = document.getElementById("repInstitutionNo").value.trim();
@@ -3462,28 +1785,22 @@ async function handleRepLogin() {
   setRepMessage("repLoginMessage", "로그인 중입니다...", "");
 
   try {
-    const data = await accountApi("login", {
-      institution_no: id,
-      password: pw
+    const apiResp = await fetch("/api/login", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ institution_no: id, password: pw })
     });
+    const data = await apiResp.json().catch(() => ({}));
 
-    if (data.ok) {
+    if (apiResp.ok && data.ok) {
       REP_ACTIVE_INSTITUTION_NO = id;
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
 
+      // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
+      await loadData();
       setRepMessage("repLoginMessage", "", "");
-      if (data.must_change_password) {
-        document.getElementById("repNewPassword").value = "";
-        document.getElementById("repNewPasswordConfirm").value = "";
-        setRepMessage("repPasswordMessage", "");
-        showRepView("password");
-      } else {
-        // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
-        await loadData({ force: true });
-        refreshClinicDisplay();
-        showRepresentativeEditor(true);
-      }
+      showRepresentativeEditor(true);
     } else {
       setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
     }
@@ -3492,58 +1809,10 @@ async function handleRepLogin() {
   }
 }
 
-async function handleRepPasswordChange() {
-  const newPassword = document.getElementById("repNewPassword").value.trim();
-  const confirm = document.getElementById("repNewPasswordConfirm").value.trim();
-
-  if (!newPassword || !confirm) {
-    setRepMessage("repPasswordMessage", "새 비밀번호를 입력해주세요.", "error");
-    return;
-  }
-  if (newPassword.length < 8) {
-    setRepMessage("repPasswordMessage", "새 비밀번호는 8자 이상으로 입력해주세요.", "error");
-    return;
-  }
-  if (newPassword !== confirm) {
-    setRepMessage("repPasswordMessage", "새 비밀번호가 서로 다릅니다.", "error");
-    return;
-  }
-  if (newPassword === REP_ACTIVE_PASSWORD) {
-    setRepMessage("repPasswordMessage", "임시 비밀번호와 다른 새 비밀번호를 입력해주세요.", "error");
-    return;
-  }
-
-  setRepMessage("repPasswordMessage", "비밀번호를 변경하는 중입니다...", "");
-  const passwordSubmitBtn = document.getElementById("repPasswordSubmitBtn");
-  if (passwordSubmitBtn) passwordSubmitBtn.disabled = true;
-  try {
-    const data = await accountApi("changePassword", {
-      institution_no: REP_ACTIVE_INSTITUTION_NO,
-      current_password: REP_ACTIVE_PASSWORD,
-      new_password: newPassword
-    });
-    if (data.ok) {
-      REP_ACTIVE_PASSWORD = newPassword;
-      setRepMessage("repPasswordMessage", "비밀번호가 변경되었습니다.", "success");
-      showRepresentativeEditor(true);
-    } else {
-      setRepMessage("repPasswordMessage", data.error || "비밀번호 변경에 실패했습니다.", "error");
-    }
-  } catch (err) {
-    setRepMessage("repPasswordMessage", "네트워크 오류로 비밀번호를 변경하지 못했습니다.", "error");
-  } finally {
-    if (passwordSubmitBtn) passwordSubmitBtn.disabled = false;
-  }
-}
-
-// 제출: 관계자 계정표에 저장 → 지도 로딩 시 같은 요양기관번호에만 덮어쓰기
+// 제출: DB에 저장 → 성공하면 서버에서 다시 읽어 모두에게 보이는 진짜 반영
 async function handleRepSubmit() {
   if (!REP_ACTIVE_INSTITUTION_NO) {
     setRepMessage("repSubmitMessage", "먼저 로그인해주세요.", "error");
-    return;
-  }
-  if (!representativeClinic()) {
-    setRepMessage("repSubmitMessage", "이 계정은 아직 지도 요양기관 데이터와 연결되어 있지 않습니다.", "error");
     return;
   }
 
@@ -3557,37 +1826,32 @@ async function handleRepSubmit() {
     apiItems[key] = { price: raw, in_stock: inStock };
   });
 
-  setRepMessage("repSubmitMessage", "저장 중입니다. 보통 5~15초 정도 걸릴 수 있습니다. 창을 닫지 말고 잠시만 기다려주세요.", "");
-  const submitBtn = document.getElementById("repSubmitBtn");
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = "저장 중입니다";
-  }
+  setRepMessage("repSubmitMessage", "제출 중입니다...", "");
 
   try {
-    const data = await accountApi("updatePrices", {
-      institution_no: REP_ACTIVE_INSTITUTION_NO,
-      password: REP_ACTIVE_PASSWORD,
-      items_json: JSON.stringify(apiItems)
+    const apiResp = await fetch("/api/update-clinic", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        institution_no: REP_ACTIVE_INSTITUTION_NO,
+        password: REP_ACTIVE_PASSWORD,
+        items: apiItems
+      })
     });
+    const data = await apiResp.json().catch(() => ({}));
 
-    if (data.ok) {
-      await loadData({ force: true });
-      refreshClinicDisplay();
+    if (apiResp.ok && data.ok) {
+      // DB 저장 성공 → 서버에서 최신 데이터 다시 읽어 지도 갱신 (모두에게 보이는 진짜 반영)
+      await loadData();
+      updateHeaderNotice();
+      renderMarkers();
       renderRepresentativeEditor();
       setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
-      if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
-      REP_CLOSE_TIMER = setTimeout(closeRepModal, 5000);
     } else {
       setRepMessage("repSubmitMessage", data.error || "저장에 실패했습니다. 잠시 후 다시 시도해주세요.", "error");
     }
   } catch (apiErr) {
     setRepMessage("repSubmitMessage", "네트워크 오류로 저장하지 못했습니다. 인터넷 연결을 확인해주세요.", "error");
-  } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "수정 내용 제출";
-    }
   }
 }
 
@@ -3602,9 +1866,6 @@ function initRepresentativeForm() {
   const closeBtn1 = document.getElementById("repCloseBtn1");
   const closeBtn2 = document.getElementById("repCloseBtn2");
   const closeBtn3 = document.getElementById("repCloseBtn3");
-  const closeBtn4 = document.getElementById("repCloseBtn4");
-  const passwordSubmitBtn = document.getElementById("repPasswordSubmitBtn");
-  const passwordBackBtn = document.getElementById("repPasswordBackBtn");
   const backdrop = document.getElementById("repModalBackdrop");
   if (!openBtn || openBtn.dataset.bound === "true") return;
   openBtn.dataset.bound = "true";
@@ -3622,7 +1883,6 @@ function initRepresentativeForm() {
   closeBtn1.addEventListener("click", closeRepModal);
   closeBtn2.addEventListener("click", closeRepModal);
   closeBtn3.addEventListener("click", closeRepModal);
-  closeBtn4.addEventListener("click", closeRepModal);
   backdrop.addEventListener("click", closeRepModal);
 
   // 로그인 / 신청 / 제출
@@ -3636,21 +1896,11 @@ function initRepresentativeForm() {
     setRepMessage("repRequestMessage", "");
     showRepView("login");
   });
-  passwordSubmitBtn.addEventListener("click", handleRepPasswordChange);
-  passwordBackBtn.addEventListener("click", () => {
-    REP_ACTIVE_INSTITUTION_NO = "";
-    REP_ACTIVE_PASSWORD = "";
-    setRepMessage("repPasswordMessage", "");
-    showRepView("login");
-  });
   submitBtn.addEventListener("click", handleRepSubmit);
 
   // 엔터키로 로그인
   document.getElementById("repPassword").addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleRepLogin();
-  });
-  document.getElementById("repNewPasswordConfirm").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleRepPasswordChange();
   });
 
   // 로그아웃 → 로그인 화면으로
@@ -3665,110 +1915,14 @@ function initRepresentativeForm() {
   });
 }
 
-// ─────────── 병의원/약국 검색 ───────────
-(function () {
-  // "하루센스" 클릭 시 강제 새로고침
-  const brand = document.querySelector(".brand-name");
-  if (brand) {
-    brand.style.cursor = "pointer";
-    brand.title = "새로고침";
-    brand.addEventListener("click", () => location.reload());
-  }
-
-  const backdrop  = document.getElementById("searchBackdrop");
-  const modal     = document.getElementById("searchModal");
-  const input     = document.getElementById("searchInput");
-  const results   = document.getElementById("searchResults");
-  const cancelBtn = document.getElementById("searchCancel");
-  if (!backdrop || !modal || !input || !results) return;
-
-  function isPh(c) {
-    return (typeof isPharmacy === "function") ? isPharmacy(c) : (c.type === "pharmacy");
-  }
-
-  function render(list) {
-    if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || CLINIC_DATA.clinics.length === 0) {
-      results.innerHTML = '<div class="search-empty">' + t("searchLoading") + '</div>';
-      return;
-    }
-    if (!list.length) {
-      results.innerHTML = '<div class="search-empty">' + t("searchEmpty") + '</div>';
-      return;
-    }
-    results.innerHTML = list.slice(0, 60).map(c => {
-      const ph = isPh(c);
-      const typeCls = ph ? "pharmacy" : "clinic";
-      const icon = ph ? "💊" : "🏥";
-      const label = ph ? t("searchPharmacy") : t("searchClinic");
-      const meta = [c.district, c.address].filter(Boolean).join(" · ");
-      return '<button class="search-item" data-idx="' + c.__idx + '">' +
-          '<span class="search-item-icon ' + typeCls + '">' + icon + '</span>' +
-          '<span class="search-item-body">' +
-            '<span class="search-item-name">' + (c.name || "") + '</span>' +
-            '<span class="search-item-meta">' + meta + '</span>' +
-          '</span>' +
-          '<span class="search-type-badge ' + typeCls + '">' + label + '</span>' +
-        '</button>';
-    }).join("");
-  }
-
-  function doSearch(q) {
-    const clinics = (CLINIC_DATA && CLINIC_DATA.clinics) || [];
-    clinics.forEach((c, i) => { c.__idx = i; });
-    const query = (q || "").trim().toLowerCase();
-    const list = !query ? clinics.slice() : clinics.filter(c =>
-      ((c.name || "") + " " + (c.address || "") + " " + (c.district || "")).toLowerCase().indexOf(query) !== -1
-    );
-    render(list);
-  }
-
-  window.openClinicSearch = function () {
-    backdrop.classList.add("open");
-    modal.classList.add("open");
-    input.value = "";
-    doSearch("");
-    setTimeout(() => input.focus(), 250);
-  };
-  function closeSearch() {
-    backdrop.classList.remove("open");
-    modal.classList.remove("open");
-  }
-
-  input.addEventListener("input", () => doSearch(input.value));
-  if (cancelBtn) cancelBtn.addEventListener("click", closeSearch);
-  backdrop.addEventListener("click", closeSearch);
-
-  results.addEventListener("click", (e) => {
-    const item = e.target.closest(".search-item");
-    if (!item) return;
-    const clinic = (CLINIC_DATA.clinics || [])[Number(item.dataset.idx)];
-    if (!clinic) return;
-    closeSearch();
-    if (map && clinic.lat && clinic.lng) {
-      map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
-      if (map.getZoom() < 15) map.setZoom(15);
-    }
-    if (typeof openSheet === "function") setTimeout(() => openSheet(clinic), 320);
-  });
-})();
-
 // Expose for Google Maps callback
 window.initMap = initMap;
 </script>
 
 <!-- Google Maps JavaScript API -->
-<script>
-(function () {
-  var lang = window.__HS_LANG === "en" ? "en" : "ko";
-  var s = document.createElement("script");
-  s.async = true;
-  s.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=" + lang + "&region=KR";
-  document.head.appendChild(s);
-})();
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=ko&region=KR">
 </script>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-
 
 </body>
 </html>
