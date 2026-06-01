@@ -614,6 +614,25 @@ body {
   line-height: 1.45;
 }
 .parking-label { font-weight: 700; color: var(--ink); flex-shrink: 0; }
+.parking-value { font-weight: 700; }
+.parking-row.available {
+  background: #fff7ed;
+  border-color: #fecaca;
+}
+.parking-row.available .parking-value {
+  color: #dc2626;
+}
+.parking-row.unavailable {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.parking-row.unavailable .parking-value {
+  color: #b91c1c;
+}
+.parking-row.pending .parking-value {
+  color: var(--mute);
+  font-weight: 600;
+}
 .parking-meta { color: var(--mute); }
 @media (max-width: 380px) {
   .sheet-action-row { grid-template-columns: 1fr; }
@@ -859,6 +878,37 @@ body {
 }
 .stock-toggle.on { border-color: var(--verified); background: var(--verified-soft); color: var(--verified); }
 .stock-toggle.off { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
+.rep-parking-card {
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid #fecaca;
+  background: #fff7ed;
+  border-radius: 12px;
+}
+.rep-parking-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.parking-toggle {
+  border-color: #fecaca;
+  background: #fff;
+  color: #9ca3af;
+}
+.parking-toggle.on {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #dc2626;
+}
+.rep-parking-help {
+  margin: 8px 0 0;
+  color: var(--mute);
+  font-size: 12px;
+  line-height: 1.45;
+}
 .rep-button {
   width: 100%; height: 50px; border: none; border-radius: 10px;
   background: var(--blue); color: #fff; font-family: inherit;
@@ -2359,7 +2409,10 @@ function applyClinicOverrides(data, overrides) {
       stock,
       price_updated_at,
       updated_at: update.updated_at || clinic.updated_at,
-      updated_by: update.institution_no || clinic.updated_by
+      updated_by: update.institution_no || clinic.updated_by,
+      provider_parking: firstValue(update.parking_available, update.provider_parking, clinic.provider_parking),
+      provider_parking_note: firstValue(update.parking_note, update.provider_parking_note, clinic.provider_parking_note),
+      parking_updated_at: firstValue(update.parking_updated_at, update.updated_at, clinic.parking_updated_at)
     };
   });
 
@@ -2372,39 +2425,6 @@ function clinicCacheKeys(clinic) {
     clinic.institution_no,
     clinic.name ? String(clinic.name).replace(/\s+/g, "") : ""
   ].filter(Boolean).map(v => String(v).trim());
-}
-
-function applyParkingCache(data, cacheData) {
-  if (!data || !Array.isArray(data.clinics) || !cacheData) return data;
-  const rows = Array.isArray(cacheData) ? cacheData : (Array.isArray(cacheData.clinics) ? cacheData.clinics : []);
-  if (!rows.length) return data;
-
-  const byKey = new Map();
-  rows.forEach(row => {
-    if (!row) return;
-    [row.id, row.institution_no, row.name ? String(row.name).replace(/\s+/g, "") : ""]
-      .filter(Boolean)
-      .forEach(key => byKey.set(String(key).trim(), row));
-  });
-
-  data.clinics = data.clinics.map(clinic => {
-    const match = clinicCacheKeys(clinic).map(key => byKey.get(key)).find(Boolean);
-    if (!match) return clinic;
-    return {
-      ...clinic,
-      cached_phone: firstValue(match.phone, match.cached_phone, match.naver_phone, match.google_phone, clinic.cached_phone),
-      naver_phone: firstValue(match.naver_phone, clinic.naver_phone),
-      google_phone: firstValue(match.google_phone, clinic.google_phone),
-      cached_parking: firstValue(match.parking, match.cached_parking, match.naver_parking, match.google_parking, clinic.cached_parking),
-      naver_parking: firstValue(match.naver_parking, clinic.naver_parking),
-      google_parking: firstValue(match.google_parking, clinic.google_parking),
-      parking_source: firstValue(match.parking_source, match.source, clinic.parking_source),
-      parking_updated_at: firstValue(match.parking_updated_at, match.updated_at, clinic.parking_updated_at),
-      naver_url: firstValue(match.naver_url, clinic.naver_url),
-      google_url: firstValue(match.google_url, clinic.google_url)
-    };
-  });
-  return data;
 }
 
 function applyPriceCache(data, cacheData) {
@@ -2450,16 +2470,6 @@ function applyPriceCache(data, cacheData) {
 async function loadPriceCache() {
   try {
     const resp = await fetch("/price-cache.json", { cache: "default" });
-    if (!resp.ok) return null;
-    return await resp.json();
-  } catch (err) {
-    return null;
-  }
-}
-
-async function loadParkingCache() {
-  try {
-    const resp = await fetch("/parking-cache.json", { cache: "default" });
     if (!resp.ok) return null;
     return await resp.json();
   } catch (err) {
@@ -2650,6 +2660,11 @@ function parkingSourceLabel(source) {
 }
 
 function normalizeParkingValue(raw) {
+  const rawText = raw == null ? "" : String(raw).trim();
+  const lower = rawText.toLowerCase();
+  if (!rawText || lower.includes("preparing") || lower.includes("checking") || rawText.includes("준비") || rawText.includes("확인 중")) {
+    return "";
+  }
   if (raw === true || raw === "true" || raw === "yes" || raw === "available" || raw === "가능") {
     return appLang === "en" ? "Parking available" : "주차 가능";
   }
@@ -2662,14 +2677,22 @@ function normalizeParkingValue(raw) {
 function parkingInfo(clinic) {
   const sources = [
     { value: firstValue(clinic.provider_parking, clinic.provider_parking_note), source: "provider" },
-    { value: firstValue(clinic.verified_parking, clinic.operator_parking, clinic.parking, clinic.parking_status, clinic.parking_note), source: "verified" },
-    { value: firstValue(clinic.naver_parking, clinic.google_parking, clinic.cached_parking, clinic.parking_cache, clinic.parking_cache_note), source: firstValue(clinic.parking_source, "cached") }
+    { value: firstValue(clinic.verified_parking, clinic.operator_parking, clinic.parking, clinic.parking_status, clinic.parking_note), source: "verified" }
   ];
   for (const item of sources) {
     const text = normalizeParkingValue(item.value);
     if (text) return { text, source: parkingSourceLabel(item.source), pending: false };
   }
   return { text: appLang === "en" ? "Parking info preparing" : "주차 정보 준비 중", source: "", pending: true };
+}
+
+function parkingStatusClass(clinic) {
+  const info = parkingInfo(clinic);
+  const text = String(info.text || "");
+  if (info.pending) return "pending";
+  if (/가능|available/i.test(text) && !/불가|not|unavailable|필요/i.test(text)) return "available";
+  if (/불가|not|unavailable|필요/i.test(text)) return "unavailable";
+  return "cached";
 }
 
 function parkingText(clinic) {
@@ -2762,7 +2785,6 @@ async function buildMergedClinicData(apiData, staticData, overrides) {
     applySubmittedClinics(data, submittedClinics);
   }
   applyClinicOverrides(data, overrides || []);
-  applyParkingCache(data, await loadParkingCache());
   return data;
 }
 
@@ -3132,9 +3154,9 @@ function openSheet(clinic) {
       </span>
     </a>`;
   const parkingRow = `
-    <div class="parking-row">
+    <div class="parking-row ${parkingStatusClass(clinic)}">
       <span class="parking-label">${appLang === "en" ? "Parking" : "주차"}</span>
-      <span>${parkingText(clinic)}<span class="parking-meta">${parkingMetaText(clinic)}</span></span>
+      <span><span class="parking-value">${parkingText(clinic)}</span><span class="parking-meta">${parkingMetaText(clinic)}</span></span>
     </div>`;
 
   const priceSection = allKeys.length > 0 ? `
@@ -3277,7 +3299,7 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbz-ICcd5njyuklOzdJ4tacR620JU32pqJ_dj2otz2xLZJKTDnW1Qt3VBMibaj5rlASdpA/exec";
+const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbxT1k19dKoPxld6NFwbHQPqC_b9csDQubL1LErJ3ATmr71A-wvPv4XYE3t5V7quHpyROA/exec";
 /** false = 신규 핀은 운영자 엑셀→clinics.json 만. true = 시트 getSubmittedClinics (나중·자동좌표용). */
 const SUBMITTED_CLINICS_ON_MAP = false;
 let REP_ACTIVE_INSTITUTION_NO = "";
@@ -3316,6 +3338,11 @@ function setStockButton(button, inStock) {
   button.classList.toggle("off", !inStock);
   button.textContent = inStock ? "재고 있음" : "재고 없음";
 }
+function setParkingButton(button, available) {
+  button.dataset.parking = available ? "true" : "false";
+  button.classList.toggle("on", available);
+  button.textContent = available ? "주차 가능" : "주차 정보 없음";
+}
 
 function renderRepresentativeEditor() {
   const clinic = representativeClinic();
@@ -3334,6 +3361,15 @@ function renderRepresentativeEditor() {
   if (submitBtn) submitBtn.hidden = false;
   document.getElementById("repClinicTitle").textContent = `${clinic.name} 정보 수정`;
   document.getElementById("repClinicSub").textContent = `${clinic.address || ""} · ${clinic.phone || "전화번호 미등록"}`;
+  const parkingAvailable = normalizeParkingValue(firstValue(clinic.provider_parking, clinic.verified_parking, clinic.parking)).includes("주차 가능");
+  const parkingControl = `
+    <div class="rep-parking-card">
+      <div class="rep-parking-title">
+        <span>주차 여부</span>
+        <button class="stock-toggle parking-toggle ${parkingAvailable ? "on" : ""}" type="button" id="repParkingToggle" data-parking="${parkingAvailable ? "true" : "false"}">${parkingAvailable ? "주차 가능" : "주차 정보 없음"}</button>
+      </div>
+      <div class="rep-parking-help">주차 가능 기관은 상세정보에서 빨간색으로 강조됩니다. 불확실하면 켜지 마세요.</div>
+    </div>`;
   const groups = ["mounjaro", "wegovy"].map(drug => {
     const items = REP_KEYS.filter(item => item.drug === drug).map(item => {
       const key = priceKey(item.drug, item.dose);
@@ -3348,10 +3384,13 @@ function renderRepresentativeEditor() {
     }).join("");
     return `<div class="rep-drug-title">${DRUG_INFO[drug].fullName}</div>${items}`;
   }).join("");
-  box.innerHTML = groups;
+  box.innerHTML = parkingControl + groups;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
+    if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
   });
+  const parkingBtn = document.getElementById("repParkingToggle");
+  if (parkingBtn) parkingBtn.addEventListener("click", () => setParkingButton(parkingBtn, parkingBtn.dataset.parking !== "true"));
 }
 // 모달 열기/닫기
 function openRepModal() {
@@ -3621,6 +3660,8 @@ async function handleRepSubmit() {
     const inStock = stockButton ? stockButton.dataset.stock === "true" : true;
     apiItems[key] = { price: raw, in_stock: inStock };
   });
+  const parkingBtn = document.getElementById("repParkingToggle");
+  const parkingAvailable = parkingBtn ? parkingBtn.dataset.parking === "true" : false;
 
   setRepMessage("repSubmitMessage", "저장 중입니다. 보통 5~15초 정도 걸릴 수 있습니다. 창을 닫지 말고 잠시만 기다려주세요.", "");
   const submitBtn = document.getElementById("repSubmitBtn");
@@ -3633,7 +3674,8 @@ async function handleRepSubmit() {
     const data = await accountApi("updatePrices", {
       institution_no: REP_ACTIVE_INSTITUTION_NO,
       password: REP_ACTIVE_PASSWORD,
-      items_json: JSON.stringify(apiItems)
+      items_json: JSON.stringify(apiItems),
+      parking_available: parkingAvailable ? "true" : ""
     });
 
     if (data.ok) {
