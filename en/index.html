@@ -3299,12 +3299,13 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbx-HG5vwmF6EbhL83pvP4iULbl7Zh-JVb7dsVipbdMGK1XIkSp3-YOoRtnL3y4duSsCgw/exec";
+const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbzoYPEtOKWH4-4hn8YjrwwHEdIQnSHbh9bAUxX_2chhcHFtBJnZbi71Oupyj784Jb5Whw/exec";
 /** true = 운영자가 시트에서 위도/경도 입력 후 지도표시상태=반영 처리한 신청기관만 지도에 추가합니다. 자동좌표는 사용하지 않습니다. */
 const SUBMITTED_CLINICS_ON_MAP = true;
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
+let REP_LOGIN_CLINIC = null;
 let REP_CLOSE_TIMER = null;
 const REP_KEYS = [
   { drug: "mounjaro", dose: "2.5mg" },
@@ -3320,10 +3321,30 @@ const REP_KEYS = [
 
 // 로그인한 요양기관을 DB 데이터에서 찾기 (요양기관번호 기준)
 function representativeClinic() {
-  return (CLINIC_DATA.clinics || []).find(
+  const clinic = (CLINIC_DATA.clinics || []).find(
     c => (c.institution_no && c.institution_no === REP_ACTIVE_INSTITUTION_NO) ||
       (c.id && String(c.id) === REP_ACTIVE_INSTITUTION_NO)
   ) || null;
+  return clinic || REP_LOGIN_CLINIC || null;
+}
+
+function buildRepresentativeFallbackClinic(loginClinic, institutionNo) {
+  const clinic = loginClinic || {};
+  const id = String(clinic.id || institutionNo || "").trim();
+  const name = String(clinic.name || clinic.organization_name || "Clinic").trim();
+  return {
+    id,
+    institution_no: String(clinic.institution_no || institutionNo || "").trim(),
+    type: clinic.type || (name.includes("Pharmacy") || name.includes("약국") ? "pharmacy" : "clinic"),
+    name,
+    address: clinic.address || "",
+    phone: clinic.phone || "",
+    prices: clinic.prices || {},
+    stock: clinic.stock || {},
+    provider_parking: clinic.provider_parking || "",
+    verified: false,
+    pending_map_connection: true
+  };
 }
 
 function setRepMessage(id, text, type = "") {
@@ -3575,6 +3596,7 @@ async function handleRepLogin() {
       REP_ACTIVE_INSTITUTION_NO = id;
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
+      REP_LOGIN_CLINIC = buildRepresentativeFallbackClinic(data.clinic, id);
 
       setRepMessage("repLoginMessage", "", "");
       if (data.must_change_password) {
@@ -3747,6 +3769,7 @@ function initRepresentativeForm() {
   passwordBackBtn.addEventListener("click", () => {
     REP_ACTIVE_INSTITUTION_NO = "";
     REP_ACTIVE_PASSWORD = "";
+    REP_LOGIN_CLINIC = null;
     setRepMessage("repPasswordMessage", "");
     showRepView("login");
   });
@@ -3765,6 +3788,7 @@ function initRepresentativeForm() {
     REP_ACTIVE_INSTITUTION_NO = "";
     REP_ACTIVE_PASSWORD = "";
     REP_ACTIVE_CLINIC_ID = null;
+    REP_LOGIN_CLINIC = null;
     showRepView("login");
     setRepMessage("repSubmitMessage", "");
     setRepMessage("repLoginMessage", "로그아웃되었습니다. 잠시 후 창이 닫힙니다.", "success");
