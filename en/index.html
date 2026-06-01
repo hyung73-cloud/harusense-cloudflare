@@ -3300,8 +3300,8 @@ const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
 const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbxT1k19dKoPxld6NFwbHQPqC_b9csDQubL1LErJ3ATmr71A-wvPv4XYE3t5V7quHpyROA/exec";
-/** false = 신규 핀은 운영자 엑셀→clinics.json 만. true = 시트 getSubmittedClinics (나중·자동좌표용). */
-const SUBMITTED_CLINICS_ON_MAP = false;
+/** true = 운영자가 시트에서 위도/경도 입력 후 지도표시상태=반영 처리한 신청기관만 지도에 추가합니다. 자동좌표는 사용하지 않습니다. */
+const SUBMITTED_CLINICS_ON_MAP = true;
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
