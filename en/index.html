@@ -3651,8 +3651,14 @@ function initRepresentativeForm() {
     REP_ACTIVE_CLINIC_ID = null;
     showRepView("login");
     setRepMessage("repSubmitMessage", "");
+    setRepMessage("repLoginMessage", "로그아웃되었습니다. 잠시 후 창이 닫힙니다.", "success");
     document.getElementById("repInstitutionNo").value = "";
     document.getElementById("repPassword").value = "";
+    if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
+    REP_CLOSE_TIMER = setTimeout(() => {
+      closeRepModal();
+      setRepMessage("repLoginMessage", "");
+    }, 3000);
   });
 }
 
