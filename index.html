@@ -2400,6 +2400,31 @@ function clinicHasSelectedPrice(clinic) {
   return clinicStockAvailable(clinic, key) && v != null && v !== "" && Number.isFinite(Number(v));
 }
 
+function parseDateMs(value) {
+  if (!value) return null;
+  const ms = Date.parse(value);
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function clinicAllSelectedDrugStockOutExpired(clinic, days = 7) {
+  const info = DRUG_INFO[state.drugKey];
+  if (!clinic || !info || !clinic.stock) return false;
+
+  const keys = info.doses.map(dose => priceKey(state.drugKey, dose));
+  const allStockOut = keys.every(key => clinic.stock[key] === false);
+  if (!allStockOut) return false;
+
+  const updatedTimes = keys
+    .map(key => clinic.price_updated_at && clinic.price_updated_at[key])
+    .map(parseDateMs)
+    .filter(ms => ms != null);
+  const fallbackUpdatedAt = parseDateMs(clinic.updated_at);
+  const latestUpdatedAt = updatedTimes.length ? Math.max(...updatedTimes) : fallbackUpdatedAt;
+  if (!latestUpdatedAt) return false;
+
+  return Date.now() - latestUpdatedAt >= days * 24 * 60 * 60 * 1000;
+}
+
 
 
 function isPharmacy(clinic) {
@@ -3371,10 +3396,13 @@ function renderMarkers() {
     } else {
       const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
       el.className = `marker-wrap no-price${pharmacyCls}`;
-      el.innerHTML = `
-        <div class="marker-dot"></div>
-        <div class="info-marker">${label}</div>
-      `;
+      const shouldHideInfoLabel = clinic.stock && clinic.stock[key] === false && clinicAllSelectedDrugStockOutExpired(clinic);
+      el.innerHTML = shouldHideInfoLabel
+        ? `<div class="marker-dot"></div>`
+        : `
+          <div class="marker-dot"></div>
+          <div class="info-marker">${label}</div>
+        `;
     }
 
     const marker = new google.maps.marker.AdvancedMarkerElement({
