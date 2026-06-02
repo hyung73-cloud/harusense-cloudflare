@@ -962,118 +962,200 @@ body {
   line-height: 1.4;
 }
 .rep-price-board {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
-.rep-drug-block {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--surface);
+.rep-board-head {
+  display: none;
+}
+.rep-pair-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rep-pair-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border-bottom: none;
+}
+.rep-pair-cell {
   min-width: 0;
+  min-height: 40px;
 }
-.rep-drug-block.mounjaro .rep-drug-title {
-  color: var(--blue-deep);
-  background: var(--blue-soft);
-}
-.rep-drug-block.wegovy .rep-drug-title {
-  color: #047857;
-  background: #ecfdf5;
-}
-.rep-drug-title {
-  margin: 0;
-  padding: 6px 10px;
-  font-size: 11px;
+.rep-pair-cell--empty { display: none; }
+.rep-cell-tag {
+  display: block;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  border-bottom: 1px solid var(--line-soft);
+  margin-bottom: 4px;
+  line-height: 1.2;
 }
-.rep-drug-rows { padding: 4px 0; }
+.rep-pair-cell.mounjaro .rep-cell-tag { color: var(--blue-deep); }
+.rep-pair-cell.wegovy .rep-cell-tag { color: #047857; }
 .rep-item {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) auto;
-  gap: 5px 6px;
+  grid-template-columns: 50px minmax(0, 1fr) 72px;
+  gap: 6px;
   align-items: center;
-  padding: 5px 8px;
+  min-height: 40px;
+  height: 40px;
   margin: 0;
-  border-bottom: 1px solid var(--line-soft);
+  padding: 0;
+  box-sizing: border-box;
 }
-.rep-drug-rows .rep-item:last-child { border-bottom: none; }
 .rep-dose {
   width: auto;
   flex-shrink: 0;
   color: var(--ink);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 #repEditView .price-input {
   flex: none;
   width: 100%;
-  height: 34px;
+  height: 36px;
+  min-height: 36px;
   border-radius: 8px;
-  padding: 0 8px;
-  font-size: 14px;
+  padding: 0 10px;
+  font-size: 15px;
+  box-sizing: border-box;
 }
 #repEditView .stock-toggle {
-  min-width: 0;
-  width: auto;
-  height: 30px;
-  padding: 0 8px;
+  width: 72px;
+  min-width: 72px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 4px;
   font-size: 10px;
   font-weight: 700;
-  border-radius: 999px;
+  border-radius: 8px;
   white-space: nowrap;
+  box-sizing: border-box;
+  line-height: 1.1;
 }
-.stock-toggle.on { border-color: var(--verified); background: var(--verified-soft); color: var(--verified); }
-.stock-toggle.off { border-color: #e5e7eb; background: var(--line-soft); color: var(--mute); }
+#repEditView .stock-toggle.on {
+  border: 1.5px solid #059669;
+  background: #d1fae5;
+  color: #047857;
+}
+#repEditView .stock-toggle.off {
+  border: 1.5px solid #d1d5db;
+  background: #f3f4f6;
+  color: #6b7280;
+}
 .rep-parking-bar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 8px;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
 }
 .rep-parking-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--mute);
+  font-size: 12px;
+  font-weight: 700;
+  color: #9a3412;
   letter-spacing: -0.01em;
 }
 .rep-switch {
   position: relative;
-  width: 42px;
-  height: 24px;
+  width: 52px;
+  height: 30px;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 2px solid #9ca3af;
   border-radius: 999px;
-  background: var(--line-soft);
+  background: #d1d5db;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 .rep-switch .rep-switch-knob {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 1px 4px rgba(17, 24, 39, 0.28);
   transition: transform 0.15s ease;
 }
 .rep-switch.on {
-  background: #fff7ed;
-  border-color: #fdba74;
+  background: #ea580c;
+  border-color: #c2410c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.28);
 }
 .rep-switch.on .rep-switch-knob {
-  transform: translateX(18px);
-  background: #fff;
+  transform: translateX(22px);
+}
+/* 모바일: 약품별로 묶어 세로 나열 */
+@media (max-width: 539px) {
+  .rep-pair-rows {
+    gap: 14px;
+  }
+  .rep-pair-row {
+    display: contents;
+  }
+  .rep-pair-cell.mounjaro { order: 1; }
+  .rep-pair-cell.wegovy { order: 2; }
+  .rep-pair-cell {
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .rep-pair-cell:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+/* 태블릿·PC: 2열 헤더 + 행 높이 맞춤 */
+@media (min-width: 540px) {
+  .rep-board-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .rep-board-head-cell {
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid var(--line-soft);
+  }
+  .rep-board-head-cell.mounjaro {
+    color: var(--blue-deep);
+    background: var(--blue-soft);
+  }
+  .rep-board-head-cell.wegovy {
+    color: #047857;
+    background: #ecfdf5;
+  }
+  .rep-pair-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: stretch;
+    padding: 0 0 6px;
+    border-bottom: none;
+  }
+  .rep-pair-cell--empty {
+    display: block;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .rep-cell-tag { display: none; }
+  .rep-pair-rows { gap: 6px; }
 }
 .rep-edit-footer .rep-button {
   width: 100%;
@@ -1103,9 +1185,15 @@ body {
   font-weight: 600;
   line-height: 1.4;
 }
-@media (max-width: 400px) {
-  .rep-price-board { grid-template-columns: 1fr; }
-  #repEditView .stock-toggle { font-size: 9px; padding: 0 6px; }
+@media (max-width: 359px) {
+  .rep-item {
+    grid-template-columns: 44px minmax(0, 1fr) 64px;
+  }
+  #repEditView .stock-toggle {
+    width: 64px;
+    min-width: 64px;
+    font-size: 9px;
+  }
 }
 .price-input {
   flex: 1; min-width: 0; height: 46px; border: 1px solid var(--line);
@@ -3634,25 +3722,51 @@ function renderRepresentativeEditor() {
     </div>`;
   const pendingMapNotice = clinic.pending_map_connection ? `
     <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
-  const groups = ["mounjaro", "wegovy"].map(drug => {
-    const items = REP_KEYS.filter(item => item.drug === drug).map(item => {
-      const key = priceKey(item.drug, item.dose);
-      const price = clinic.prices && clinic.prices[key] != null ? clinic.prices[key] : "";
-      const inStock = clinicStockAvailable(clinic, key);
-      return `
-        <div class="rep-item" data-key="${key}">
-          <div class="rep-dose">${item.dose}</div>
-          <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" placeholder="가격" />
-          <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
-        </div>`;
-    }).join("");
+
+  function buildRepItemHtml(item) {
+    const key = priceKey(item.drug, item.dose);
+    const price = clinic.prices && clinic.prices[key] != null ? clinic.prices[key] : "";
+    const inStock = clinicStockAvailable(clinic, key);
     return `
-      <section class="rep-drug-block ${drug}">
-        <div class="rep-drug-title">${DRUG_INFO[drug].fullName}</div>
-        <div class="rep-drug-rows">${items}</div>
-      </section>`;
-  }).join("");
-  box.innerHTML = `${pendingMapNotice}<div class="rep-price-board">${groups}</div>${parkingControl}`;
+      <div class="rep-item" data-key="${key}">
+        <div class="rep-dose">${item.dose}</div>
+        <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" placeholder="가격" />
+        <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
+      </div>`;
+  }
+
+  function buildRepPairCell(item, showDrugLabel) {
+    if (!item) return `<div class="rep-pair-cell rep-pair-cell--empty" aria-hidden="true"></div>`;
+    const drug = item.drug;
+    const drugLabel = showDrugLabel
+      ? `<span class="rep-cell-tag">${DRUG_INFO[drug].fullName}</span>`
+      : "";
+    return `
+      <div class="rep-pair-cell ${drug}">
+        ${drugLabel}
+        ${buildRepItemHtml(item)}
+      </div>`;
+  }
+
+  const mounjaroItems = REP_KEYS.filter(item => item.drug === "mounjaro");
+  const wegovyItems = REP_KEYS.filter(item => item.drug === "wegovy");
+  const pairRowCount = Math.max(mounjaroItems.length, wegovyItems.length);
+  const pairRows = Array.from({ length: pairRowCount }, (_, i) => `
+    <div class="rep-pair-row">
+      ${buildRepPairCell(mounjaroItems[i], i === 0)}
+      ${buildRepPairCell(wegovyItems[i], i === 0)}
+    </div>`).join("");
+
+  const priceBoard = `
+    <div class="rep-price-board">
+      <div class="rep-board-head">
+        <div class="rep-board-head-cell mounjaro">${DRUG_INFO.mounjaro.fullName}</div>
+        <div class="rep-board-head-cell wegovy">${DRUG_INFO.wegovy.fullName}</div>
+      </div>
+      <div class="rep-pair-rows">${pairRows}</div>
+    </div>`;
+
+  box.innerHTML = `${pendingMapNotice}${priceBoard}${parkingControl}`;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
     if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
