@@ -3665,17 +3665,18 @@ async function handleRepLogin() {
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
       REP_LOGIN_CLINIC = buildRepresentativeFallbackClinic(data.clinic, id);
 
-      setRepMessage("repLoginMessage", "", "");
       if (data.must_change_password) {
         document.getElementById("repNewPassword").value = "";
         document.getElementById("repNewPasswordConfirm").value = "";
         setRepMessage("repPasswordMessage", "");
         showRepView("password");
+        setRepMessage("repLoginMessage", "", "");
       } else {
         // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
         await loadData({ force: true });
         refreshClinicDisplay();
         showRepresentativeEditor(true);
+        setRepMessage("repLoginMessage", "", "");
       }
     } else {
       setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
