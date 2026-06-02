@@ -878,6 +878,10 @@ body {
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1);
   height: 90vh; max-height: 90vh; display: flex; flex-direction: column;
 }
+.rep-modal:has(#repEditView:not([hidden])) {
+  height: min(88vh, 720px);
+  max-height: min(88vh, 720px);
+}
 .rep-modal.open { transform: translateY(0); }
 .rep-modal > div { display: flex; flex-direction: column; min-height: 0; flex: 1; }
 .rep-modal > div[hidden] { display: none; }
@@ -925,10 +929,184 @@ body {
   margin: 2px 0 12px; color: var(--ink-2); font-size: 13px; line-height: 1.45;
 }
 .rep-check input { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; }
-.rep-drug-title { margin: 4px 0 12px; color: var(--ink); font-size: 14px; font-weight: 700; }
-.rep-drug-title:not(:first-child) { margin-top: 22px; }
-.rep-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.rep-dose { width: 56px; flex-shrink: 0; color: var(--ink); font-size: 14px; font-weight: 600; }
+/* ── 관계자 정보 수정 화면 (repEditView) ── */
+#repEditView .rep-modal-header {
+  padding: 12px 16px 10px;
+}
+#repEditView .rep-modal-title { font-size: 15px; }
+#repEditView .rep-modal-sub {
+  font-size: 11px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+#repEditView .rep-modal-body {
+  padding: 10px 14px 6px;
+}
+#repEditView .rep-modal-footer.rep-edit-footer {
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  box-shadow: 0 -4px 16px rgba(17, 24, 39, 0.06);
+}
+.rep-edit-hint {
+  margin: 0 0 8px;
+  padding: 0;
+  background: transparent;
+  color: var(--mute);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.rep-price-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.rep-drug-block {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  min-width: 0;
+}
+.rep-drug-block.mounjaro .rep-drug-title {
+  color: var(--blue-deep);
+  background: var(--blue-soft);
+}
+.rep-drug-block.wegovy .rep-drug-title {
+  color: #047857;
+  background: #ecfdf5;
+}
+.rep-drug-title {
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--line-soft);
+}
+.rep-drug-rows { padding: 4px 0; }
+.rep-item {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  gap: 5px 6px;
+  align-items: center;
+  padding: 5px 8px;
+  margin: 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.rep-drug-rows .rep-item:last-child { border-bottom: none; }
+.rep-dose {
+  width: auto;
+  flex-shrink: 0;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+#repEditView .price-input {
+  flex: none;
+  width: 100%;
+  height: 34px;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 14px;
+}
+#repEditView .stock-toggle {
+  min-width: 0;
+  width: auto;
+  height: 30px;
+  padding: 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.stock-toggle.on { border-color: var(--verified); background: var(--verified-soft); color: var(--verified); }
+.stock-toggle.off { border-color: #e5e7eb; background: var(--line-soft); color: var(--mute); }
+.rep-parking-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 8px;
+}
+.rep-parking-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mute);
+  letter-spacing: -0.01em;
+}
+.rep-switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--line-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.rep-switch .rep-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.18);
+  transition: transform 0.15s ease;
+}
+.rep-switch.on {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+.rep-switch.on .rep-switch-knob {
+  transform: translateX(18px);
+  background: #fff;
+}
+.rep-edit-footer .rep-button {
+  width: 100%;
+  height: 44px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+.rep-edit-footer .rep-btn-ghost {
+  width: auto;
+  align-self: flex-end;
+  height: auto;
+  min-height: 0;
+  padding: 4px 2px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.rep-edit-footer .rep-btn-ghost:active { opacity: 0.7; }
+#repEditView .rep-message {
+  margin-top: 0;
+  min-height: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+@media (max-width: 400px) {
+  .rep-price-board { grid-template-columns: 1fr; }
+  #repEditView .stock-toggle { font-size: 9px; padding: 0 6px; }
+}
 .price-input {
   flex: 1; min-width: 0; height: 46px; border: 1px solid var(--line);
   border-radius: 10px; padding: 0 14px; color: var(--ink);
@@ -939,39 +1117,6 @@ body {
   flex-shrink: 0; min-width: 84px; height: 46px;
   border: 1px solid var(--line); border-radius: 999px; background: #fff;
   color: var(--ink-2); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
-}
-.stock-toggle.on { border-color: var(--verified); background: var(--verified-soft); color: var(--verified); }
-.stock-toggle.off { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
-.rep-parking-card {
-  margin: 0 0 18px;
-  padding: 14px;
-  border: 1px solid #fecaca;
-  background: #fff7ed;
-  border-radius: 12px;
-}
-.rep-parking-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-weight: 800;
-  color: var(--ink);
-}
-.parking-toggle {
-  border-color: #fecaca;
-  background: #fff;
-  color: #9ca3af;
-}
-.parking-toggle.on {
-  border-color: #ef4444;
-  background: #fef2f2;
-  color: #dc2626;
-}
-.rep-parking-help {
-  margin: 8px 0 0;
-  color: var(--mute);
-  font-size: 12px;
-  line-height: 1.45;
 }
 .rep-button {
   width: 100%; height: 50px; border: none; border-radius: 10px;
@@ -1789,9 +1934,9 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="rep-modal-body">
       <div id="repPriceFields"></div>
     </div>
-    <div class="rep-modal-footer">
+    <div class="rep-modal-footer rep-edit-footer">
       <button class="rep-button" id="repSubmitBtn" type="button">수정 내용 제출</button>
-      <button class="rep-button secondary" id="repLogoutBtn" type="button">로그아웃</button>
+      <button class="rep-button rep-btn-ghost" id="repLogoutBtn" type="button">로그아웃</button>
       <div class="rep-message" id="repSubmitMessage"></div>
     </div>
   </div>
@@ -3458,7 +3603,8 @@ function setStockButton(button, inStock) {
 function setParkingButton(button, available) {
   button.dataset.parking = available ? "true" : "false";
   button.classList.toggle("on", available);
-  button.textContent = available ? "주차 가능" : "주차 정보 없음";
+  button.setAttribute("aria-pressed", available ? "true" : "false");
+  button.setAttribute("aria-label", available ? "주차 가능" : "주차 정보 없음");
 }
 
 function renderRepresentativeEditor() {
@@ -3480,17 +3626,14 @@ function renderRepresentativeEditor() {
   document.getElementById("repClinicSub").textContent = `${clinic.address || ""} · ${clinic.phone || "전화번호 미등록"}`;
   const parkingAvailable = normalizeParkingValue(firstValue(clinic.provider_parking, clinic.verified_parking, clinic.parking)).includes("주차 가능");
   const parkingControl = `
-    <div class="rep-parking-card">
-      <div class="rep-parking-title">
-        <span>주차 여부</span>
-        <button class="stock-toggle parking-toggle ${parkingAvailable ? "on" : ""}" type="button" id="repParkingToggle" data-parking="${parkingAvailable ? "true" : "false"}">${parkingAvailable ? "주차 가능" : "주차 정보 없음"}</button>
-      </div>
-      <div class="rep-parking-help">주차 가능 기관은 상세정보에서 빨간색으로 강조됩니다. 불확실하면 켜지 마세요.</div>
+    <div class="rep-parking-bar">
+      <span class="rep-parking-label">주차 가능</span>
+      <button class="rep-switch parking-toggle ${parkingAvailable ? "on" : ""}" type="button" id="repParkingToggle" data-parking="${parkingAvailable ? "true" : "false"}" aria-pressed="${parkingAvailable ? "true" : "false"}" aria-label="${parkingAvailable ? "주차 가능" : "주차 정보 없음"}">
+        <span class="rep-switch-knob"></span>
+      </button>
     </div>`;
   const pendingMapNotice = clinic.pending_map_connection ? `
-    <div class="rep-help">
-      가격/재고 정보는 미리 입력하실 수 있습니다. 6시간 이내 지도핀이 열리면 입력하신 가격/재고 정보가 표시됩니다.
-    </div>` : "";
+    <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
   const groups = ["mounjaro", "wegovy"].map(drug => {
     const items = REP_KEYS.filter(item => item.drug === drug).map(item => {
       const key = priceKey(item.drug, item.dose);
@@ -3499,13 +3642,17 @@ function renderRepresentativeEditor() {
       return `
         <div class="rep-item" data-key="${key}">
           <div class="rep-dose">${item.dose}</div>
-          <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" />
+          <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" placeholder="가격" />
           <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
         </div>`;
     }).join("");
-    return `<div class="rep-drug-title">${DRUG_INFO[drug].fullName}</div>${items}`;
+    return `
+      <section class="rep-drug-block ${drug}">
+        <div class="rep-drug-title">${DRUG_INFO[drug].fullName}</div>
+        <div class="rep-drug-rows">${items}</div>
+      </section>`;
   }).join("");
-  box.innerHTML = pendingMapNotice + parkingControl + groups;
+  box.innerHTML = `${pendingMapNotice}<div class="rep-price-board">${groups}</div>${parkingControl}`;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
     if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
