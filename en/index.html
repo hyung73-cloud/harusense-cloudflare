@@ -3283,7 +3283,8 @@ if (guideTabsEl) {
 const REP_LOGIN_KEY = "harusense_rep_login";
 const GOOGLE_FORM_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/viewform?usp=header";
 const GOOGLE_FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdlYbS_pMeQh5S8XUth_228xoh1glYloOUeGV5MMjIIUIyjDQ/formResponse";
-const ACCOUNT_API_URL = "https://script.google.com/macros/s/AKfycbzoYPEtOKWH4-4hn8YjrwwHEdIQnSHbh9bAUxX_2chhcHFtBJnZbi71Oupyj784Jb5Whw/exec";
+const ACCOUNT_API_URL = "/api/account";
+const ACCOUNT_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoYPEtOKWH4-4hn8YjrwwHEdIQnSHbh9bAUxX_2chhcHFtBJnZbi71Oupyj784Jb5Whw/exec";
 /** true = 운영자가 시트에서 위도/경도 입력 후 지도표시상태=반영 처리한 신청기관만 지도에 추가합니다. 자동좌표는 사용하지 않습니다. */
 const SUBMITTED_CLINICS_ON_MAP = true;
 let REP_ACTIVE_INSTITUTION_NO = "";
@@ -3535,7 +3536,7 @@ function submitRepresentativeRequestToGoogleForm(payload) {
   setTimeout(() => form.remove(), 1000);
 }
 
-function accountApi(action, params = {}) {
+function appsScriptApi(action, params = {}) {
   return new Promise((resolve, reject) => {
     const callbackName = `harusenseAccountCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const script = document.createElement("script");
@@ -3558,9 +3559,39 @@ function accountApi(action, params = {}) {
       cleanup();
       reject(new Error("network"));
     };
-    script.src = `${ACCOUNT_API_URL}?${query.toString()}`;
+    script.src = `${ACCOUNT_APPS_SCRIPT_URL}?${query.toString()}`;
     document.body.appendChild(script);
   });
+}
+
+async function cloudflareAccountApi(action, params = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const response = await fetch(ACCOUNT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, ...params }),
+      signal: controller.signal
+    });
+    const data = await response.json().catch(() => null);
+    if (!data) return { ok: false, error: "서버 응답 형식이 올바르지 않습니다." };
+    return data;
+  } catch (err) {
+    return {
+      ok: false,
+      error: err && err.name === "AbortError" ? "로그인 서버 응답이 지연되고 있습니다." : "네트워크 오류가 발생했습니다."
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function accountApi(action, params = {}) {
+  if (action === "getSubmittedClinics" || action === "getSubmittedClinicDebug") {
+    return appsScriptApi(action, params);
+  }
+  return cloudflareAccountApi(action, params);
 }
 
 // 로그인: 서버(/api/login)에서만 검증. 성공해야만 에디터 표시.
