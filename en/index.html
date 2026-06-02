@@ -1536,8 +1536,8 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 <header class="header">
   <div class="header-top">
     <div class="brand">
-      <span class="brand-name" data-i18n="brandTitle">하루센스 GLP-1 가격지도</span>
-      <span class="brand-sub" data-i18n="brandSub">인크레틴 치료제 가격정보</span>
+      <span class="brand-name" data-i18n="brandTitle">하루센스 마운자로·위고비 가격지도</span>
+      <span class="brand-sub" data-i18n="brandSub">GLP-1 비만주사 실시간 가격정보</span>
     </div>
     <div class="header-actions">
       <div class="fx-chip" id="fxBanner" aria-live="polite">
@@ -1797,8 +1797,8 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 // ─────────── i18n + FX ───────────
 const I18N = {
   ko: {
-    brandTitle: "하루센스 GLP-1 가격지도",
-    brandSub: "인크레틴 치료제 가격정보",
+    brandTitle: "하루센스 마운자로·위고비 가격지도",
+    brandSub: "GLP-1 비만주사 실시간 가격정보",
     searchBtn: "병의원/약국검색",
     loading: "데이터를 불러오는 중",
     emptyState: "선택한 용량의 가격 정보가 있는 의원이 없습니다",
@@ -1930,7 +1930,7 @@ function applyI18n() {
   if (appLang === "en") {
     document.title = "Harusense GLP-1 Price Map | Mounjaro & Wegovy in Seoul";
   } else {
-    document.title = "하루센스 GLP-1 가격지도 | 마운자로·위고비 가격 비교";
+    document.title = "마운자로 가격지도 | 위고비 가격지도 | 하루센스";
   }
   updateFxBanner();
 }
