@@ -4045,11 +4045,14 @@ async function handleRepLogin() {
         showRepView("password");
         setRepMessage("repLoginMessage", "", "");
       } else {
-        // 최신 데이터를 다시 읽어 로그인한 요양기관의 현재 가격을 정확히 표시
-        await loadData({ force: true });
-        refreshClinicDisplay();
         showRepresentativeEditor(true);
         setRepMessage("repLoginMessage", "", "");
+        loadData({ force: true })
+          .then(() => {
+            refreshClinicDisplay();
+            if (REP_ACTIVE_INSTITUTION_NO === id) renderRepresentativeEditor();
+          })
+          .catch(() => {});
       }
     } else {
       setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
