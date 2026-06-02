@@ -411,14 +411,14 @@ body {
   left: 0; right: 0; bottom: 0;
   z-index: 1600;
   background: var(--surface);
-  border-radius: 20px 20px 0 0;
+  border-radius: 18px 18px 0 0;
   box-shadow: var(--shadow-lg);
   transform: translateY(calc(100% + 28px));
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease, visibility 0s linear 0.32s;
-  max-height: 82vh;
+  max-height: min(78vh, 640px);
   display: flex; flex-direction: column;
 }
 .detail-sheet.open {
@@ -429,43 +429,59 @@ body {
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease;
 }
 .sheet-handle {
-  width: 40px; height: 4px;
+  width: 36px; height: 4px;
   background: var(--line);
   border-radius: 2px;
-  margin: 9px auto 0;
+  margin: 8px auto 0;
   flex-shrink: 0;
 }
 .sheet-content {
-  padding: 14px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+}
+.sheet-top {
+  flex-shrink: 0;
+}
+.sheet-prices-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
+  padding-top: 2px;
 }
 .sheet-clinic-header {
   display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 12px; margin-bottom: 4px;
+  gap: 10px; margin-bottom: 2px;
 }
 .sheet-name-wrap {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  min-width: 0;
 }
 .sheet-name-link {
   text-decoration: none;
   color: inherit;
   display: inline-block;
   border-radius: 6px;
-  margin: -4px -6px;
-  padding: 4px 6px;
+  margin: -2px -4px;
+  padding: 2px 4px;
   transition: background 0.12s ease;
   -webkit-tap-highlight-color: rgba(37, 99, 235, 0.1);
+  max-width: 100%;
 }
 .sheet-name-link:hover,
 .sheet-name-link:active {
   background: var(--blue-soft);
 }
 .sheet-name {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.022em;
-  line-height: 1.25;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
   color: var(--ink);
   display: inline;
 }
@@ -475,115 +491,143 @@ body {
 }
 .naver-icon {
   display: inline-block;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--blue);
   font-weight: 600;
-  margin-left: 4px;
+  margin-left: 3px;
   vertical-align: super;
   line-height: 1;
   position: relative;
-  top: 2px;
+  top: 1px;
 }
 .sheet-name-hint {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--mute);
-  margin-top: 6px;
-  margin-bottom: 2px;
+  margin: 2px 0 6px;
   letter-spacing: -0.005em;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 .sheet-verified-badge {
   display: inline-flex; align-items: center; gap: 3px;
-  padding: 2px 7px;
+  padding: 2px 6px;
   background: var(--verified-soft);
   color: var(--verified);
   border-radius: 999px;
   font-size: 10px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 .sheet-verified-badge svg { width: 10px; height: 10px; }
 .sheet-close {
   background: var(--line-soft); border: none;
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   border-radius: 50%;
-  font-size: 18px; color: var(--ink-2);
+  font-size: 17px; color: var(--ink-2);
   cursor: pointer;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   line-height: 1;
   font-family: inherit;
 }
+.sheet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-bottom: 10px;
+}
+.sheet-location { min-width: 0; flex: 1 1 180px; }
 .sheet-district {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--mute);
-  font-weight: 500;
-  margin-top: 4px;
-  margin-bottom: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
 }
 .sheet-address {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--ink-2);
-  line-height: 1.5;
-  margin-bottom: 14px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+.parking-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+  line-height: 1.2;
+}
+.parking-chip svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }
 
 /* Action buttons */
 .sheet-action-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 10px;
-  margin-bottom: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
 }
 .sheet-action-row.single { grid-template-columns: 1fr; }
 .call-button,
 .direction-button {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
   background: var(--blue);
   color: #fff;
-  padding: 14px 14px;
-  border-radius: 12px;
+  padding: 10px 10px;
+  border-radius: 10px;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.22);
   transition: transform 0.1s ease, box-shadow 0.15s ease;
   font-family: inherit;
   min-width: 0;
 }
 .direction-button {
   background: #111827;
-  box-shadow: 0 4px 14px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.14);
 }
 .call-button:active,
 .direction-button:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 .call-icon,
 .direction-icon {
-  width: 38px; height: 38px;
-  background: rgba(255,255,255,0.18);
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.16);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 .call-icon svg,
-.direction-icon svg { width: 20px; height: 20px; fill: #fff; }
+.direction-icon svg { width: 17px; height: 17px; fill: #fff; }
 .call-text,
-.direction-text { flex: 1; min-width: 0; }
+.direction-text { flex: 1; min-width: 0; text-align: left; }
 .call-label,
 .direction-label {
-  font-size: 11px;
+  display: block;
+  font-size: 10px;
   font-weight: 500;
-  opacity: 0.88;
-  letter-spacing: 0.02em;
+  opacity: 0.86;
+  letter-spacing: 0.01em;
   margin-bottom: 1px;
 }
 .call-number,
 .direction-title {
   display: block;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
@@ -591,135 +635,163 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.call-arrow { font-size: 20px; opacity: 0.85; }
-.parking-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 16px;
-  padding: 10px 12px;
-  background: #f8fafc;
-  border: 1px solid var(--line-soft);
-  border-radius: 10px;
-  color: var(--ink-2);
-  font-size: 12.5px;
-  line-height: 1.45;
-}
-.parking-label { font-weight: 700; color: var(--ink); flex-shrink: 0; }
-.parking-value { font-weight: 700; }
-.parking-row.available {
-  background: #fff7ed;
-  border-color: #fecaca;
-}
-.parking-row.available .parking-value {
-  color: #dc2626;
-}
-.parking-row.unavailable {
-  background: #fef2f2;
-  border-color: #fecaca;
-}
-.parking-row.unavailable .parking-value {
-  color: #b91c1c;
-}
-.parking-row.pending .parking-value {
-  color: var(--mute);
-  font-weight: 600;
-}
-.parking-meta { color: var(--mute); }
+.call-arrow { display: none; }
 @media (max-width: 380px) {
   .sheet-action-row { grid-template-columns: 1fr; }
 }
 
-/* Price table */
-.price-section-label {
-  display: flex; align-items: center; justify-content: space-between;
+/* Price board — 2 columns (mounjaro / wegovy) */
+.price-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 8px;
+  padding: 0 2px;
 }
-.price-section-label .label {
+.price-section-head .label {
   font-size: 11px;
   color: var(--mute);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
-.price-section-label .count {
-  font-size: 11px;
+.price-section-head .count {
+  font-size: 10px;
   color: var(--mute);
-}
-.price-row {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: 13px 0;
-  border-bottom: 1px solid var(--line-soft);
-}
-.price-row:last-child { border-bottom: none; }
-.price-row.highlight {
-  background: var(--blue-soft);
-  padding-left: 12px;
-  padding-right: 12px;
-  margin: 0 -12px;
-  border-radius: 8px;
-  border-bottom-color: transparent;
-}
-.price-drug {
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-.price-drug .dose {
-  font-size: 11.5px;
-  color: var(--mute);
-  margin-left: 7px;
   font-weight: 500;
 }
+.price-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.price-board.single-col {
+  grid-template-columns: 1fr;
+  max-width: 100%;
+}
+.price-col {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  min-width: 0;
+}
+.price-col-head {
+  padding: 7px 10px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--line-soft);
+  line-height: 1.2;
+}
+.price-col.mounjaro .price-col-head {
+  color: var(--blue-deep);
+  background: var(--blue-soft);
+}
+.price-col.wegovy .price-col-head {
+  color: #047857;
+  background: #ecfdf5;
+}
+.price-col-body { padding: 2px 0; }
+.price-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 6px;
+  align-items: center;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.price-col-body .price-row:last-child { border-bottom: none; }
+.price-row.highlight {
+  background: rgba(37, 99, 235, 0.08);
+}
+.price-col.wegovy .price-row.highlight {
+  background: rgba(5, 150, 105, 0.08);
+}
+.price-drug {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.price-drug .dose {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.stock-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+.stock-badge.on {
+  color: #047857;
+  background: #d1fae5;
+}
+.stock-badge.off {
+  color: #9ca3af;
+  background: var(--line-soft);
+}
 .price-value {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-align: right;
 }
 .price-row.highlight .price-value { color: var(--blue-deep); }
+.price-col.wegovy .price-row.highlight .price-value { color: #047857; }
 .price-value .won {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 500;
   color: var(--mute);
   margin-left: 1px;
 }
 .sheet-notes {
-  margin-top: 16px;
-  padding: 12px 14px;
+  flex-shrink: 0;
+  margin-top: 10px;
+  padding: 10px 12px;
   background: var(--blue-soft);
   border-radius: 8px;
-  font-size: 12.5px;
+  font-size: 11.5px;
   color: var(--ink-2);
-  line-height: 1.55;
+  line-height: 1.5;
   border-left: 3px solid var(--blue);
 }
 
 /* Empty info state (no prices yet) */
 .info-empty {
   text-align: center;
-  padding: 32px 16px 20px;
+  padding: 22px 14px 16px;
   background: var(--line-soft);
-  border-radius: 12px;
-  margin-top: 4px;
+  border-radius: 10px;
 }
 .info-empty-icon {
-  font-size: 32px;
-  margin-bottom: 10px;
-  opacity: 0.6;
+  font-size: 26px;
+  margin-bottom: 8px;
+  opacity: 0.55;
 }
 .info-empty-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ink-2);
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 .info-empty-text {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--mute);
-  line-height: 1.5;
+  line-height: 1.45;
+}
+@media (max-width: 360px) {
+  .price-board { grid-template-columns: 1fr; }
 }
 
 /* ===== 메인 푸터 — 미니멀 엑셀 탭 스타일 ===== */
@@ -3088,6 +3160,34 @@ function renderMarkers() {
 }
 
 // ─────────── Detail sheet ───────────
+function sheetDrugColumnTitle(drugKey) {
+  const info = DRUG_INFO[drugKey];
+  if (!info) return drugKey;
+  return appLang === "en" ? info.displayNameEn : info.fullName;
+}
+
+function buildSheetPriceRow(clinic, { key, drugKey, dose }, selectedKey) {
+  const isHighlight = key === selectedKey;
+  const inStock = clinicStockAvailable(clinic, key);
+  const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? t("stockOn") : t("stockOff")}</span>`;
+  const formatted = formatPriceFull(Number(clinic.prices[key]));
+  return `
+    <div class="price-row${isHighlight ? " highlight" : ""}">
+      <div class="price-drug"><span class="dose">${dose}</span>${stockBadge}</div>
+      <div class="price-value">${formatted.value}${formatted.suffix}</div>
+    </div>`;
+}
+
+function buildSheetPriceColumn(clinic, drugKey, items, selectedKey) {
+  if (!items.length) return "";
+  const rows = items.map(item => buildSheetPriceRow(clinic, item, selectedKey)).join("");
+  return `
+    <div class="price-col ${drugKey}">
+      <div class="price-col-head">${sheetDrugColumnTitle(drugKey)}</div>
+      <div class="price-col-body">${rows}</div>
+    </div>`;
+}
+
 function openSheet(clinic) {
   ACTIVE_SHEET_CLINIC = clinic;
   const content = document.getElementById("sheetContent");
@@ -3109,18 +3209,10 @@ function openSheet(clinic) {
   });
 
   const selectedKey = priceKey(state.drugKey, state.dose);
-  const priceRows = allKeys.map(({ key, drugKey, dose }) => {
-    const info = DRUG_INFO[drugKey];
-    const isHighlight = key === selectedKey;
-    const inStock = clinicStockAvailable(clinic, key);
-    const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? t("stockOn") : t("stockOff")}</span>`;
-    const formatted = formatPriceFull(Number(clinic.prices[key]));
-    return `
-      <div class="price-row${isHighlight ? " highlight" : ""}">
-        <div class="price-drug">${drugDisplayName(drugKey)}<span class="dose">${dose}</span>${stockBadge}</div>
-        <div class="price-value">${formatted.value}${formatted.suffix}</div>
-      </div>`;
-  }).join("");
+  const mounjaroItems = allKeys.filter(item => item.drugKey === "mounjaro");
+  const wegovyItems = allKeys.filter(item => item.drugKey === "wegovy");
+  const colCount = (mounjaroItems.length ? 1 : 0) + (wegovyItems.length ? 1 : 0);
+  const priceBoardClass = colCount <= 1 ? "price-board single-col" : "price-board";
 
   const phoneValue = displayPhone(clinic);
   const phoneClean = String(phoneValue || "").replace(/[^0-9]/g, "");
@@ -3134,7 +3226,6 @@ function openSheet(clinic) {
         <span class="call-label">${t("callLabel")}</span>
         <span class="call-number">${phoneDisplay}</span>
       </span>
-      <span class="call-arrow">›</span>
     </a>` : "";
   const directionButton = `
     <a href="${googleDirectionsUrl(clinic)}" target="_blank" rel="noopener noreferrer" class="direction-button">
@@ -3146,18 +3237,22 @@ function openSheet(clinic) {
         <span class="direction-title">${appLang === "en" ? "Google Maps" : "구글맵"}</span>
       </span>
     </a>`;
-  const parkingRow = `
-    <div class="parking-row ${parkingStatusClass(clinic)}">
-      <span class="parking-label">${appLang === "en" ? "Parking" : "주차"}</span>
-      <span><span class="parking-value">${parkingText(clinic)}</span><span class="parking-meta">${parkingMetaText(clinic)}</span></span>
-    </div>`;
+
+  const parkingChip = parkingStatusClass(clinic) === "available" ? `
+    <span class="parking-chip" title="${parkingMetaText(clinic).replace(/"/g, "&quot;")}">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+      ${parkingText(clinic)}
+    </span>` : "";
 
   const priceSection = allKeys.length > 0 ? `
-    <div class="price-section-label">
+    <div class="price-section-head">
       <span class="label">${t("priceSection")}</span>
       <span class="count">${allKeys.length}${t("priceCount")}</span>
     </div>
-    ${priceRows}
+    <div class="${priceBoardClass}">
+      ${buildSheetPriceColumn(clinic, "mounjaro", mounjaroItems, selectedKey)}
+      ${buildSheetPriceColumn(clinic, "wegovy", wegovyItems, selectedKey)}
+    </div>
   ` : `
     <div class="info-empty">
       <div class="info-empty-icon">📋</div>
@@ -3171,24 +3266,32 @@ function openSheet(clinic) {
   const naverMapUrl = `https://map.naver.com/v5/search/${naverQuery}`;
 
   content.innerHTML = `
-    <div class="sheet-clinic-header">
-      <div class="sheet-name-wrap">
-        <a href="${naverMapUrl}" target="_blank" rel="noopener noreferrer" class="sheet-name-link" title="${t("naverTitle")}">
-          <h2 class="sheet-name">${clinic.name}<span class="naver-icon" aria-hidden="true">↗</span></h2>
-        </a>
-        ${verifiedBadge}
+    <div class="sheet-top">
+      <div class="sheet-clinic-header">
+        <div class="sheet-name-wrap">
+          <a href="${naverMapUrl}" target="_blank" rel="noopener noreferrer" class="sheet-name-link" title="${t("naverTitle")}">
+            <h2 class="sheet-name">${clinic.name}<span class="naver-icon" aria-hidden="true">↗</span></h2>
+          </a>
+          ${verifiedBadge}
+        </div>
+        <button class="sheet-close" id="sheetClose" aria-label="Close">×</button>
       </div>
-      <button class="sheet-close" id="sheetClose" aria-label="Close">×</button>
+      <div class="sheet-name-hint">${t("sheetHint")}</div>
+      <div class="sheet-meta">
+        <div class="sheet-location">
+          <div class="sheet-district">${clinic.district || ""}</div>
+          <div class="sheet-address">${clinic.address || ""}</div>
+        </div>
+        ${parkingChip}
+      </div>
+      <div class="sheet-action-row${callButton ? "" : " single"}">
+        ${callButton || ""}
+        ${directionButton}
+      </div>
     </div>
-    <div class="sheet-name-hint">${t("sheetHint")}</div>
-    <div class="sheet-district">${clinic.district || ""}</div>
-    <div class="sheet-address">${clinic.address || ""}</div>
-    <div class="sheet-action-row${callButton ? "" : " single"}">
-      ${callButton || ""}
-      ${directionButton}
+    <div class="sheet-prices-scroll">
+      ${priceSection}
     </div>
-    ${parkingRow}
-    ${priceSection}
     ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
   `;
   document.getElementById("sheetClose").addEventListener("click", closeSheet);
