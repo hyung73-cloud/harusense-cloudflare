@@ -1499,6 +1499,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--mute);
+  text-decoration: none;
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
 }
@@ -1644,8 +1645,8 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
         <span class="fx-chip-line" id="fxChipLine"></span>
       </div>
       <div class="lang-toggle" role="group" aria-label="Language">
-        <button type="button" class="lang-toggle-btn active" data-lang="ko" id="langKo">KOR</button>
-        <button type="button" class="lang-toggle-btn" data-lang="en" id="langEn">ENG</button>
+        <a href="/" class="lang-toggle-btn" data-lang="ko" id="langKo">KOR</a>
+        <button type="button" class="lang-toggle-btn active" data-lang="en" id="langEn">ENG</button>
       </div>
       <button type="button" class="clinic-search-btn" onclick="openClinicSearch()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -2116,22 +2117,10 @@ function setLang(lang) {
   if (lang !== "ko" && lang !== "en") return;
   if (lang === "ko") {
     localStorage.setItem("harusense_lang", "ko");
-    const path = location.pathname || "/";
-    if (!path.startsWith("/en")) {
-      appLang = "ko";
-      document.documentElement.lang = "ko";
-      document.documentElement.classList.remove("lang-en");
-      applyI18n();
-      updateHeaderNotice();
-      renderMarkers();
-      if (FX_REFRESH_TIMER) { clearInterval(FX_REFRESH_TIMER); FX_REFRESH_TIMER = null; }
-      if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
-      return;
-    }
     const dest = new URL("/", location.origin);
     const drug = state.drugKey;
     if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
-    location.href = dest.pathname + dest.search;
+    location.replace(dest.pathname + dest.search);
     return;
   }
   appLang = "en";
@@ -2675,6 +2664,38 @@ async function loadClinicOverrides() {
 
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
+}
+
+function focusMapByDistrict(district) {
+  if (!map || !window.google || !google.maps || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return;
+
+  const clinics = CLINIC_DATA.clinics.filter(clinic => {
+    if (isDemoClinic(clinic)) return false;
+    if (!hasValidCoords(clinic)) return false;
+    return district === "all" || clinic.district === district;
+  });
+
+  if (!clinics.length) return;
+
+  if (clinics.length === 1) {
+    map.panTo({ lat: Number(clinics[0].lat), lng: Number(clinics[0].lng) });
+    map.setZoom(district === "all" ? 11 : 15);
+    return;
+  }
+
+  const bounds = new google.maps.LatLngBounds();
+  clinics.forEach(clinic => bounds.extend({ lat: Number(clinic.lat), lng: Number(clinic.lng) }));
+  map.fitBounds(bounds, {
+    top: 72,
+    right: 56,
+    bottom: window.innerWidth <= 640 ? 118 : 72,
+    left: 56
+  });
+
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    const maxZoom = district === "all" ? 12 : 15;
+    if (map.getZoom() > maxZoom) map.setZoom(maxZoom);
+  });
 }
 function latestClinicUpdatedAt() {
   const times = (CLINIC_DATA.clinics || [])
@@ -3414,6 +3435,7 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   btn.classList.add("active");
   state.districtFilter = btn.dataset.district;
   renderMarkers();
+  focusMapByDistrict(state.districtFilter);
 });
 
 // Guide tabs (현재 가이드 패널은 푸터로 대체됨 — 요소가 없을 때 안전 처리)
