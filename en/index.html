@@ -2170,6 +2170,67 @@ let state = {
 let CLINIC_DATA = { clinics: [] };
 let map = null;
 let markers = [];
+let LAST_OPENED_QR_TARGET = "";
+
+function normalizeClinicLookup(value) {
+  return String(value || "").replace(/\s+/g, "").trim().toLowerCase();
+}
+
+function getClinicDeepLinkTarget() {
+  const params = new URLSearchParams(location.search);
+  return ["clinic", "institution", "i"]
+    .map(key => params.get(key))
+    .find(value => value && String(value).trim()) || "";
+}
+
+function isQrVisit() {
+  const params = new URLSearchParams(location.search);
+  return params.get("src") === "qr" || params.get("from") === "qr";
+}
+
+function clinicMatchesDeepLink(clinic, target) {
+  const needle = normalizeClinicLookup(target);
+  if (!needle || !clinic) return false;
+  return [
+    clinic.institution_no,
+    clinic.id,
+    clinic.name
+  ].some(value => normalizeClinicLookup(value) === needle);
+}
+
+function buildClinicDeepLink(clinic) {
+  const id = String(clinic && (clinic.institution_no || clinic.id) || "").trim();
+  const url = new URL("/", location.origin);
+  if (id) url.searchParams.set("clinic", id);
+  url.searchParams.set("src", "qr");
+  return url.toString();
+}
+
+function buildClinicQrImageUrl(clinic, size = 300) {
+  const data = encodeURIComponent(buildClinicDeepLink(clinic));
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${data}`;
+}
+
+function openClinicFromDeepLink() {
+  const target = getClinicDeepLinkTarget();
+  if (!target || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
+  if (LAST_OPENED_QR_TARGET === target && ACTIVE_SHEET_CLINIC) return true;
+  const clinic = CLINIC_DATA.clinics.find(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
+  if (!clinic || !hasValidCoords(clinic)) return false;
+
+  LAST_OPENED_QR_TARGET = target;
+  if (state.districtFilter !== "all") {
+    state.districtFilter = "all";
+    document.querySelectorAll(".chip[data-district]").forEach(chip => {
+      chip.classList.toggle("active", chip.dataset.district === "all");
+    });
+    renderMarkers();
+  }
+  map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
+  if (map.getZoom() < 16) map.setZoom(16);
+  openSheet(clinic);
+  return true;
+}
 
 // ─────────── Format helpers ───────────
 function priceKey(drugKey, dose) {
@@ -3186,6 +3247,7 @@ function initMap() {
       applyI18n();
       if (appLang === "en") startFxRefresh();
       refreshClinicDisplay();
+      openClinicFromDeepLink();
       initRepresentativeForm();
     })
     .catch(err => {
@@ -3193,6 +3255,7 @@ function initMap() {
       ensureMapHasPins().finally(() => {
         document.getElementById("loading").style.display = "none";
         refreshClinicDisplay();
+        openClinicFromDeepLink();
       });
     });
 }
