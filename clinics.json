@@ -616,15 +616,26 @@
       "verified": false,
       "prices": {
         "mounjaro_2.5mg": 310000,
-        "mounjaro_5mg": 400000
+        "mounjaro_5mg": 400000,
+        "wegovy_0.25mg": 240000,
+        "wegovy_0.5mg": 260000,
+        "wegovy_1.0mg": 280000,
+        "wegovy_1.7mg": 360000,
+        "wegovy_2.4mg": 418000
       },
       "stock": {
         "mounjaro_2.5mg": true,
-        "mounjaro_5mg": true
+        "mounjaro_5mg": true,
+        "wegovy_0.25mg": true,
+        "wegovy_0.5mg": true,
+        "wegovy_1.0mg": true,
+        "wegovy_1.7mg": true,
+        "wegovy_2.4mg": true
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "type": "pharmacy"
+      "type": "pharmacy",
+      "updated_at": "2026-06-04"
     },
     {
       "id": "pharmacy_02_item",
