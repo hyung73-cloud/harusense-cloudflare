@@ -1923,9 +1923,69 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 @media (max-width: 380px) {
   .lang-toggle-btn { padding: 4px 7px; font-size: 9px; }
 }
+
+.qr-opening-notice {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  z-index: 1200;
+  transform: translate(-50%, 10px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(92vw, 420px);
+  padding: 13px 16px;
+  border-radius: 16px;
+  border: 1px solid #dbeafe;
+  background: rgba(255,255,255,0.98);
+  color: #1f2937;
+  box-shadow: 0 14px 40px rgba(15,23,42,0.18);
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.qr-opening-notice.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.qr-opening-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid #dbeafe;
+  border-top-color: #2563eb;
+  flex: 0 0 auto;
+  animation: qrSpin .75s linear infinite;
+}
+@keyframes qrSpin { to { transform: rotate(360deg); } }
+@media (min-width: 720px) {
+  .qr-opening-notice { bottom: 30px; }
+}
+
 </style>
 </head>
 <body>
+
+<div class="qr-opening-notice" id="qrOpeningNotice" hidden aria-live="polite" role="status">
+  <span class="qr-opening-spinner" aria-hidden="true"></span>
+  <span id="qrOpeningNoticeText">기관 정보를 여는 중입니다...</span>
+</div>
+<script>
+(function () {
+  try {
+    var params = new URLSearchParams(location.search);
+    var target = params.get("clinic") || params.get("institution") || params.get("i");
+    if (!target) return;
+    var el = document.getElementById("qrOpeningNotice");
+    if (!el) return;
+    el.hidden = false;
+    setTimeout(function () { el.classList.add("show"); }, 20);
+  } catch (err) {}
+})();
+</script>
+
 
 <header class="header">
   <div class="header-top">
@@ -2528,14 +2588,42 @@ function buildClinicQrImageUrl(clinic, size = 300) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${data}`;
 }
 
+
+function showQrOpeningNotice(message) {
+  const el = document.getElementById("qrOpeningNotice");
+  const text = document.getElementById("qrOpeningNoticeText");
+  if (!el || !text) return;
+  text.textContent = message || "기관 정보를 여는 중입니다...";
+  el.hidden = false;
+  requestAnimationFrame(() => el.classList.add("show"));
+}
+
+function hideQrOpeningNotice(delay = 0) {
+  const el = document.getElementById("qrOpeningNotice");
+  if (!el) return;
+  window.setTimeout(() => {
+    el.classList.remove("show");
+    window.setTimeout(() => { el.hidden = true; }, 220);
+  }, delay);
+}
+
 function openClinicFromDeepLink() {
   const target = getClinicDeepLinkTarget();
-  if (!target || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
-  if (LAST_OPENED_QR_TARGET === target && ACTIVE_SHEET_CLINIC) return true;
+  if (!target) return false;
+  showQrOpeningNotice("기관 정보를 여는 중입니다...");
+  if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
+  if (LAST_OPENED_QR_TARGET === target && ACTIVE_SHEET_CLINIC) {
+    hideQrOpeningNotice(350);
+    return true;
+  }
   const clinic = CLINIC_DATA.clinics.find(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
-  if (!clinic || !hasValidCoords(clinic)) return false;
+  if (!clinic || !hasValidCoords(clinic)) {
+    showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
+    return false;
+  }
 
   LAST_OPENED_QR_TARGET = target;
+  showQrOpeningNotice((clinic.name || "") + " 정보를 여는 중입니다...");
   if (state.districtFilter !== "all") {
     state.districtFilter = "all";
     document.querySelectorAll(".chip[data-district]").forEach(chip => {
@@ -2546,8 +2634,11 @@ function openClinicFromDeepLink() {
   map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
   if (map.getZoom() < 16) map.setZoom(16);
   openSheet(clinic);
+  hideQrOpeningNotice(650);
   return true;
 }
+
+
 
 // ─────────── Format helpers ───────────
 function priceKey(drugKey, dose) {
