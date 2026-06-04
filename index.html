@@ -2992,6 +2992,38 @@ async function loadClinicOverrides() {
 function clinicMatchesDistrict(clinic) {
   return state.districtFilter === "all" || clinic.district === state.districtFilter;
 }
+
+function focusMapByDistrict(district) {
+  if (!map || !window.google || !google.maps || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return;
+
+  const clinics = CLINIC_DATA.clinics.filter(clinic => {
+    if (isDemoClinic(clinic)) return false;
+    if (!hasValidCoords(clinic)) return false;
+    return district === "all" || clinic.district === district;
+  });
+
+  if (!clinics.length) return;
+
+  if (clinics.length === 1) {
+    map.panTo({ lat: Number(clinics[0].lat), lng: Number(clinics[0].lng) });
+    map.setZoom(district === "all" ? 11 : 15);
+    return;
+  }
+
+  const bounds = new google.maps.LatLngBounds();
+  clinics.forEach(clinic => bounds.extend({ lat: Number(clinic.lat), lng: Number(clinic.lng) }));
+  map.fitBounds(bounds, {
+    top: 72,
+    right: 56,
+    bottom: window.innerWidth <= 640 ? 118 : 72,
+    left: 56
+  });
+
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    const maxZoom = district === "all" ? 12 : 15;
+    if (map.getZoom() > maxZoom) map.setZoom(maxZoom);
+  });
+}
 function latestClinicUpdatedAt() {
   const times = (CLINIC_DATA.clinics || [])
     .map(clinic => clinic.updated_at)
@@ -3766,6 +3798,7 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   btn.classList.add("active");
   state.districtFilter = btn.dataset.district;
   renderMarkers();
+  focusMapByDistrict(state.districtFilter);
 });
 
 // Guide tabs (현재 가이드 패널은 푸터로 대체됨 — 요소가 없을 때 안전 처리)
