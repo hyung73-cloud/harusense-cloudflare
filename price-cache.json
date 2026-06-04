@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-01T11:30:57.402Z",
+  "updated_at": "2026-06-04T00:00:00+09:00",
   "source": "clinics.json",
   "clinics": [
     {
@@ -12,7 +12,7 @@
         "mounjaro_5mg": 405000,
         "mounjaro_7.5mg": 570000,
         "mounjaro_10mg": 570000,
-        "wegovy_0.25mg": 250000,
+        "wegovy_0.25mg": 249000,
         "wegovy_0.5mg": 269000,
         "wegovy_1.0mg": 309000,
         "wegovy_1.7mg": 369000,
@@ -29,8 +29,18 @@
         "wegovy_1.7mg": true,
         "wegovy_2.4mg": true
       },
-      "price_updated_at": {},
-      "updated_at": "2026-05-31"
+      "price_updated_at": {
+        "mounjaro_2.5mg": "2026-06-04",
+        "mounjaro_5mg": "2026-06-04",
+        "mounjaro_7.5mg": "2026-06-04",
+        "mounjaro_10mg": "2026-06-04",
+        "wegovy_0.25mg": "2026-06-04",
+        "wegovy_0.5mg": "2026-06-04",
+        "wegovy_1.0mg": "2026-06-04",
+        "wegovy_1.7mg": "2026-06-04",
+        "wegovy_2.4mg": "2026-06-04"
+      },
+      "updated_at": "2026-06-04"
     },
     {
       "id": "clinic_excel_001_item",
@@ -156,16 +166,36 @@
         "mounjaro_2.5mg": 320000,
         "mounjaro_5mg": 410000,
         "mounjaro_7.5mg": 560000,
-        "mounjaro_10mg": 560000
+        "mounjaro_10mg": 560000,
+        "wegovy_0.25mg": 250000,
+        "wegovy_0.5mg": 270000,
+        "wegovy_1.0mg": 300000,
+        "wegovy_1.7mg": 370000,
+        "wegovy_2.4mg": 420000
       },
       "stock": {
         "mounjaro_2.5mg": true,
         "mounjaro_5mg": true,
         "mounjaro_7.5mg": true,
-        "mounjaro_10mg": true
+        "mounjaro_10mg": true,
+        "wegovy_0.25mg": true,
+        "wegovy_0.5mg": true,
+        "wegovy_1.0mg": true,
+        "wegovy_1.7mg": true,
+        "wegovy_2.4mg": true
       },
-      "price_updated_at": {},
-      "updated_at": "2026-05-31"
+      "price_updated_at": {
+        "mounjaro_2.5mg": "2026-06-04",
+        "mounjaro_5mg": "2026-06-04",
+        "mounjaro_7.5mg": "2026-06-04",
+        "mounjaro_10mg": "2026-06-04",
+        "wegovy_0.25mg": "2026-06-04",
+        "wegovy_0.5mg": "2026-06-04",
+        "wegovy_1.0mg": "2026-06-04",
+        "wegovy_1.7mg": "2026-06-04",
+        "wegovy_2.4mg": "2026-06-04"
+      },
+      "updated_at": "2026-06-04"
     },
     {
       "id": "clinic_excel_008_item",
