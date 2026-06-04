@@ -2575,6 +2575,9 @@ function isDemoClinic(clinic) {
   if (!clinic) return true;
   const id = String(clinic.id || "");
   const name = String(clinic.name || "");
+  const institutionNo = String(clinic.institution_no || "").trim();
+  if (["12339698", "12339600"].includes(institutionNo)) return true;
+  if (/^(하나약국|라임약국)$/i.test(name.trim())) return true;
   if (/^sample_/i.test(id)) return true;
   if (/샘플의원/i.test(name)) return true;
   if (id === "newsense_fallback") return true;
