@@ -2553,6 +2553,10 @@ function normalizeClinicLookup(value) {
   return String(value || "").replace(/\s+/g, "").trim().toLowerCase();
 }
 
+function normalizeClinicDigits(value) {
+  return String(value || "").replace(/\D+/g, "");
+}
+
 function getClinicDeepLinkTarget() {
   const params = new URLSearchParams(location.search);
   return ["clinic", "institution", "i"]
@@ -2567,12 +2571,14 @@ function isQrVisit() {
 
 function clinicMatchesDeepLink(clinic, target) {
   const needle = normalizeClinicLookup(target);
+  const needleDigits = normalizeClinicDigits(target);
   if (!needle || !clinic) return false;
-  return [
-    clinic.institution_no,
-    clinic.id,
-    clinic.name
-  ].some(value => normalizeClinicLookup(value) === needle);
+  const values = [clinic.institution_no, clinic.id, clinic.name];
+  return values.some(value => {
+    const normalized = normalizeClinicLookup(value);
+    const digits = normalizeClinicDigits(value);
+    return normalized === needle || (needleDigits && digits && digits === needleDigits);
+  });
 }
 
 function buildClinicDeepLink(clinic) {
