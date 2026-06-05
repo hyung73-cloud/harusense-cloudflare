@@ -38,6 +38,10 @@ export async function onRequest(context) {
         return json(await syncAccount(db, env, payload));
       case "syncAccountHash":
         return json(await syncAccountHash(db, env, payload));
+      case "addQrFeedback":
+        return json(await addQrFeedback(db, payload));
+      case "getQrFeedbacks":
+        return json(await getQrFeedbacks(db, payload));
       default:
         return json({ ok: false, error: "알 수 없는 요청입니다." }, 400);
     }
@@ -291,6 +295,82 @@ async function syncAccountHash(db, env, payload) {
   return { ok: true, institution_no: institutionNo };
 }
 
+async function ensureQrFeedbackTable(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS qr_feedbacks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      institution_no TEXT NOT NULL,
+      choices_json TEXT NOT NULL DEFAULT '[]',
+      emoji TEXT NOT NULL DEFAULT '',
+      source TEXT NOT NULL DEFAULT 'qr',
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      user_agent TEXT NOT NULL DEFAULT ''
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_qr_feedbacks_institution_created ON qr_feedbacks (institution_no, created_at)").run();
+}
+
+async function addQrFeedback(db, payload) {
+  const institutionNo = clean(payload.institution_no);
+  if (!institutionNo) return { ok: false, error: "institution_no is required" };
+
+  let choices = [];
+  try {
+    const parsed = JSON.parse(String(payload.choices_json || "[]"));
+    if (Array.isArray(parsed)) choices = parsed.map(v => clean(v)).filter(Boolean).slice(0, 3);
+  } catch (err) {
+    choices = [];
+  }
+
+  const emoji = clean(payload.emoji).slice(0, 8);
+  if (!choices.length && !emoji) return { ok: false, error: "feedback is empty" };
+
+  await ensureQrFeedbackTable(db);
+  await db.prepare(`
+    INSERT INTO qr_feedbacks (institution_no, choices_json, emoji, source, user_agent)
+    VALUES (?, ?, ?, 'qr', ?)
+  `).bind(
+    institutionNo,
+    JSON.stringify(choices),
+    emoji,
+    clean(payload.user_agent).slice(0, 240)
+  ).run();
+
+  return { ok: true };
+}
+
+async function getQrFeedbacks(db, payload) {
+  const institutionNo = clean(payload.institution_no);
+  await ensureQrFeedbackTable(db);
+
+  const rows = institutionNo
+    ? await db.prepare(`
+        SELECT institution_no, choices_json, emoji, created_at
+        FROM qr_feedbacks
+        WHERE institution_no = ?
+        ORDER BY created_at DESC
+        LIMIT 3
+      `).bind(institutionNo).all()
+    : await db.prepare(`
+        SELECT institution_no, choices_json, emoji, created_at
+        FROM qr_feedbacks
+        ORDER BY created_at DESC
+        LIMIT 3
+      `).all();
+
+  const feedbacks = [];
+  for (const row of rows.results || []) {
+    let choices = [];
+    try { choices = JSON.parse(row.choices_json || "[]"); } catch (err) {}
+    feedbacks.push({
+      institution_no: String(row.institution_no || ""),
+      choices,
+      emoji: String(row.emoji || ""),
+      created_at: row.created_at || ""
+    });
+  }
+  return { ok: true, feedbacks };
+}
 async function findAccount(db, institutionNo) {
   return await db.prepare("SELECT * FROM provider_accounts WHERE institution_no = ? LIMIT 1")
     .bind(institutionNo)
