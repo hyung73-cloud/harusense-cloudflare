@@ -1986,16 +1986,17 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 .qr-intro-kicker { font-size: 11px; font-weight: 800; color: #2563eb; margin-bottom: 5px; }
 .qr-intro-title { font-size: 18px; font-weight: 900; color: #111827; line-height: 1.3; margin-bottom: 6px; }
 .qr-intro-text { font-size: 13px; color: #4b5563; line-height: 1.55; margin-bottom: 14px; }
-.qr-intro-close {
+.qr-intro-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.qr-intro-open, .qr-intro-close {
   width: 100%;
   border: 0;
   border-radius: 13px;
-  background: #111827;
-  color: #fff;
   font-size: 14px;
   font-weight: 850;
   padding: 13px 14px;
 }
+.qr-intro-open { background: #2563eb; color: #fff; }
+.qr-intro-close { background: #f3f4f6; color: #111827; }
 @media (min-width: 720px) {
   .qr-intro-backdrop { align-items: center; }
 }
@@ -2012,8 +2013,11 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   <div class="qr-intro-card" role="dialog" aria-modal="true" aria-labelledby="qrIntroTitle">
     <div class="qr-intro-kicker">QR 방문 확인</div>
     <div class="qr-intro-title" id="qrIntroTitle">기관 정보를 확인할 준비가 되었습니다</div>
-    <div class="qr-intro-text" id="qrIntroText">지금은 새 확인 기능 준비 단계입니다. 닫기를 누르면 지도 화면으로 돌아갑니다.</div>
-    <button type="button" class="qr-intro-close" id="qrIntroClose">닫기</button>
+    <div class="qr-intro-text" id="qrIntroText">기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.</div>
+    <div class="qr-intro-actions">
+      <button type="button" class="qr-intro-open" id="qrIntroOpen">기관 정보 보기</button>
+      <button type="button" class="qr-intro-close" id="qrIntroClose">닫기</button>
+    </div>
   </div>
 </div>
 <script>
@@ -2655,20 +2659,40 @@ function showQrIntroPopup(clinic) {
   const backdrop = document.getElementById("qrIntroBackdrop");
   const title = document.getElementById("qrIntroTitle");
   const text = document.getElementById("qrIntroText");
+  const openBtn = document.getElementById("qrIntroOpen");
   const closeBtn = document.getElementById("qrIntroClose");
-  if (!backdrop || !closeBtn) return;
+  if (!backdrop || !openBtn || !closeBtn) return;
   hideQrOpeningNotice(0);
+  backdrop.__clinic = clinic;
   if (title) title.textContent = (clinic && clinic.name ? clinic.name : "기관") + " 방문 확인";
-  if (text) text.textContent = "지금은 새 QR 확인 기능 준비 단계입니다. 닫기를 누르면 기존 지도 화면으로 돌아갑니다.";
+  if (text) text.textContent = "기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.";
   backdrop.hidden = false;
   requestAnimationFrame(() => backdrop.classList.add("open"));
   if (backdrop.dataset.bound !== "true") {
     backdrop.dataset.bound = "true";
+    openBtn.addEventListener("click", () => openQrClinicFromPopup());
     closeBtn.addEventListener("click", () => closeQrIntroPopup());
     backdrop.addEventListener("click", event => {
       if (event.target === backdrop) closeQrIntroPopup();
     });
   }
+}
+
+function openQrClinicFromPopup() {
+  const backdrop = document.getElementById("qrIntroBackdrop");
+  const clinic = backdrop && backdrop.__clinic;
+  closeQrIntroPopup();
+  if (!clinic) return;
+  if (state.districtFilter !== "all") {
+    state.districtFilter = "all";
+    document.querySelectorAll(".chip[data-district]").forEach(chip => {
+      chip.classList.toggle("active", chip.dataset.district === "all");
+    });
+    renderMarkers();
+  }
+  map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
+  if (map.getZoom() < 16) map.setZoom(16);
+  openSheet(clinic);
 }
 
 function closeQrIntroPopup() {
