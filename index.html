@@ -2039,7 +2039,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="qr-intro-title" id="qrIntroTitle">기관 정보를 확인할 준비가 되었습니다</div>
     <div class="qr-intro-text" id="qrIntroText">기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.</div>
     <div class="qr-choice-grid" id="qrChoiceGrid" aria-label="방문 확인 선택"></div>
-    <div class="qr-choice-hint">최대 3개까지 선택할 수 있습니다. 아직 저장되지는 않습니다.</div>
+    <div class="qr-choice-hint">최대 3개까지 선택할 수 있습니다. 선택 후 기관 정보 보기를 누르면 조용히 저장됩니다.</div>
     <div class="qr-emoji-row" id="qrEmojiRow" aria-label="느낌 선택">
       <button type="button" class="qr-emoji-btn" data-qr-emoji="👍" aria-label="좋아요">👍</button>
       <button type="button" class="qr-emoji-btn" data-qr-emoji="👌" aria-label="괜찮아요">👌</button>
@@ -2711,6 +2711,31 @@ function renderQrFeedbackChoices() {
     `<button type="button" class="qr-choice-btn" data-qr-choice="${label}">${label}</button>`
   ).join("");
 }
+function collectQrFeedbackPayload(clinic) {
+  const backdrop = document.getElementById("qrIntroBackdrop");
+  if (!backdrop || !clinic) return null;
+  const choices = Array.from(backdrop.querySelectorAll("[data-qr-choice].selected"))
+    .map(btn => btn.dataset.qrChoice || btn.textContent || "")
+    .filter(Boolean)
+    .slice(0, 3);
+  const emojiBtn = backdrop.querySelector("[data-qr-emoji].selected");
+  const emoji = emojiBtn ? (emojiBtn.dataset.qrEmoji || emojiBtn.textContent || "") : "";
+  if (!choices.length && !emoji) return null;
+  return {
+    institution_no: String(clinic.institution_no || clinic.id || ""),
+    choices_json: JSON.stringify(choices),
+    emoji,
+    user_agent: navigator.userAgent || ""
+  };
+}
+
+function saveQrFeedbackQuietly(clinic) {
+  const payload = collectQrFeedbackPayload(clinic);
+  if (!payload || !payload.institution_no) return;
+  accountApi("addQrFeedback", payload).catch(err => {
+    console.warn("QR feedback save skipped", err);
+  });
+}
 function showQrIntroPopup(clinic) {
   const backdrop = document.getElementById("qrIntroBackdrop");
   const title = document.getElementById("qrIntroTitle");
@@ -2754,7 +2779,8 @@ function showQrIntroPopup(clinic) {
 function openQrClinicFromPopup() {
   const backdrop = document.getElementById("qrIntroBackdrop");
   const clinic = backdrop && backdrop.__clinic;
-  closeQrIntroPopup();
+    saveQrFeedbackQuietly(clinic);
+closeQrIntroPopup();
   if (!clinic) return;
   if (state.districtFilter !== "all") {
     state.districtFilter = "all";
