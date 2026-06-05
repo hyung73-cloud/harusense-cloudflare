@@ -3834,8 +3834,8 @@ function pickReactionOptions(seed) {
 }
 function buildClinicReactionSection(clinic) {
   const institutionNo = reactionInstitutionNo(clinic);
-  if (!institutionNo) return "";
   const qrMode = isQrVisit();
+  if (!institutionNo || !qrMode) return "";
   const submitted = hasSubmittedReactionToday(institutionNo);
   const options = pickReactionOptions(institutionNo + (clinic.name || ""));
   CLINIC_REACTION_STATE.set(institutionNo, { selected: [], emoji: "", options });
@@ -4050,9 +4050,9 @@ function openSheet(clinic) {
     </div>
     <div class="sheet-prices-scroll">
       ${priceSection}
+      ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
+      ${buildClinicReactionSection(clinic)}
     </div>
-    ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
-    ${buildClinicReactionSection(clinic)}
   `;
   document.getElementById("sheetClose").addEventListener("click", closeSheet);
   bindClinicReactionSection(clinic);
