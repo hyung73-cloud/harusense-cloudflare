@@ -2039,7 +2039,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="qr-intro-title" id="qrIntroTitle">기관 정보를 확인할 준비가 되었습니다</div>
     <div class="qr-intro-text" id="qrIntroText">기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.</div>
     <div class="qr-choice-grid" id="qrChoiceGrid" aria-label="방문 확인 선택"></div>
-    <div class="qr-choice-hint">최대 3개까지 선택할 수 있습니다. 선택 후 기관 정보 보기를 누르면 조용히 저장됩니다.</div>
+    <div class="qr-choice-hint">최대 2개까지 선택할 수 있습니다.</div>
     <div class="qr-emoji-row" id="qrEmojiRow" aria-label="느낌 선택">
       <button type="button" class="qr-emoji-btn" data-qr-emoji="👍" aria-label="좋아요">👍</button>
       <button type="button" class="qr-emoji-btn" data-qr-emoji="👌" aria-label="괜찮아요">👌</button>
@@ -2699,9 +2699,9 @@ function getQrFeedbackOptions() {
   QR_FEEDBACK_GROUPS.forEach((group, groupIndex) => {
     const first = (period + groupIndex * 2) % group.length;
     options.push(group[first]);
-    if (options.length < 7) options.push(group[(first + 2) % group.length]);
+    if (options.length < 5) options.push(group[(first + 2) % group.length]);
   });
-  return options.slice(0, 7);
+  return options.slice(0, 5);
 }
 
 function renderQrFeedbackChoices() {
@@ -2758,7 +2758,7 @@ function showQrIntroPopup(clinic) {
       const choice = event.target.closest("[data-qr-choice]");
       if (choice) {
         const selected = backdrop.querySelectorAll("[data-qr-choice].selected");
-        if (!choice.classList.contains("selected") && selected.length >= 3) return;
+        if (!choice.classList.contains("selected") && selected.length >= 2) return;
         choice.classList.toggle("selected");
         return;
       }
