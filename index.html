@@ -2022,14 +2022,25 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 .qr-feedback-history-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   min-height: 18px;
   font-size: 11px;
   font-weight: 700;
   color: #334155;
   white-space: nowrap;
   overflow: hidden;
+}
+.qr-feedback-history-text {
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
+}
+.qr-feedback-history-time {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
 }
 .qr-feedback-history-empty { font-size: 11px; color: #94a3b8; }
 .qr-intro-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
@@ -2742,6 +2753,24 @@ function escapeHtml(value) {
     "'": "&#39;"
   }[ch] || ch));
 }
+function formatQrFeedbackTime(value) {
+  if (!value) return "";
+  const raw = String(value).trim();
+  const date = new Date(raw.includes("T") ? raw : raw.replace(" ", "T") + "Z");
+  if (Number.isNaN(date.getTime())) return "";
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "방금 전";
+  if (diffMin < 60) return `${diffMin}분 전`;
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `${diffHour}시간 전`;
+  const now = new Date();
+  const sameYear = date.getFullYear() === now.getFullYear();
+  return sameYear
+    ? `${date.getMonth() + 1}월 ${date.getDate()}일`
+    : `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
+}
+
 function renderQrFeedbackHistoryRows(feedbacks) {
   const list = document.getElementById("qrFeedbackHistoryList");
   if (!list) return;
@@ -2753,8 +2782,9 @@ function renderQrFeedbackHistoryRows(feedbacks) {
   list.innerHTML = rows.map(item => {
     const choices = Array.isArray(item.choices) ? item.choices.slice(0, 2) : [];
     const emoji = item.emoji || "";
-    const text = [emoji].concat(choices).filter(Boolean).join(" · ");
-    return `<div class="qr-feedback-history-row">${escapeHtml(text || "방문 확인")}</div>`;
+    const text = [emoji].concat(choices).filter(Boolean).join(" · ") || "방문 확인";
+    const time = formatQrFeedbackTime(item.created_at);
+    return `<div class="qr-feedback-history-row"><span class="qr-feedback-history-text">${escapeHtml(text)}</span>${time ? `<span class="qr-feedback-history-time">${escapeHtml(time)}</span>` : ""}</div>`;
   }).join("");
 }
 
