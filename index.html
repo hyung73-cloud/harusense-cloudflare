@@ -1963,6 +1963,42 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 @media (min-width: 720px) {
   .qr-opening-notice { bottom: 30px; }
 }
+.qr-intro-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.18);
+  pointer-events: auto;
+}
+.qr-intro-backdrop.open { display: flex; }
+.qr-intro-card {
+  width: min(420px, 100%);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+}
+.qr-intro-kicker { font-size: 11px; font-weight: 800; color: #2563eb; margin-bottom: 5px; }
+.qr-intro-title { font-size: 18px; font-weight: 900; color: #111827; line-height: 1.3; margin-bottom: 6px; }
+.qr-intro-text { font-size: 13px; color: #4b5563; line-height: 1.55; margin-bottom: 14px; }
+.qr-intro-close {
+  width: 100%;
+  border: 0;
+  border-radius: 13px;
+  background: #111827;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 850;
+  padding: 13px 14px;
+}
+@media (min-width: 720px) {
+  .qr-intro-backdrop { align-items: center; }
+}
 
 </style>
 </head>
@@ -1971,6 +2007,14 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 <div class="qr-opening-notice" id="qrOpeningNotice" hidden aria-live="polite" role="status">
   <span class="qr-opening-spinner" aria-hidden="true"></span>
   <span id="qrOpeningNoticeText">기관 정보를 여는 중입니다...</span>
+</div>
+<div class="qr-intro-backdrop" id="qrIntroBackdrop" hidden>
+  <div class="qr-intro-card" role="dialog" aria-modal="true" aria-labelledby="qrIntroTitle">
+    <div class="qr-intro-kicker">QR 방문 확인</div>
+    <div class="qr-intro-title" id="qrIntroTitle">기관 정보를 확인할 준비가 되었습니다</div>
+    <div class="qr-intro-text" id="qrIntroText">지금은 새 확인 기능 준비 단계입니다. 닫기를 누르면 지도 화면으로 돌아갑니다.</div>
+    <button type="button" class="qr-intro-close" id="qrIntroClose">닫기</button>
+  </div>
 </div>
 <script>
 (function () {
@@ -2607,15 +2651,38 @@ function hideQrOpeningNotice(delay = 0) {
   }, delay);
 }
 
+function showQrIntroPopup(clinic) {
+  const backdrop = document.getElementById("qrIntroBackdrop");
+  const title = document.getElementById("qrIntroTitle");
+  const text = document.getElementById("qrIntroText");
+  const closeBtn = document.getElementById("qrIntroClose");
+  if (!backdrop || !closeBtn) return;
+  hideQrOpeningNotice(0);
+  if (title) title.textContent = (clinic && clinic.name ? clinic.name : "기관") + " 방문 확인";
+  if (text) text.textContent = "지금은 새 QR 확인 기능 준비 단계입니다. 닫기를 누르면 기존 지도 화면으로 돌아갑니다.";
+  backdrop.hidden = false;
+  requestAnimationFrame(() => backdrop.classList.add("open"));
+  if (backdrop.dataset.bound !== "true") {
+    backdrop.dataset.bound = "true";
+    closeBtn.addEventListener("click", () => closeQrIntroPopup());
+    backdrop.addEventListener("click", event => {
+      if (event.target === backdrop) closeQrIntroPopup();
+    });
+  }
+}
+
+function closeQrIntroPopup() {
+  const backdrop = document.getElementById("qrIntroBackdrop");
+  if (!backdrop) return;
+  backdrop.classList.remove("open");
+  window.setTimeout(() => { backdrop.hidden = true; }, 180);
+}
+
 function openClinicFromDeepLink() {
   const target = getClinicDeepLinkTarget();
   if (!target) return false;
   showQrOpeningNotice("기관 정보를 여는 중입니다...");
   if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
-  if (LAST_OPENED_QR_TARGET === target && ACTIVE_SHEET_CLINIC) {
-    hideQrOpeningNotice(350);
-    return true;
-  }
   const clinic = CLINIC_DATA.clinics.find(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
   if (!clinic || !hasValidCoords(clinic)) {
     showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
@@ -2623,18 +2690,7 @@ function openClinicFromDeepLink() {
   }
 
   LAST_OPENED_QR_TARGET = target;
-  showQrOpeningNotice((clinic.name || "") + " 정보를 여는 중입니다...");
-  if (state.districtFilter !== "all") {
-    state.districtFilter = "all";
-    document.querySelectorAll(".chip[data-district]").forEach(chip => {
-      chip.classList.toggle("active", chip.dataset.district === "all");
-    });
-    renderMarkers();
-  }
-  map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
-  if (map.getZoom() < 16) map.setZoom(16);
-  openSheet(clinic);
-  hideQrOpeningNotice(650);
+  showQrIntroPopup(clinic);
   return true;
 }
 
