@@ -2781,9 +2781,10 @@ function collectQrFeedbackPayload(clinic) {
 
 function saveQrFeedbackQuietly(clinic) {
   const payload = collectQrFeedbackPayload(clinic);
-  if (!payload || !payload.institution_no) return;
-  accountApi("addQrFeedback", payload).catch(err => {
+  if (!payload || !payload.institution_no) return Promise.resolve({ ok: true, skipped: true });
+  return accountApi("addQrFeedback", payload).catch(err => {
     console.warn("QR feedback save skipped", err);
+    return { ok: false, error: err && err.message ? err.message : "save skipped" };
   });
 }
 function showQrIntroPopup(clinic) {
@@ -2827,11 +2828,16 @@ function showQrIntroPopup(clinic) {
   }
 }
 
-function openQrClinicFromPopup() {
+async function openQrClinicFromPopup() {
   const backdrop = document.getElementById("qrIntroBackdrop");
   const clinic = backdrop && backdrop.__clinic;
-    saveQrFeedbackQuietly(clinic);
-closeQrIntroPopup();
+  if (clinic) {
+    await Promise.race([
+      saveQrFeedbackQuietly(clinic),
+      new Promise(resolve => setTimeout(resolve, 900))
+    ]);
+  }
+  closeQrIntroPopup();
   if (!clinic) return;
   if (state.districtFilter !== "all") {
     state.districtFilter = "all";
