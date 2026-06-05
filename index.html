@@ -2613,20 +2613,68 @@ function hideQrOpeningNotice(delay = 0) {
   }, delay);
 }
 
-function openClinicFromDeepLink() {
+function countClinicPrices(clinic) {
+  if (!clinic || !clinic.prices || typeof clinic.prices !== "object") return 0;
+  return Object.keys(clinic.prices).filter(key => clinic.prices[key] != null && clinic.prices[key] !== "").length;
+}
+
+function selectBestClinicForDeepLink(target) {
+  if (!target || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return null;
+  const targetDigits = normalizeClinicDigits(target);
+  const canonicalId = targetDigits ? "clinic_" + targetDigits : "";
+  const matches = CLINIC_DATA.clinics.filter(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
+  if (!matches.length) return null;
+
+  const ranked = matches.slice().sort((a, b) => {
+    const priceDiff = countClinicPrices(b) - countClinicPrices(a);
+    if (priceDiff !== 0) return priceDiff;
+
+    const aInstExact = normalizeClinicDigits(a.institution_no) === targetDigits ? 1 : 0;
+    const bInstExact = normalizeClinicDigits(b.institution_no) === targetDigits ? 1 : 0;
+    if (bInstExact !== aInstExact) return bInstExact - aInstExact;
+
+    const aCanon = String(a.id || "") === canonicalId ? 1 : 0;
+    const bCanon = String(b.id || "") === canonicalId ? 1 : 0;
+    return bCanon - aCanon;
+  });
+
+  return ranked.find(item => hasValidCoords(item)) || ranked[0] || null;
+}
+
+async function ensureDeepLinkClinicHasPrices(clinic) {
+  if (!clinic || countClinicPrices(clinic) > 0) return clinic;
+  const cache = await loadPriceCache();
+  if (!cache) return clinic;
+  const probe = { clinics: [cloneClinic(clinic)] };
+  applyPriceCache(probe, cache);
+  const enriched = probe.clinics[0];
+  return countClinicPrices(enriched) > 0 ? enriched : clinic;
+}
+
+async function openClinicFromDeepLink() {
   const target = getClinicDeepLinkTarget();
   if (!target) return false;
   showQrOpeningNotice("기관 정보를 여는 중입니다...");
   if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
-  if (LAST_OPENED_QR_TARGET === target && ACTIVE_SHEET_CLINIC) {
+
+  let clinic = selectBestClinicForDeepLink(target);
+  if (!clinic) {
+    showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
+    return false;
+  }
+
+  clinic = await ensureDeepLinkClinicHasPrices(clinic);
+
+  if (
+    LAST_OPENED_QR_TARGET === target &&
+    ACTIVE_SHEET_CLINIC &&
+    countClinicPrices(ACTIVE_SHEET_CLINIC) >= countClinicPrices(clinic)
+  ) {
     hideQrOpeningNotice(350);
     return true;
   }
-  const matches = CLINIC_DATA.clinics
-    .filter(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target) && hasValidCoords(item))
-    .sort((a, b) => Object.keys(b.prices || {}).length - Object.keys(a.prices || {}).length);
-  const clinic = matches[0];
-  if (!clinic || !hasValidCoords(clinic)) {
+
+  if (!hasValidCoords(clinic)) {
     showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
     return false;
   }
