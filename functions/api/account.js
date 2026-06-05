@@ -176,7 +176,7 @@ async function getClinicOverrides(db) {
   return { ok: true, updates };
 }
 
-function syncAccount(db, env, payload) {
+async function syncAccount(db, env, payload) {
   const expectedToken = String(env.ADMIN_SYNC_TOKEN || "");
   if (!expectedToken || String(payload.token || "") !== expectedToken) {
     return { ok: false, error: "운영자 동기화 권한이 없습니다." };
