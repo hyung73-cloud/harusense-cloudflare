@@ -34,10 +34,6 @@ export async function onRequest(context) {
         return json(await updatePrices(db, payload));
       case "getClinicOverrides":
         return json(await getClinicOverrides(db));
-      case "addClinicReaction":
-        return json(await addClinicReaction(db, payload));
-      case "getClinicReactions":
-        return json(await getClinicReactions(db, payload));
       case "syncAccount":
         return json(await syncAccount(db, env, payload));
       case "syncAccountHash":
@@ -178,87 +174,6 @@ async function getClinicOverrides(db) {
   }
 
   return { ok: true, updates };
-}
-
-async async function ensureReactionTable(db) {
-  await db.prepare([
-    "CREATE TABLE IF NOT EXISTS clinic_reactions (",
-    "id INTEGER PRIMARY KEY AUTOINCREMENT,",
-    "institution_no TEXT NOT NULL,",
-    "emoji TEXT NOT NULL DEFAULT '',",
-    "tags_json TEXT NOT NULL DEFAULT '[]',",
-    "source TEXT NOT NULL DEFAULT '',",
-    "visitor_key TEXT NOT NULL DEFAULT '',",
-    "created_at TEXT NOT NULL DEFAULT (datetime('now'))",
-    ")"
-  ].join("\n")).run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_clinic_reactions_inst_time ON clinic_reactions (institution_no, created_at DESC)").run();
-}
-
-const ALLOWED_REACTION_TAGS = new Set([
-  "실제 가격 동일", "표시 가격과 같았어요", "가격 변동 없었어요", "오늘 기준 동일했어요", "현장 가격 동일",
-  "오늘 재고 있었어요", "바로 수령 가능했어요", "재고 확인됐어요", "방문 시 가능했어요", "오늘 기준 확인됨",
-  "대기 길지 않았어요", "비교적 빠르게 진행됐어요", "바로 안내받았어요", "오래 기다리지 않았어요", "혼잡하지 않았어요",
-  "응대가 깔끔했어요", "안내가 빨랐어요", "설명이 간단명확했어요", "방문 흐름이 빨랐어요", "전체적으로 무난했어요"
-]);
-const ALLOWED_REACTION_EMOJIS = new Set(["👍", "👌", "😮"]);
-
-function parseReactionTags(raw) {
-  let tags = raw;
-  if (typeof raw === "string") {
-    try { tags = JSON.parse(raw); } catch (err) { tags = []; }
-  }
-  if (!Array.isArray(tags)) tags = [];
-  const out = [];
-  for (const tag of tags) {
-    const cleanTag = clean(tag);
-    if (ALLOWED_REACTION_TAGS.has(cleanTag) && !out.includes(cleanTag)) out.push(cleanTag);
-    if (out.length >= 3) break;
-  }
-  return out;
-}
-
-async function addClinicReaction(db, payload) {
-  await ensureReactionTable(db);
-  const institutionNo = clean(payload.institution_no);
-  const emoji = clean(payload.emoji);
-  const tags = parseReactionTags(payload.tags || payload.tags_json);
-  const source = clean(payload.source) === "qr" ? "qr" : "";
-  const visitorKey = clean(payload.visitor_key).slice(0, 80);
-
-  if (!institutionNo) return { ok: false, error: "기관 정보가 없습니다." };
-  if (!ALLOWED_REACTION_EMOJIS.has(emoji)) return { ok: false, error: "이모티콘을 선택해주세요." };
-  if (!tags.length) return { ok: false, error: "확인 문구를 1개 이상 선택해주세요." };
-
-  await db.prepare([
-    "INSERT INTO clinic_reactions (institution_no, emoji, tags_json, source, visitor_key, created_at)",
-    "VALUES (?, ?, ?, ?, ?, datetime('now'))"
-  ].join("\n")).bind(institutionNo, emoji, JSON.stringify(tags), source, visitorKey).run();
-
-  return await getClinicReactions(db, { institution_no: institutionNo });
-}
-
-async function getClinicReactions(db, payload) {
-  await ensureReactionTable(db);
-  const institutionNo = clean(payload.institution_no);
-  if (!institutionNo) return { ok: true, reactions: [] };
-
-  const rows = await db.prepare([
-    "SELECT emoji, tags_json, source, created_at",
-    "FROM clinic_reactions",
-    "WHERE institution_no = ?",
-    "ORDER BY datetime(created_at) DESC, id DESC",
-    "LIMIT 3"
-  ].join("\n")).bind(institutionNo).all();
-
-  const reactions = [];
-  for (const row of rows.results || []) {
-    let tags = [];
-    try { tags = JSON.parse(row.tags_json || "[]"); } catch (err) {}
-    reactions.push({ emoji: row.emoji || "", tags, source: row.source || "", created_at: row.created_at || "" });
-  }
-
-  return { ok: true, reactions };
 }
 
 function syncAccount(db, env, payload) {
