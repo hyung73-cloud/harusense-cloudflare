@@ -1964,33 +1964,6 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   .qr-opening-notice { bottom: 30px; }
 }
 
-.clinic-reaction-card {
-  margin-top: 12px;
-  padding: 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  background: #ffffff;
-}
-.clinic-reaction-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-.clinic-reaction-title { font-size: 13px; font-weight: 800; color: #111827; }
-.clinic-reaction-sub { font-size: 10.5px; color: #64748b; }
-.clinic-reaction-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
-.clinic-reaction-item { display: flex; align-items: flex-start; gap: 6px; min-height: 24px; padding: 6px 8px; border-radius: 10px; background: #f8fafc; font-size: 11.5px; color: #374151; line-height: 1.4; }
-.clinic-reaction-empty { font-size: 11.5px; color: #94a3b8; padding: 6px 2px 8px; }
-.clinic-reaction-form { border-top: 1px solid #eef2f7; padding-top: 10px; }
-.clinic-reaction-options { display: flex; flex-wrap: wrap; gap: 6px; }
-.clinic-reaction-option, .clinic-reaction-emoji { border: 1px solid #dbe3ef; background: #fff; color: #334155; border-radius: 999px; padding: 7px 10px; font-size: 11.5px; font-weight: 700; line-height: 1; }
-.clinic-reaction-option.selected { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
-.clinic-reaction-emoji-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 9px; }
-.clinic-reaction-emojis { display: flex; gap: 6px; }
-.clinic-reaction-emoji { width: 36px; height: 32px; padding: 0; font-size: 17px; }
-.clinic-reaction-emoji.selected { border-color: #16a34a; background: #ecfdf5; }
-.clinic-reaction-submit { border: 0; border-radius: 10px; background: #111827; color: white; padding: 9px 12px; font-size: 12px; font-weight: 800; }
-.clinic-reaction-msg { min-height: 17px; margin-top: 7px; font-size: 11px; color: #64748b; }
-.clinic-reaction-msg.ok { color: #059669; font-weight: 700; }
-.clinic-reaction-msg.err { color: #dc2626; font-weight: 700; }
-@media (max-width: 420px) { .clinic-reaction-card { padding: 10px; } .clinic-reaction-option { padding: 7px 8px; font-size: 11px; } }
-
 </style>
 </head>
 <body>
@@ -2643,10 +2616,7 @@ function openClinicFromDeepLink() {
     hideQrOpeningNotice(350);
     return true;
   }
-  const matches = CLINIC_DATA.clinics
-    .filter(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target) && hasValidCoords(item))
-    .sort((a, b) => Object.keys(b.prices || {}).length - Object.keys(a.prices || {}).length);
-  const clinic = matches[0];
+  const clinic = CLINIC_DATA.clinics.find(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
   if (!clinic || !hasValidCoords(clinic)) {
     showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
     return false;
@@ -3795,157 +3765,6 @@ function buildSheetPriceColumn(clinic, drugKey, items, selectedKey) {
     </div>`;
 }
 
-const REACTION_GROUPS = [
-  ["실제 가격 동일", "표시 가격과 같았어요", "가격 변동 없었어요", "오늘 기준 동일했어요", "현장 가격 동일"],
-  ["오늘 재고 있었어요", "바로 수령 가능했어요", "재고 확인됐어요", "방문 시 가능했어요", "오늘 기준 확인됨"],
-  ["대기 길지 않았어요", "비교적 빠르게 진행됐어요", "바로 안내받았어요", "오래 기다리지 않았어요", "혼잡하지 않았어요"],
-  ["응대가 깔끔했어요", "안내가 빨랐어요", "설명이 간단명확했어요", "방문 흐름이 빨랐어요", "전체적으로 무난했어요"]
-];
-const REACTION_EMOJIS = ["👍", "👌", "😮"];
-const CLINIC_REACTION_STATE = new Map();
-
-function escapeText(value) {
-  return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-function reactionInstitutionNo(clinic) { return String(clinic && (clinic.institution_no || clinic.id) || "").trim(); }
-function getReactionVisitorKey() {
-  const key = "harusense_reaction_visitor";
-  let value = localStorage.getItem(key);
-  if (!value) {
-    value = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
-    localStorage.setItem(key, value);
-  }
-  return value;
-}
-function reactionTodayKey(institutionNo) {
-  const d = new Date();
-  const day = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-  return "harusense_reaction_done_" + institutionNo + "_" + day;
-}
-function hasSubmittedReactionToday(institutionNo) { return localStorage.getItem(reactionTodayKey(institutionNo)) === "1"; }
-function markReactionSubmittedToday(institutionNo) { localStorage.setItem(reactionTodayKey(institutionNo), "1"); }
-function pickReactionOptions(seed) {
-  const options = [];
-  REACTION_GROUPS.forEach((group, groupIndex) => {
-    let base = 0;
-    for (let i = 0; i < seed.length; i++) base += seed.charCodeAt(i) + groupIndex * 17;
-    const start = Math.abs(base + Math.floor(Date.now() / 3600000) + groupIndex * 3) % group.length;
-    options.push(group[start]);
-    options.push(group[(start + 2) % group.length]);
-  });
-  return options;
-}
-function buildClinicReactionSection(clinic) {
-  return "";
-  const institutionNo = reactionInstitutionNo(clinic);
-  const qrMode = isQrVisit();
-  if (!institutionNo || !qrMode) return "";
-  const submitted = hasSubmittedReactionToday(institutionNo);
-  const options = pickReactionOptions(institutionNo + (clinic.name || ""));
-  CLINIC_REACTION_STATE.set(institutionNo, { selected: [], emoji: "", options });
-  const optionButtons = options.map(tag => `<button type="button" class="clinic-reaction-option" data-reaction-tag="${escapeText(tag)}">${escapeText(tag)}</button>`).join("");
-  const emojiButtons = REACTION_EMOJIS.map(emoji => `<button type="button" class="clinic-reaction-emoji" data-reaction-emoji="${emoji}" aria-label="${emoji}">${emoji}</button>`).join("");
-  const form = qrMode && !submitted ? `
-    <div class="clinic-reaction-form" data-reaction-form="${escapeText(institutionNo)}">
-      <div class="clinic-reaction-sub">최대 3개 선택 후 이모티콘 1개를 골라주세요</div>
-      <div class="clinic-reaction-options">${optionButtons}</div>
-      <div class="clinic-reaction-emoji-row">
-        <div class="clinic-reaction-emojis">${emojiButtons}</div>
-        <button type="button" class="clinic-reaction-submit">확인 남기기</button>
-      </div>
-      <div class="clinic-reaction-msg"></div>
-    </div>` : qrMode && submitted ? `<div class="clinic-reaction-msg ok">오늘 확인을 남겨주셔서 감사합니다.</div>` : "";
-  return `
-    <div class="clinic-reaction-card" id="clinicReactionCard" data-institution-no="${escapeText(institutionNo)}">
-      <div class="clinic-reaction-head"><div class="clinic-reaction-title">최근 방문 확인</div><div class="clinic-reaction-sub">최신 3개만 표시</div></div>
-      <div class="clinic-reaction-list" id="clinicReactionList"><div class="clinic-reaction-empty">확인 정보를 불러오는 중입니다.</div></div>
-      ${form}
-    </div>`;
-}
-function renderClinicReactions(institutionNo, reactions) {
-  const list = document.getElementById("clinicReactionList");
-  if (!list) return;
-  if (!reactions || !reactions.length) {
-    list.innerHTML = `<div class="clinic-reaction-empty">아직 남겨진 확인이 없습니다.</div>`;
-    return;
-  }
-  list.innerHTML = reactions.slice(0, 3).map(item => {
-    const tags = Array.isArray(item.tags) ? item.tags.slice(0, 3).join(" · ") : "";
-    return `<div class="clinic-reaction-item"><span>${escapeText(item.emoji || "•")}</span><span>${escapeText(tags)}</span></div>`;
-  }).join("");
-}
-async function loadClinicReactions(clinic) {
-  const institutionNo = reactionInstitutionNo(clinic);
-  if (!institutionNo) return;
-  try {
-    const data = await accountApi("getClinicReactions", { institution_no: institutionNo });
-    if (data && data.ok) renderClinicReactions(institutionNo, data.reactions || []);
-  } catch (err) {
-    const list = document.getElementById("clinicReactionList");
-    if (list) list.innerHTML = `<div class="clinic-reaction-empty">확인 정보를 잠시 후 다시 불러옵니다.</div>`;
-  }
-}
-function bindClinicReactionSection(clinic) {
-  const institutionNo = reactionInstitutionNo(clinic);
-  const form = document.querySelector(`[data-reaction-form="${CSS.escape(institutionNo)}"]`);
-  if (!form) return;
-  const state = CLINIC_REACTION_STATE.get(institutionNo) || { selected: [], emoji: "" };
-  const msg = form.querySelector(".clinic-reaction-msg");
-  form.querySelectorAll("[data-reaction-tag]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const tag = btn.dataset.reactionTag;
-      const exists = state.selected.includes(tag);
-      if (exists) {
-        state.selected = state.selected.filter(item => item !== tag);
-        btn.classList.remove("selected");
-      } else {
-        if (state.selected.length >= 3) {
-          msg.textContent = "최대 3개까지 선택할 수 있습니다.";
-          msg.className = "clinic-reaction-msg err";
-          return;
-        }
-        state.selected.push(tag);
-        btn.classList.add("selected");
-      }
-      msg.textContent = "";
-      msg.className = "clinic-reaction-msg";
-    });
-  });
-  form.querySelectorAll("[data-reaction-emoji]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.emoji = btn.dataset.reactionEmoji;
-      form.querySelectorAll("[data-reaction-emoji]").forEach(el => el.classList.remove("selected"));
-      btn.classList.add("selected");
-      msg.textContent = "";
-      msg.className = "clinic-reaction-msg";
-    });
-  });
-  form.querySelector(".clinic-reaction-submit").addEventListener("click", async () => {
-    if (!state.selected.length) {
-      msg.textContent = "확인 문구를 1개 이상 선택해주세요.";
-      msg.className = "clinic-reaction-msg err";
-      return;
-    }
-    if (!state.emoji) {
-      msg.textContent = "이모티콘을 하나 선택해주세요.";
-      msg.className = "clinic-reaction-msg err";
-      return;
-    }
-    msg.textContent = "저장 중입니다...";
-    msg.className = "clinic-reaction-msg";
-    try {
-      const data = await accountApi("addClinicReaction", { institution_no: institutionNo, tags: state.selected, emoji: state.emoji, source: "qr", visitor_key: getReactionVisitorKey() });
-      if (!data || !data.ok) throw new Error((data && data.error) || "저장하지 못했습니다.");
-      markReactionSubmittedToday(institutionNo);
-      renderClinicReactions(institutionNo, data.reactions || []);
-      form.innerHTML = `<div class="clinic-reaction-msg ok">확인 감사합니다. 최근 방문 정보에 반영됩니다.</div>`;
-    } catch (err) {
-      msg.textContent = err.message || "잠시 후 다시 시도해주세요.";
-      msg.className = "clinic-reaction-msg err";
-    }
-  });
-}
-
 function openSheet(clinic) {
   ACTIVE_SHEET_CLINIC = clinic;
   const content = document.getElementById("sheetContent");
@@ -4054,13 +3873,10 @@ function openSheet(clinic) {
     </div>
     <div class="sheet-prices-scroll">
       ${priceSection}
-      ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
-      ${buildClinicReactionSection(clinic)}
     </div>
+    ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
   `;
   document.getElementById("sheetClose").addEventListener("click", closeSheet);
-  bindClinicReactionSection(clinic);
-  loadClinicReactions(clinic);
   document.getElementById("sheet").classList.add("open");
   document.getElementById("backdrop").classList.add("open");
 }
