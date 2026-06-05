@@ -239,54 +239,6 @@ body {
   .trust-badge-full { display: none; }
   .trust-badge-short { display: inline; }
 }
-.live-feedback-ticker {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 760px;
-  margin: 8px 0 0;
-  padding: 7px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.94);
-  color: #334155;
-  font-size: 12px;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(15,23,42,0.06);
-}
-.live-feedback-kicker {
-  flex: 0 0 auto;
-  color: var(--verified);
-  font-weight: 850;
-}
-.live-feedback-track {
-  min-width: 0;
-  overflow: hidden;
-  color: #475569;
-  font-weight: 650;
-}
-.live-feedback-item {
-  display: inline-block;
-  padding-right: 28px;
-  animation: liveFeedbackTicker 18s linear infinite;
-}
-.live-feedback-ticker:hover .live-feedback-item { animation-play-state: paused; }
-@keyframes liveFeedbackTicker {
-  0% { transform: translateX(8%); }
-  100% { transform: translateX(-100%); }
-}
-@media (max-width: 640px) {
-  .live-feedback-ticker {
-    margin-top: 7px;
-    max-width: 100%;
-    padding: 6px 10px;
-    font-size: 11px;
-    border-radius: 14px;
-  }
-  .live-feedback-item { animation-duration: 16s; padding-right: 20px; }
-}
 .curator-badge {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 5px 10px;
@@ -2178,11 +2130,6 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     </div>
   </div>
 
-  <div class="live-feedback-ticker" id="liveFeedbackTicker" hidden aria-live="polite">
-    <span class="live-feedback-kicker">최근 확인</span>
-    <span class="live-feedback-track" id="liveFeedbackTrack">방문 확인 기록을 불러오는 중입니다.</span>
-  </div>
-
   <!-- Drug + Dose toggle -->
   <div class="drug-toggle-bar" id="drugToggleBar">
     <div class="drug-group active" data-drug="mounjaro">
@@ -2841,53 +2788,6 @@ function renderQrFeedbackHistoryRows(feedbacks) {
   }).join("");
 }
 
-let GLOBAL_QR_FEEDBACKS = [];
-
-function clinicNameForFeedback(institutionNo) {
-  const id = String(institutionNo || "").trim();
-  if (!id || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return "하루센스";
-  const clinic = CLINIC_DATA.clinics.find(item => String(item.institution_no || item.id || "").trim() === id);
-  return clinic && clinic.name ? clinic.name : "하루센스";
-}
-
-function buildFeedbackTickerText(item) {
-  const choices = Array.isArray(item.choices) ? item.choices.slice(0, 2) : [];
-  const emoji = item.emoji || "";
-  const clinicName = clinicNameForFeedback(item.institution_no);
-  const body = [emoji, clinicName].concat(choices).filter(Boolean).join(" · ");
-  const time = formatQrFeedbackTime(item.created_at);
-  return [body, time].filter(Boolean).join(" · ");
-}
-
-function renderGlobalFeedbackTicker() {
-  const ticker = document.getElementById("liveFeedbackTicker");
-  const track = document.getElementById("liveFeedbackTrack");
-  if (!ticker || !track) return;
-  const rows = Array.isArray(GLOBAL_QR_FEEDBACKS) ? GLOBAL_QR_FEEDBACKS.slice(0, 5) : [];
-  if (!rows.length) {
-    ticker.hidden = true;
-    return;
-  }
-  const text = rows.map(buildFeedbackTickerText).filter(Boolean).join("   /   ");
-  if (!text) {
-    ticker.hidden = true;
-    return;
-  }
-  track.innerHTML = `<span class="live-feedback-item">${escapeHtml(text)}</span>`;
-  ticker.hidden = false;
-}
-
-function loadGlobalFeedbackTicker() {
-  accountApi("getQrFeedbacks", {})
-    .then(data => {
-      GLOBAL_QR_FEEDBACKS = data && data.ok && Array.isArray(data.feedbacks) ? data.feedbacks : [];
-      renderGlobalFeedbackTicker();
-    })
-    .catch(() => {
-      GLOBAL_QR_FEEDBACKS = [];
-      renderGlobalFeedbackTicker();
-    });
-}
 function loadQrFeedbackHistory(clinic) {
   const list = document.getElementById("qrFeedbackHistoryList");
   if (!list || !clinic) return;
@@ -3816,7 +3716,6 @@ function clinicDataSignature(data) {
 function refreshClinicDisplay() {
   updateHeaderNotice();
   renderMarkers();
-  renderGlobalFeedbackTicker();
 }
 
 function applyClinicFallbackData() {
@@ -4278,8 +4177,6 @@ function initLangToggle() {
 document.addEventListener("DOMContentLoaded", () => {
   applyI18n();
   initLangToggle();
-  loadGlobalFeedbackTicker();
-  window.setInterval(loadGlobalFeedbackTicker, 300000);
   window.addEventListener("resize", applyBrandTitle);
   const params = new URLSearchParams(location.search);
   const drug = params.get("drug");
