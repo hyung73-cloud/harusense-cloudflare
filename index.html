@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- harusense-build: qr-price-fix-20260605-overlay-scaffold -->
+<!-- harusense-build: qr-price-fix-20260606-final -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -2589,7 +2589,7 @@ let LAST_STABLE_MAP_DATA = null;
 let map = null;
 let markers = [];
 let LAST_OPENED_QR_TARGET = "";
-const HARUSENSE_BUILD_ID = "qr-price-fix-20260605-overlay-scaffold";
+const HARUSENSE_BUILD_ID = "qr-price-fix-20260606-final";
 
 function normalizeClinicLookup(value) {
   return String(value || "").replace(/\s+/g, "").trim().toLowerCase();
@@ -2722,25 +2722,48 @@ function refreshActiveSheetIfOpen() {
   }
 }
 
+async function resolveDeepLinkClinicWithPrices(target) {
+  await ensureClinicDataPrices();
+  let clinic = selectBestClinicForDeepLink(target);
+  if (!clinic) return null;
+  clinic = await ensureDeepLinkClinicHasPrices(clinic);
+  if (countClinicPrices(clinic) > 0) return clinic;
+
+  try {
+    const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
+    const merged = await buildMergedClinicData(apiData, staticData, []);
+    if (merged && Array.isArray(merged.clinics)) {
+      const prev = CLINIC_DATA;
+      CLINIC_DATA = merged;
+      let fresh = selectBestClinicForDeepLink(target);
+      CLINIC_DATA = prev;
+      if (fresh) {
+        fresh = await ensureDeepLinkClinicHasPrices(fresh);
+        if (countClinicPrices(fresh) > countClinicPrices(clinic)) clinic = fresh;
+      }
+    }
+  } catch (err) {
+    console.warn("[하루센스] QR 기관 네트워크 재조회 실패", err);
+  }
+  return clinic;
+}
+
 async function openClinicFromDeepLink() {
   const target = getClinicDeepLinkTarget();
   if (!target) return false;
   showQrOpeningNotice("기관 정보를 여는 중입니다...");
   if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
 
-  await ensureClinicDataPrices();
-
-  let clinic = selectBestClinicForDeepLink(target);
+  const clinic = await resolveDeepLinkClinicWithPrices(target);
   if (!clinic) {
     showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
     return false;
   }
 
-  clinic = await ensureDeepLinkClinicHasPrices(clinic);
-
   if (
     LAST_OPENED_QR_TARGET === target &&
     ACTIVE_SHEET_CLINIC &&
+    countClinicPrices(clinic) > 0 &&
     countClinicPrices(ACTIVE_SHEET_CLINIC) >= countClinicPrices(clinic)
   ) {
     hideQrOpeningNotice(350);
@@ -3788,6 +3811,7 @@ async function bootstrapClinicData() {
 
 // ─────────── Map init ───────────
 function initMap() {
+  console.info("[하루센스] build", HARUSENSE_BUILD_ID);
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 37.5470, lng: 126.9300 },
     zoom: 13,
