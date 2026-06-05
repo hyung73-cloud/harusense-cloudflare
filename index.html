@@ -2548,6 +2548,7 @@ let LAST_STABLE_MAP_DATA = null;
 let map = null;
 let markers = [];
 let LAST_OPENED_QR_TARGET = "";
+const HARUSENSE_BUILD_ID = "qr-price-fix-20260605";
 
 function normalizeClinicLookup(value) {
   return String(value || "").replace(/\s+/g, "").trim().toLowerCase();
@@ -2641,7 +2642,15 @@ function selectBestClinicForDeepLink(target) {
   return ranked.find(item => hasValidCoords(item)) || ranked[0] || null;
 }
 
+function resolveClinicFromMapData(clinic) {
+  if (!clinic || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return clinic;
+  const target = String(clinic.institution_no || clinic.id || "").trim();
+  if (!target) return clinic;
+  return selectBestClinicForDeepLink(target) || clinic;
+}
+
 async function ensureDeepLinkClinicHasPrices(clinic) {
+  clinic = resolveClinicFromMapData(clinic);
   if (!clinic || countClinicPrices(clinic) > 0) return clinic;
   const cache = await loadPriceCache();
   if (!cache) return clinic;
@@ -2649,6 +2658,27 @@ async function ensureDeepLinkClinicHasPrices(clinic) {
   applyPriceCache(probe, cache);
   const enriched = probe.clinics[0];
   return countClinicPrices(enriched) > 0 ? enriched : clinic;
+}
+
+async function ensureClinicDataPrices() {
+  if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || !CLINIC_DATA.clinics.length) return false;
+  const cache = await loadPriceCache();
+  if (!cache) return false;
+  const prevSig = clinicDataSignature(CLINIC_DATA);
+  const next = cloneClinicData(CLINIC_DATA);
+  applyPriceCache(next, cache);
+  if (prevSig === clinicDataSignature(next)) return false;
+  return commitClinicData(next, { force: true });
+}
+
+function refreshActiveSheetIfOpen() {
+  if (!ACTIVE_SHEET_CLINIC) return;
+  const target = String(ACTIVE_SHEET_CLINIC.institution_no || ACTIVE_SHEET_CLINIC.id || "").trim();
+  if (!target) return;
+  const clinic = resolveClinicFromMapData(ACTIVE_SHEET_CLINIC);
+  if (clinic && countClinicPrices(clinic) > countClinicPrices(ACTIVE_SHEET_CLINIC)) {
+    openSheet(clinic);
+  }
 }
 
 async function openClinicFromDeepLink() {
@@ -3527,7 +3557,9 @@ function applyClinicFallbackData() {
 async function tryLoadStableDisplayCache() {
   const stable = readDataCache(HARUSENSE_CACHE.keys.stable, HARUSENSE_CACHE.ttl.stableMs);
   if (!stable || countPinnedClinics(stable) < 1) return false;
-  return commitClinicData(stripDemoClinics(stable), { force: true });
+  const data = stripDemoClinics(stable);
+  applyPriceCache(data, await loadPriceCache());
+  return commitClinicData(data, { force: true });
 }
 
 /** 핀이 0개면 캐시 무시하고 네트워크에서 다시 받기 */
@@ -3632,9 +3664,17 @@ async function revalidateClinicData(options = {}) {
 }
 
 function revalidateClinicDataInBackground() {
-  revalidateClinicData().then(changed => {
-    if (changed || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
-  }).catch(() => {});
+  revalidateClinicData()
+    .then(async changed => {
+      const pricesFilled = await ensureClinicDataPrices();
+      if (changed || pricesFilled || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
+      if (getClinicDeepLinkTarget()) {
+        openClinicFromDeepLink();
+      } else {
+        refreshActiveSheetIfOpen();
+      }
+    })
+    .catch(() => {});
 }
 
 async function loadData(options = {}) {
@@ -3721,6 +3761,7 @@ function initMap() {
   });
   bootstrapClinicData()
     .then(() => ensureMapHasPins())
+    .then(() => ensureClinicDataPrices())
     .then(() => {
       document.getElementById("loading").style.display = "none";
       applyI18n();
@@ -3731,11 +3772,13 @@ function initMap() {
     })
     .catch(err => {
       console.error("[하루센스] 지도 데이터 로드 오류", err);
-      ensureMapHasPins().finally(() => {
-        document.getElementById("loading").style.display = "none";
-        refreshClinicDisplay();
-        openClinicFromDeepLink();
-      });
+      ensureMapHasPins()
+        .then(() => ensureClinicDataPrices())
+        .finally(() => {
+          document.getElementById("loading").style.display = "none";
+          refreshClinicDisplay();
+          openClinicFromDeepLink();
+        });
     });
 }
 
