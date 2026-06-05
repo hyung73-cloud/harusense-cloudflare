@@ -2643,7 +2643,10 @@ function openClinicFromDeepLink() {
     hideQrOpeningNotice(350);
     return true;
   }
-  const clinic = CLINIC_DATA.clinics.find(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
+  const matches = CLINIC_DATA.clinics
+    .filter(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target) && hasValidCoords(item))
+    .sort((a, b) => Object.keys(b.prices || {}).length - Object.keys(a.prices || {}).length);
+  const clinic = matches[0];
   if (!clinic || !hasValidCoords(clinic)) {
     showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
     return false;
@@ -3833,6 +3836,7 @@ function pickReactionOptions(seed) {
   return options;
 }
 function buildClinicReactionSection(clinic) {
+  return "";
   const institutionNo = reactionInstitutionNo(clinic);
   const qrMode = isQrVisit();
   if (!institutionNo || !qrMode) return "";
