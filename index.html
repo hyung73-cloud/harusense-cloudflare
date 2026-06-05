@@ -1986,7 +1986,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 .qr-intro-kicker { font-size: 11px; font-weight: 800; color: #2563eb; margin-bottom: 5px; }
 .qr-intro-title { font-size: 18px; font-weight: 900; color: #111827; line-height: 1.3; margin-bottom: 6px; }
 .qr-intro-text { font-size: 13px; color: #4b5563; line-height: 1.55; margin-bottom: 12px; }
-.qr-choice-grid { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 12px; }
+.qr-choice-grid { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 9px; }
 .qr-choice-btn {
   border: 1px solid #dbe3ef;
   background: #fff;
@@ -1998,6 +1998,18 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   line-height: 1;
 }
 .qr-choice-btn.selected { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
+.qr-choice-hint { font-size: 11px; color: #64748b; margin: -2px 0 9px; }
+.qr-emoji-row { display: flex; gap: 8px; margin: 0 0 12px; }
+.qr-emoji-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid #dbe3ef;
+  background: #fff;
+  font-size: 17px;
+  line-height: 1;
+}
+.qr-emoji-btn.selected { border-color: #2563eb; background: #eff6ff; }
 .qr-intro-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .qr-intro-open, .qr-intro-close {
   width: 100%;
@@ -2026,11 +2038,12 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="qr-intro-kicker">QR 방문 확인</div>
     <div class="qr-intro-title" id="qrIntroTitle">기관 정보를 확인할 준비가 되었습니다</div>
     <div class="qr-intro-text" id="qrIntroText">기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.</div>
-    <div class="qr-choice-grid" id="qrChoiceGrid" aria-label="방문 확인 선택">
-      <button type="button" class="qr-choice-btn" data-qr-choice="가격 동일">가격 동일</button>
-      <button type="button" class="qr-choice-btn" data-qr-choice="재고 있음">재고 있음</button>
-      <button type="button" class="qr-choice-btn" data-qr-choice="대기 짧음">대기 짧음</button>
-      <button type="button" class="qr-choice-btn" data-qr-choice="친절함">친절함</button>
+    <div class="qr-choice-grid" id="qrChoiceGrid" aria-label="방문 확인 선택"></div>
+    <div class="qr-choice-hint">최대 3개까지 선택할 수 있습니다. 아직 저장되지는 않습니다.</div>
+    <div class="qr-emoji-row" id="qrEmojiRow" aria-label="느낌 선택">
+      <button type="button" class="qr-emoji-btn" data-qr-emoji="👍" aria-label="좋아요">👍</button>
+      <button type="button" class="qr-emoji-btn" data-qr-emoji="👌" aria-label="괜찮아요">👌</button>
+      <button type="button" class="qr-emoji-btn" data-qr-emoji="😮" aria-label="놀랐어요">😮</button>
     </div>
     <div class="qr-intro-actions">
       <button type="button" class="qr-intro-open" id="qrIntroOpen">기관 정보 보기</button>
@@ -2673,6 +2686,31 @@ function hideQrOpeningNotice(delay = 0) {
   }, delay);
 }
 
+const QR_FEEDBACK_GROUPS = [
+  ["실제 가격 동일", "표시 가격과 같았어요", "가격 변동 없었어요", "오늘 기준 동일했어요", "현장 가격 동일"],
+  ["오늘 재고 있었어요", "바로 수령 가능했어요", "재고 확인됐어요", "방문 시 가능했어요", "오늘 기준 확인됨"],
+  ["대기 길지 않았어요", "비교적 빠르게 진행됐어요", "바로 안내받았어요", "오래 기다리지 않았어요", "혼잡하지 않았어요"],
+  ["응대가 깔끔했어요", "안내가 빨랐어요", "설명이 간단명확했어요", "방문 흐름이 빨랐어요", "전체적으로 무난했어요"]
+];
+
+function getQrFeedbackOptions() {
+  const period = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 3));
+  const options = [];
+  QR_FEEDBACK_GROUPS.forEach((group, groupIndex) => {
+    const first = (period + groupIndex * 2) % group.length;
+    options.push(group[first]);
+    if (options.length < 7) options.push(group[(first + 2) % group.length]);
+  });
+  return options.slice(0, 7);
+}
+
+function renderQrFeedbackChoices() {
+  const grid = document.getElementById("qrChoiceGrid");
+  if (!grid) return;
+  grid.innerHTML = getQrFeedbackOptions().map(label =>
+    `<button type="button" class="qr-choice-btn" data-qr-choice="${label}">${label}</button>`
+  ).join("");
+}
 function showQrIntroPopup(clinic) {
   const backdrop = document.getElementById("qrIntroBackdrop");
   const title = document.getElementById("qrIntroTitle");
@@ -2683,19 +2721,33 @@ function showQrIntroPopup(clinic) {
   hideQrOpeningNotice(0);
   backdrop.__clinic = clinic;
   if (title) title.textContent = (clinic && clinic.name ? clinic.name : "기관") + " 방문 확인";
-  if (text) text.textContent = "기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.";
+  if (text) text.textContent = "방문 후 간단한 확인을 남기고, 기관 정보 보기 버튼으로 가격표와 재고 정보를 확인할 수 있습니다.";
+  renderQrFeedbackChoices();
+  document.querySelectorAll("[data-qr-choice]").forEach(btn => btn.classList.remove("selected"));
+  document.querySelectorAll("[data-qr-emoji]").forEach(btn => btn.classList.remove("selected"));
   backdrop.hidden = false;
   requestAnimationFrame(() => backdrop.classList.add("open"));
   if (backdrop.dataset.bound !== "true") {
     backdrop.dataset.bound = "true";
-    document.querySelectorAll("[data-qr-choice]").forEach(btn => {
-      btn.addEventListener("click", () => btn.classList.toggle("selected"));
+    backdrop.addEventListener("click", event => {
+      const choice = event.target.closest("[data-qr-choice]");
+      if (choice) {
+        const selected = backdrop.querySelectorAll("[data-qr-choice].selected");
+        if (!choice.classList.contains("selected") && selected.length >= 3) return;
+        choice.classList.toggle("selected");
+        return;
+      }
+      const emoji = event.target.closest("[data-qr-emoji]");
+      if (emoji) {
+        backdrop.querySelectorAll("[data-qr-emoji]").forEach(btn => btn.classList.remove("selected"));
+        emoji.classList.add("selected");
+        return;
+      }
+      if (event.target === backdrop) closeQrIntroPopup();
     });
     openBtn.addEventListener("click", () => openQrClinicFromPopup());
     closeBtn.addEventListener("click", () => closeQrIntroPopup());
-    backdrop.addEventListener("click", event => {
-      if (event.target === backdrop) closeQrIntroPopup();
-    });
+
   }
 }
 
