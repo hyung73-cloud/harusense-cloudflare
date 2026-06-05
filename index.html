@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- harusense-build: qr-price-fix-20260606-final -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -462,45 +461,6 @@ body {
   visibility: visible;
   pointer-events: auto;
   transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.36, 1), opacity 0.18s ease;
-}
-/* QR 반응 팝업(추후): 상세 시트는 실루엣으로 유지, 가격표 스크롤은 그대로 */
-.detail-sheet.has-sheet-overlay .sheet-content {
-  opacity: 0.42;
-  filter: saturate(0.84);
-  transition: opacity 0.2s ease, filter 0.2s ease;
-  pointer-events: auto;
-}
-.sheet-overlay-stack {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 6;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
-}
-.sheet-overlay-stack.open {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.2s ease;
-}
-.sheet-overlay-stack[hidden] { display: none !important; }
-.sheet-overlay-panel {
-  position: relative;
-  width: 100%;
-  max-height: min(48vh, 340px);
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  border-radius: 16px 16px 14px 14px;
-  background: #fff;
-  box-shadow: 0 -8px 28px rgba(15, 23, 42, 0.18), 0 18px 40px rgba(15, 23, 42, 0.14);
-  pointer-events: auto;
 }
 .sheet-handle {
   width: 36px; height: 4px;
@@ -2256,7 +2216,6 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 <aside class="detail-sheet" id="sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-content" id="sheetContent"></div>
-  <div class="sheet-overlay-stack" id="sheetOverlayStack" hidden aria-hidden="true"></div>
 </aside>
 
 <!-- SEO content -->
@@ -2589,14 +2548,9 @@ let LAST_STABLE_MAP_DATA = null;
 let map = null;
 let markers = [];
 let LAST_OPENED_QR_TARGET = "";
-const HARUSENSE_BUILD_ID = "qr-price-fix-20260606-final";
 
 function normalizeClinicLookup(value) {
   return String(value || "").replace(/\s+/g, "").trim().toLowerCase();
-}
-
-function normalizeClinicDigits(value) {
-  return String(value || "").replace(/\D+/g, "");
 }
 
 function getClinicDeepLinkTarget() {
@@ -2613,14 +2567,12 @@ function isQrVisit() {
 
 function clinicMatchesDeepLink(clinic, target) {
   const needle = normalizeClinicLookup(target);
-  const needleDigits = normalizeClinicDigits(target);
   if (!needle || !clinic) return false;
-  const values = [clinic.institution_no, clinic.id, clinic.name];
-  return values.some(value => {
-    const normalized = normalizeClinicLookup(value);
-    const digits = normalizeClinicDigits(value);
-    return normalized === needle || (needleDigits && digits && digits === needleDigits);
-  });
+  return [
+    clinic.institution_no,
+    clinic.id,
+    clinic.name
+  ].some(value => normalizeClinicLookup(value) === needle);
 }
 
 function buildClinicDeepLink(clinic) {
@@ -2655,122 +2607,17 @@ function hideQrOpeningNotice(delay = 0) {
   }, delay);
 }
 
-function countClinicPrices(clinic) {
-  if (!clinic || !clinic.prices || typeof clinic.prices !== "object") return 0;
-  return Object.keys(clinic.prices).filter(key => clinic.prices[key] != null && clinic.prices[key] !== "").length;
-}
-
-function selectBestClinicForDeepLink(target) {
-  if (!target || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return null;
-  const targetDigits = normalizeClinicDigits(target);
-  const canonicalId = targetDigits ? "clinic_" + targetDigits : "";
-  const matches = CLINIC_DATA.clinics.filter(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
-  if (!matches.length) return null;
-
-  const ranked = matches.slice().sort((a, b) => {
-    const priceDiff = countClinicPrices(b) - countClinicPrices(a);
-    if (priceDiff !== 0) return priceDiff;
-
-    const aInstExact = normalizeClinicDigits(a.institution_no) === targetDigits ? 1 : 0;
-    const bInstExact = normalizeClinicDigits(b.institution_no) === targetDigits ? 1 : 0;
-    if (bInstExact !== aInstExact) return bInstExact - aInstExact;
-
-    const aCanon = String(a.id || "") === canonicalId ? 1 : 0;
-    const bCanon = String(b.id || "") === canonicalId ? 1 : 0;
-    return bCanon - aCanon;
-  });
-
-  return ranked.find(item => hasValidCoords(item)) || ranked[0] || null;
-}
-
-function resolveClinicFromMapData(clinic) {
-  if (!clinic || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return clinic;
-  const target = String(clinic.institution_no || clinic.id || "").trim();
-  if (!target) return clinic;
-  return selectBestClinicForDeepLink(target) || clinic;
-}
-
-async function ensureDeepLinkClinicHasPrices(clinic) {
-  clinic = resolveClinicFromMapData(clinic);
-  if (!clinic || countClinicPrices(clinic) > 0) return clinic;
-  const cache = await loadPriceCache();
-  if (!cache) return clinic;
-  const probe = { clinics: [cloneClinic(clinic)] };
-  applyPriceCache(probe, cache);
-  const enriched = probe.clinics[0];
-  return countClinicPrices(enriched) > 0 ? enriched : clinic;
-}
-
-async function ensureClinicDataPrices() {
-  if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || !CLINIC_DATA.clinics.length) return false;
-  const cache = await loadPriceCache();
-  if (!cache) return false;
-  const prevSig = clinicDataSignature(CLINIC_DATA);
-  const next = cloneClinicData(CLINIC_DATA);
-  applyPriceCache(next, cache);
-  if (prevSig === clinicDataSignature(next)) return false;
-  return commitClinicData(next, { force: true });
-}
-
-function refreshActiveSheetIfOpen() {
-  if (!ACTIVE_SHEET_CLINIC) return;
-  const target = String(ACTIVE_SHEET_CLINIC.institution_no || ACTIVE_SHEET_CLINIC.id || "").trim();
-  if (!target) return;
-  const clinic = resolveClinicFromMapData(ACTIVE_SHEET_CLINIC);
-  if (clinic && countClinicPrices(clinic) > countClinicPrices(ACTIVE_SHEET_CLINIC)) {
-    openSheet(clinic);
-  }
-}
-
-async function resolveDeepLinkClinicWithPrices(target) {
-  await ensureClinicDataPrices();
-  let clinic = selectBestClinicForDeepLink(target);
-  if (!clinic) return null;
-  clinic = await ensureDeepLinkClinicHasPrices(clinic);
-  if (countClinicPrices(clinic) > 0) return clinic;
-
-  try {
-    const { apiData, staticData } = await fetchClinicSourcesFromNetwork();
-    const merged = await buildMergedClinicData(apiData, staticData, []);
-    if (merged && Array.isArray(merged.clinics)) {
-      const prev = CLINIC_DATA;
-      CLINIC_DATA = merged;
-      let fresh = selectBestClinicForDeepLink(target);
-      CLINIC_DATA = prev;
-      if (fresh) {
-        fresh = await ensureDeepLinkClinicHasPrices(fresh);
-        if (countClinicPrices(fresh) > countClinicPrices(clinic)) clinic = fresh;
-      }
-    }
-  } catch (err) {
-    console.warn("[하루센스] QR 기관 네트워크 재조회 실패", err);
-  }
-  return clinic;
-}
-
-async function openClinicFromDeepLink() {
+function openClinicFromDeepLink() {
   const target = getClinicDeepLinkTarget();
   if (!target) return false;
   showQrOpeningNotice("기관 정보를 여는 중입니다...");
   if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return false;
-
-  const clinic = await resolveDeepLinkClinicWithPrices(target);
-  if (!clinic) {
-    showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
-    return false;
-  }
-
-  if (
-    LAST_OPENED_QR_TARGET === target &&
-    ACTIVE_SHEET_CLINIC &&
-    countClinicPrices(clinic) > 0 &&
-    countClinicPrices(ACTIVE_SHEET_CLINIC) >= countClinicPrices(clinic)
-  ) {
+  if (LAST_OPENED_QR_TARGET === target && ACTIVE_SHEET_CLINIC) {
     hideQrOpeningNotice(350);
     return true;
   }
-
-  if (!hasValidCoords(clinic)) {
+  const clinic = CLINIC_DATA.clinics.find(item => !isDemoClinic(item) && clinicMatchesDeepLink(item, target));
+  if (!clinic || !hasValidCoords(clinic)) {
     showQrOpeningNotice("기관 정보를 찾는 중입니다. 잠시 후 다시 확인해주세요.");
     return false;
   }
@@ -3623,9 +3470,7 @@ function applyClinicFallbackData() {
 async function tryLoadStableDisplayCache() {
   const stable = readDataCache(HARUSENSE_CACHE.keys.stable, HARUSENSE_CACHE.ttl.stableMs);
   if (!stable || countPinnedClinics(stable) < 1) return false;
-  const data = stripDemoClinics(stable);
-  applyPriceCache(data, await loadPriceCache());
-  return commitClinicData(data, { force: true });
+  return commitClinicData(stripDemoClinics(stable), { force: true });
 }
 
 /** 핀이 0개면 캐시 무시하고 네트워크에서 다시 받기 */
@@ -3730,17 +3575,9 @@ async function revalidateClinicData(options = {}) {
 }
 
 function revalidateClinicDataInBackground() {
-  revalidateClinicData()
-    .then(async changed => {
-      const pricesFilled = await ensureClinicDataPrices();
-      if (changed || pricesFilled || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
-      if (getClinicDeepLinkTarget()) {
-        openClinicFromDeepLink();
-      } else {
-        refreshActiveSheetIfOpen();
-      }
-    })
-    .catch(() => {});
+  revalidateClinicData().then(changed => {
+    if (changed || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
+  }).catch(() => {});
 }
 
 async function loadData(options = {}) {
@@ -3811,7 +3648,6 @@ async function bootstrapClinicData() {
 
 // ─────────── Map init ───────────
 function initMap() {
-  console.info("[하루센스] build", HARUSENSE_BUILD_ID);
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 37.5470, lng: 126.9300 },
     zoom: 13,
@@ -3828,7 +3664,6 @@ function initMap() {
   });
   bootstrapClinicData()
     .then(() => ensureMapHasPins())
-    .then(() => ensureClinicDataPrices())
     .then(() => {
       document.getElementById("loading").style.display = "none";
       applyI18n();
@@ -3839,13 +3674,11 @@ function initMap() {
     })
     .catch(err => {
       console.error("[하루센스] 지도 데이터 로드 오류", err);
-      ensureMapHasPins()
-        .then(() => ensureClinicDataPrices())
-        .finally(() => {
-          document.getElementById("loading").style.display = "none";
-          refreshClinicDisplay();
-          openClinicFromDeepLink();
-        });
+      ensureMapHasPins().finally(() => {
+        document.getElementById("loading").style.display = "none";
+        refreshClinicDisplay();
+        openClinicFromDeepLink();
+      });
     });
 }
 
@@ -3930,84 +3763,6 @@ function buildSheetPriceColumn(clinic, drugKey, items, selectedKey) {
       <div class="price-col-head">${sheetDrugColumnTitle(drugKey)}</div>
       <div class="price-col-body">${rows}</div>
     </div>`;
-}
-
-/**
- * 상세 시트 + 오버레이 스택
- * - openSheet(clinic): 가격표·기관정보 상세 (항상 먼저, 단독으로도 완전 동작)
- * - openSheetOverlay(type, clinic): 추후 QR 반응 팝업 — 상세는 실루엣 유지, 가격표 스크롤 가능
- * - closeSheetOverlay(): 팝업만 닫고 상세·가격표 유지
- * - closeSheet(): 오버레이 + 상세 모두 닫기
- */
-const SHEET_OVERLAY_REGISTRY = new Map();
-
-function getSheetEl() {
-  return document.getElementById("sheet");
-}
-
-function getSheetOverlayStackEl() {
-  return document.getElementById("sheetOverlayStack");
-}
-
-function showSheetSurface() {
-  getSheetEl().classList.add("open");
-  document.getElementById("backdrop").classList.add("open");
-}
-
-function isSheetOverlayOpen() {
-  const stack = getSheetOverlayStackEl();
-  return !!(stack && !stack.hidden && stack.classList.contains("open"));
-}
-
-function closeSheetOverlay(options) {
-  const silent = options && options.silent === true;
-  const stack = getSheetOverlayStackEl();
-  const sheet = getSheetEl();
-  if (!stack || !sheet) return false;
-  if (!isSheetOverlayOpen() && stack.hidden) return false;
-  stack.classList.remove("open");
-  stack.hidden = true;
-  stack.setAttribute("aria-hidden", "true");
-  stack.innerHTML = "";
-  sheet.classList.remove("has-sheet-overlay");
-  if (!silent && typeof window.onSheetOverlayClosed === "function") {
-    try { window.onSheetOverlayClosed(); } catch (err) { /* hook reserved */ }
-  }
-  return true;
-}
-
-function openSheetOverlay(type, clinic, options) {
-  if (!type || !clinic) return false;
-  const handler = SHEET_OVERLAY_REGISTRY.get(type);
-  if (!handler || typeof handler.render !== "function") return false;
-  const html = handler.render(clinic, options || {});
-  if (!html) return false;
-
-  const stack = getSheetOverlayStackEl();
-  const sheet = getSheetEl();
-  if (!stack || !sheet || !sheet.classList.contains("open")) return false;
-
-  stack.innerHTML = `
-    <div class="sheet-overlay-panel" role="dialog" aria-modal="true" data-overlay-panel="true">
-      ${html}
-    </div>`;
-  stack.hidden = false;
-  stack.setAttribute("aria-hidden", "false");
-  sheet.classList.add("has-sheet-overlay");
-  requestAnimationFrame(() => stack.classList.add("open"));
-
-  if (typeof handler.bind === "function") {
-    handler.bind(stack, clinic, options || {});
-  }
-  return true;
-}
-
-function handleSheetBackdropClick() {
-  if (isSheetOverlayOpen()) {
-    closeSheetOverlay();
-    return;
-  }
-  closeSheet();
 }
 
 function openSheet(clinic) {
@@ -4122,22 +3877,15 @@ function openSheet(clinic) {
     ${clinic.notes ? `<div class="sheet-notes">${clinic.notes}</div>` : ""}
   `;
   document.getElementById("sheetClose").addEventListener("click", closeSheet);
-  closeSheetOverlay({ silent: true });
-  showSheetSurface();
+  document.getElementById("sheet").classList.add("open");
+  document.getElementById("backdrop").classList.add("open");
 }
 function closeSheet() {
-  closeSheetOverlay({ silent: true });
   ACTIVE_SHEET_CLINIC = null;
-  getSheetEl().classList.remove("open", "has-sheet-overlay");
+  document.getElementById("sheet").classList.remove("open");
   document.getElementById("backdrop").classList.remove("open");
 }
-document.getElementById("backdrop").addEventListener("click", handleSheetBackdropClick);
-
-/** 추후 QR 반응 UI 연결 지점 — 지금은 비활성(빈 render) */
-SHEET_OVERLAY_REGISTRY.set("qr-reaction", {
-  render() { return ""; },
-  bind() {}
-});
+document.getElementById("backdrop").addEventListener("click", closeSheet);
 
 function initLangToggle() {
   const group = document.querySelector(".lang-toggle");
