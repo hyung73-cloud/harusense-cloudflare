@@ -2733,6 +2733,15 @@ function renderQrFeedbackChoices() {
     `<button type="button" class="qr-choice-btn" data-qr-choice="${label}">${label}</button>`
   ).join("");
 }
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[ch] || ch));
+}
 function renderQrFeedbackHistoryRows(feedbacks) {
   const list = document.getElementById("qrFeedbackHistoryList");
   if (!list) return;
