@@ -2073,10 +2073,12 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="qr-intro-text" id="qrIntroText">기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.</div>
     <div class="qr-choice-grid" id="qrChoiceGrid" aria-label="방문 확인 선택"></div>
     <div class="qr-choice-hint">최대 2개까지 선택할 수 있습니다.</div>
-    <div class="qr-emoji-row" id="qrEmojiRow" aria-label="느낌 선택">
+    <div class="qr-emoji-row" id="qrEmojiRow" aria-label="이모티콘 선택">
       <button type="button" class="qr-emoji-btn" data-qr-emoji="👍" aria-label="좋아요">👍</button>
       <button type="button" class="qr-emoji-btn" data-qr-emoji="👌" aria-label="괜찮아요">👌</button>
       <button type="button" class="qr-emoji-btn" data-qr-emoji="😮" aria-label="놀랐어요">😮</button>
+      <button type="button" class="qr-emoji-btn" data-qr-emoji="😁" aria-label="만족해요">😁</button>
+      <button type="button" class="qr-emoji-btn" data-qr-emoji="😶" aria-label="보통이에요">😶</button>
     </div>
     <div class="qr-intro-actions">
       <button type="button" class="qr-intro-open" id="qrIntroOpen">기관 정보 보기</button>
@@ -2774,7 +2776,7 @@ function formatQrFeedbackTime(value) {
 function renderQrFeedbackHistoryRows(feedbacks) {
   const list = document.getElementById("qrFeedbackHistoryList");
   if (!list) return;
-  const rows = Array.isArray(feedbacks) ? feedbacks.slice(0, 3) : [];
+  const rows = Array.isArray(feedbacks) ? feedbacks.slice(0, 2) : [];
   if (!rows.length) {
     list.innerHTML = `<div class="qr-feedback-history-empty">아직 표시할 확인 기록이 없습니다.</div>`;
     return;
@@ -2807,8 +2809,11 @@ function collectQrFeedbackPayload(clinic) {
     .map(btn => btn.dataset.qrChoice || btn.textContent || "")
     .filter(Boolean)
     .slice(0, 2);
-  const emojiBtn = backdrop.querySelector("[data-qr-emoji].selected");
-  const emoji = emojiBtn ? (emojiBtn.dataset.qrEmoji || emojiBtn.textContent || "") : "";
+  const emoji = Array.from(backdrop.querySelectorAll("[data-qr-emoji].selected"))
+    .map(btn => btn.dataset.qrEmoji || btn.textContent || "")
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("");
   if (!choices.length && !emoji) return null;
   return {
     institution_no: String(clinic.institution_no || clinic.id || ""),
@@ -2855,8 +2860,9 @@ function showQrIntroPopup(clinic) {
       }
       const emoji = event.target.closest("[data-qr-emoji]");
       if (emoji) {
-        backdrop.querySelectorAll("[data-qr-emoji]").forEach(btn => btn.classList.remove("selected"));
-        emoji.classList.add("selected");
+        const selectedEmoji = backdrop.querySelectorAll("[data-qr-emoji].selected");
+        if (!emoji.classList.contains("selected") && selectedEmoji.length >= 2) return;
+        emoji.classList.toggle("selected");
         return;
       }
       if (event.target === backdrop) closeQrIntroPopup();
