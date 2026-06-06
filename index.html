@@ -4134,10 +4134,6 @@ function openSheet(clinic) {
     </span>` : "";
 
   const priceSection = allKeys.length > 0 ? `
-    <div class="price-section-head">
-      <span class="label">${t("priceSection")}</span>
-      <span class="count">${allKeys.length}${t("priceCount")}</span>
-    </div>
     <div class="${priceBoardClass}">
       ${buildSheetPriceColumn(clinic, "mounjaro", mounjaroItems, selectedKey)}
       ${buildSheetPriceColumn(clinic, "wegovy", wegovyItems, selectedKey)}
