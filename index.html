@@ -1394,6 +1394,116 @@ body {
 }
 .loading-dot:nth-child(2) { animation-delay: 0.2s; }
 .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Fast clinic list */
+.clinic-list-panel {
+  position: relative;
+  z-index: 20;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  max-height: 34vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 14px 84px;
+}
+.clinic-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 760px;
+  margin: 0 auto 8px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+.clinic-list-count {
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+}
+.clinic-list-items {
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  gap: 7px;
+}
+.clinic-list-row {
+  width: 100%;
+  border: 1px solid #edf0f4;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.clinic-list-row:active { transform: translateY(1px); }
+.clinic-list-main { min-width: 0; }
+.clinic-list-name {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clinic-list-meta {
+  margin-top: 3px;
+  color: var(--mute);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clinic-list-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: #b45309;
+  background: #fff7ed;
+  font-size: 11px;
+  font-weight: 800;
+}
+.clinic-list-price {
+  align-self: center;
+  justify-self: end;
+  min-width: 72px;
+  padding: 7px 9px;
+  border-radius: 11px;
+  text-align: center;
+  color: #1d4ed8;
+  background: #eff6ff;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.clinic-list-price.no-price {
+  color: #64748b;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 800;
+}
+.clinic-list-empty {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 18px 12px;
+  color: var(--mute);
+  font-size: 13px;
+  text-align: center;
+}
+@media (max-width: 767px) {
+  #map { height: 48vh; min-height: 360px; }
+  .clinic-list-panel { max-height: 32vh; padding-left: 10px; padding-right: 10px; }
+}
+@media (min-width: 768px) {
+  .clinic-list-panel { max-height: 220px; }
+  .clinic-list-items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @keyframes pulse {
   0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
   40% { opacity: 1; transform: scale(1); }
@@ -2216,6 +2326,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 </div>
 
 <div id="map"></div>
+<section class="clinic-list-panel" id="clinicList" aria-live="polite"></section>
 
 <div class="empty-state" id="emptyState" data-i18n="emptyState">선택한 용량의 가격 정보가 있는 의원이 없습니다</div>
 
@@ -2413,6 +2524,7 @@ const I18N = {
     searchBtn: "병의원/약국검색",
     loading: "데이터를 불러오는 중",
     emptyState: "선택한 용량의 가격 정보가 있는 의원이 없습니다",
+    clinicListTitle: "가격 낮은 순",
     footerMounjaro: "마운자로",
     footerWegovy: "위고비",
     footerGuide: "하루센스 이용안내",
@@ -2465,6 +2577,7 @@ const I18N = {
     searchBtn: "Search",
     loading: "Loading map data",
     emptyState: "No clinics with pricing for this dose",
+    clinicListTitle: "Lowest price",
     footerMounjaro: "Mounjaro",
     footerWegovy: "Wegovy",
     footerGuide: "Guide",
@@ -2611,7 +2724,7 @@ async function fetchExchangeRate() {
   fx.loading = false;
   updateFxBanner();
   updateHeaderNotice();
-  renderMarkers();
+  renderResults();
   if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
 }
 
@@ -2640,7 +2753,7 @@ function setLang(lang) {
     document.documentElement.classList.add("lang-en");
     applyI18n();
     updateHeaderNotice();
-    renderMarkers();
+    renderResults();
     startFxRefresh();
     if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
     return;
@@ -2651,7 +2764,7 @@ function setLang(lang) {
   document.documentElement.classList.remove("lang-en");
   applyI18n();
   updateHeaderNotice();
-  renderMarkers();
+  renderResults();
   if (FX_REFRESH_TIMER) { clearInterval(FX_REFRESH_TIMER); FX_REFRESH_TIMER = null; }
   if (ACTIVE_SHEET_CLINIC) openSheet(ACTIVE_SHEET_CLINIC);
 }
@@ -2924,7 +3037,7 @@ async function openQrClinicFromPopup() {
     document.querySelectorAll(".chip[data-district]").forEach(chip => {
       chip.classList.toggle("active", chip.dataset.district === "all");
     });
-    renderMarkers();
+    renderResults();
   }
   map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
   if (map.getZoom() < 16) map.setZoom(16);
@@ -3757,7 +3870,7 @@ function clinicDataSignature(data) {
 
 function refreshClinicDisplay() {
   updateHeaderNotice();
-  renderMarkers();
+  renderResults();
 }
 
 function applyClinicFallbackData() {
@@ -4074,6 +4187,82 @@ function renderMarkers() {
 
   document.getElementById("emptyState").classList.toggle("show", visibleCount === 0);
 }
+function clinicListEscape(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function clinicListPriceValue(clinic, key) {
+  if (!clinic || !clinic.prices) return null;
+  const raw = clinic.prices[key];
+  if (raw == null || raw === "") return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+
+function renderClinicList() {
+  const container = document.getElementById("clinicList");
+  if (!container) return;
+
+  const clinics = Array.isArray(CLINIC_DATA && CLINIC_DATA.clinics) ? CLINIC_DATA.clinics : [];
+  const key = priceKey(state.drugKey, state.dose);
+  const rows = [];
+
+  clinics.forEach(clinic => {
+    if (isDemoClinic(clinic)) return;
+    if (!clinicMatchesDistrict(clinic)) return;
+    if (!hasValidCoords(clinic)) return;
+
+    const price = clinicListPriceValue(clinic, key);
+    const hasPrice = clinicHasSelectedPrice(clinic) && price != null;
+    const label = hasPrice
+      ? buildPriceMarkerHtml(clinic, price, key)
+      : (clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting"));
+
+    rows.push({ clinic, price: hasPrice ? price : Number.POSITIVE_INFINITY, hasPrice, label });
+  });
+
+  rows.sort((a, b) => {
+    if (a.hasPrice !== b.hasPrice) return a.hasPrice ? -1 : 1;
+    if (a.hasPrice && b.hasPrice && a.price !== b.price) return a.price - b.price;
+    return String(a.clinic.name || "").localeCompare(String(b.clinic.name || ""));
+  });
+
+  if (!rows.length) {
+    container.innerHTML = `<div class="clinic-list-empty">${clinicListEscape(t("emptyState"))}</div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="clinic-list-head">
+      <span>${clinicListEscape(t("clinicListTitle"))}</span>
+      <span>${rows.length}${appLang === "en" ? " places" : "곳"}</span>
+    </div>
+    <div class="clinic-list-items">
+      ${rows.map(({ clinic, hasPrice, label }) => `
+        <button class="clinic-list-row${isPharmacy(clinic) ? " pharmacy" : ""}" type="button" data-clinic-id="${clinicListEscape(clinic.id || clinic.institution_no || clinic.name)}">
+          <span class="clinic-list-main">
+            <span class="clinic-list-name">${clinicListEscape(clinic.name || "")}</span>
+            <span class="clinic-list-meta">${clinicListEscape(clinic.district || "")}${isPharmacy(clinic) ? ` · ${appLang === "en" ? "Pharmacy" : "약국"}` : ""}</span>
+          </span>
+          <span class="clinic-list-price${hasPrice ? "" : " muted"}">${label}</span>
+        </button>
+      `).join("")}
+    </div>`;
+
+  container.querySelectorAll(".clinic-list-row").forEach((row, index) => {
+    row.addEventListener("click", () => openSheet(rows[index].clinic));
+  });
+}
+
+function renderResults() {
+  renderMarkers();
+  renderClinicList();
+}
 
 // ─────────── Detail sheet ───────────
 function sheetDrugColumnTitle(drugKey) {
@@ -4234,7 +4423,22 @@ function initLangToggle() {
   });
 }
 
+function paintInlineClinicListEarly() {
+  try {
+    if (CLINIC_DATA && Array.isArray(CLINIC_DATA.clinics) && CLINIC_DATA.clinics.length) return;
+    const inlineSnap = typeof window.__hsReadInlineBootstrap === "function" ? window.__hsReadInlineBootstrap() : null;
+    if (!inlineSnap || !Array.isArray(inlineSnap.clinics) || !inlineSnap.clinics.length) return;
+    const cleanSnap = stripDemoClinics(inlineSnap);
+    CLINIC_DATA = cloneClinicData(cleanSnap);
+    renderClinicList();
+    const loading = document.getElementById("loading");
+    if (loading) loading.style.display = "none";
+  } catch (err) {
+    console.warn("[Harusense] early clinic list skipped", err);
+  }
+}
 document.addEventListener("DOMContentLoaded", () => {
+  paintInlineClinicListEarly();
   applyI18n();
   initLangToggle();
   window.addEventListener("resize", applyBrandTitle);
@@ -4269,7 +4473,7 @@ document.getElementById("drugToggleBar").addEventListener("click", (e) => {
     const first = group.querySelector(".dose-btn");
     if (first) state.dose = first.dataset.dose;
     updateDrugGroupStates();
-    renderMarkers();
+    renderResults();
     return;
   }
   const btn = e.target.closest(".dose-btn");
@@ -4277,7 +4481,7 @@ document.getElementById("drugToggleBar").addEventListener("click", (e) => {
   state.drugKey = btn.dataset.drug;
   state.dose = btn.dataset.dose;
   updateDrugGroupStates();
-  renderMarkers();
+  renderResults();
 });
 
 // District chips
@@ -4287,7 +4491,7 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   document.querySelectorAll(".chip[data-district]").forEach(c => c.classList.remove("active"));
   btn.classList.add("active");
   state.districtFilter = btn.dataset.district;
-  renderMarkers();
+  renderResults();
   focusMapByDistrict(state.districtFilter);
 });
 
