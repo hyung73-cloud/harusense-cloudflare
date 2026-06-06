@@ -1031,7 +1031,42 @@ body {
   font-size: 11px;
   line-height: 1.4;
 }
-.rep-price-board {
+.rep-provider-note-field {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+.rep-provider-note-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+.rep-provider-note-field input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #dbe1ea;
+  border-radius: 12px;
+  padding: 0 13px;
+  font-size: 15px;
+  color: #111827;
+  background: #fff;
+}
+.rep-provider-note-field input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+.rep-provider-note-field input::placeholder { color: #9ca3af; }
+.rep-provider-note-help {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #6b7280;
+}.rep-price-board {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -3294,6 +3329,7 @@ function applyClinicOverrides(data, overrides) {
       updated_by: update.institution_no || clinic.updated_by,
       provider_parking: firstValue(update.parking_available, update.provider_parking, clinic.provider_parking),
       provider_parking_note: firstValue(update.parking_note, update.provider_parking_note, clinic.provider_parking_note),
+      notes: firstValue(update.provider_note, update.note, clinic.notes),
       parking_updated_at: firstValue(update.parking_updated_at, update.updated_at, clinic.parking_updated_at)
     };
   });
@@ -4354,6 +4390,13 @@ function renderRepresentativeEditor() {
     </div>`;
   const pendingMapNotice = clinic.pending_map_connection ? `
     <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
+  const providerNoteValue = String(firstValue(clinic.provider_note, clinic.notes, "")).slice(0, 50);
+  const providerNoteControl = `
+    <div class="rep-provider-note-field">
+      <label for="repProviderNote">기관 한줄 안내</label>
+      <input id="repProviderNote" type="text" maxlength="50" value="${escapeHtml(providerNoteValue)}" placeholder="직접수정 및 업데이트" />
+      <div class="rep-provider-note-help">공란으로 두면 기존 안내가 사라집니다. 예: 원장 직접 처방 · 일본어 상담 가능</div>
+    </div>`;
 
   function buildRepItemHtml(item) {
     const key = priceKey(item.drug, item.dose);
@@ -4398,7 +4441,7 @@ function renderRepresentativeEditor() {
       <div class="rep-pair-rows">${pairRows}</div>
     </div>`;
 
-  box.innerHTML = `${pendingMapNotice}${priceBoard}${parkingControl}`;
+  box.innerHTML = `${pendingMapNotice}${priceBoard}${parkingControl}${providerNoteControl}`;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
     if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
@@ -4711,6 +4754,8 @@ async function handleRepSubmit() {
   });
   const parkingBtn = document.getElementById("repParkingToggle");
   const parkingAvailable = parkingBtn ? parkingBtn.dataset.parking === "true" : false;
+  const providerNoteInput = document.getElementById("repProviderNote");
+  const providerNote = providerNoteInput ? providerNoteInput.value.trim().slice(0, 50) : "";
 
   setRepMessage("repSubmitMessage", "저장 중입니다. 창을 닫지 말고 잠시만 기다려주세요.", "loading");
   const submitBtn = document.getElementById("repSubmitBtn");
@@ -4724,7 +4769,8 @@ async function handleRepSubmit() {
       institution_no: REP_ACTIVE_INSTITUTION_NO,
       password: REP_ACTIVE_PASSWORD,
       items_json: JSON.stringify(apiItems),
-      parking_available: parkingAvailable ? "true" : ""
+      parking_available: parkingAvailable ? "true" : "",
+      provider_note: providerNote
     });
 
     if (data.ok) {
