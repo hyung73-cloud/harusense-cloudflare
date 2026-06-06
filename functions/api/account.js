@@ -116,8 +116,19 @@ async function changePassword(db, payload) {
   return { ok: true };
 }
 
+
+async function ensureProviderUpdatesNoteColumn(db) {
+  try {
+    await db.prepare("SELECT provider_note FROM provider_updates LIMIT 1").first();
+  } catch (err) {
+    try {
+      await db.prepare("ALTER TABLE provider_updates ADD COLUMN provider_note TEXT NOT NULL DEFAULT ''").run();
+    } catch (alterErr) {}
+  }
+}
 async function updatePrices(db, payload) {
-  const institutionNo = clean(payload.institution_no);
+    await ensureProviderUpdatesNoteColumn(db);
+const institutionNo = clean(payload.institution_no);
   const password = String(payload.password || "");
   const itemsJson = String(payload.items_json || "");
   if (!institutionNo || !password || !itemsJson) {
@@ -138,25 +149,28 @@ async function updatePrices(db, payload) {
 
   const parking = String(payload.parking_available || "") === "true" ? "예" : "";
   const parkingUpdatedAt = parking ? new Date().toISOString() : "";
+  const providerNote = clean(payload.provider_note).slice(0, 50);
 
   await db.prepare(`
-    INSERT INTO provider_updates (institution_no, items_json, updated_at, updated_by, status, parking_available, parking_updated_at)
-    VALUES (?, ?, datetime('now'), ?, '반영', ?, ?)
+    INSERT INTO provider_updates (institution_no, items_json, updated_at, updated_by, status, parking_available, parking_updated_at, provider_note)
+    VALUES (?, ?, datetime('now'), ?, '반영', ?, ?, ?)
     ON CONFLICT(institution_no) DO UPDATE SET
       items_json = excluded.items_json,
       updated_at = excluded.updated_at,
       updated_by = excluded.updated_by,
       status = '반영',
       parking_available = excluded.parking_available,
-      parking_updated_at = excluded.parking_updated_at
-  `).bind(institutionNo, JSON.stringify(items), institutionNo, parking, parkingUpdatedAt).run();
+      parking_updated_at = excluded.parking_updated_at,
+      provider_note = excluded.provider_note
+  `).bind(institutionNo, JSON.stringify(items), institutionNo, parking, parkingUpdatedAt, providerNote).run();
 
   return { ok: true };
 }
 
 async function getClinicOverrides(db) {
-  const rows = await db.prepare(`
-    SELECT institution_no, items_json, updated_at, parking_available, parking_updated_at
+    await ensureProviderUpdatesNoteColumn(db);
+const rows = await db.prepare(`
+    SELECT institution_no, items_json, updated_at, parking_available, parking_updated_at, provider_note
     FROM provider_updates
     WHERE status IS NULL OR status != '중지'
   `).all();
@@ -172,7 +186,8 @@ async function getClinicOverrides(db) {
         updated_at: row.updated_at || "",
         parking_available: parking === "예" ? "주차 가능" : "",
         provider_parking: parking === "예" ? "주차 가능" : "",
-        parking_updated_at: row.parking_updated_at || ""
+        parking_updated_at: row.parking_updated_at || "",
+        provider_note: String(row.provider_note || "").trim()
       });
     } catch (err) {}
   }
