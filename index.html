@@ -1045,22 +1045,24 @@ body {
   color: #111827;
   margin-bottom: 8px;
 }
-.rep-provider-note-field input {
+.rep-provider-note-field textarea {
   width: 100%;
-  min-height: 46px;
+  min-height: 72px;
   border: 1px solid #dbe1ea;
   border-radius: 12px;
-  padding: 0 13px;
+  padding: 12px 13px;
+  resize: vertical;
+  line-height: 1.45;
   font-size: 15px;
   color: #111827;
   background: #fff;
 }
-.rep-provider-note-field input:focus {
+.rep-provider-note-field textarea:focus {
   outline: none;
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
 }
-.rep-provider-note-field input::placeholder { color: #9ca3af; }
+.rep-provider-note-field textarea::placeholder { color: #9ca3af; }
 .rep-provider-note-help {
   margin-top: 7px;
   font-size: 12px;
@@ -3658,12 +3660,15 @@ function getPriceUpdatedAt(clinic, doseKey) {
     clinic.updated_at,
     clinic.parking_updated_at
   ];
-  for (const raw of candidates) {
-    if (!raw) continue;
-    const d = new Date(raw);
-    if (Number.isFinite(d.getTime())) return d;
-  }
-  return null;
+  const times = candidates
+    .map(raw => {
+      if (!raw) return null;
+      const d = new Date(raw);
+      return Number.isFinite(d.getTime()) ? d : null;
+    })
+    .filter(Boolean);
+  if (!times.length) return null;
+  return new Date(Math.max(...times.map(d => d.getTime())));
 }
 
 function isRecentPriceUpdate(clinic, doseKey) {
@@ -3873,7 +3878,11 @@ function clinicDataSignature(data) {
     c.prices,
     c.stock,
     c.updated_at,
-    c.price_updated_at
+    c.price_updated_at,
+    c.notes,
+    c.provider_note,
+    c.provider_parking,
+    c.parking_updated_at
   ].join(":")).join("|");
 }
 
@@ -4671,14 +4680,13 @@ function renderRepresentativeEditor() {
     </div>`;
   const pendingMapNotice = clinic.pending_map_connection ? `
     <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
-  const providerNoteValue = String(firstValue(clinic.provider_note, clinic.notes, "")).slice(0, 50);
+  const providerNoteValue = String(firstValue(clinic.provider_note, clinic.notes, "")).slice(0, 80);
   const providerNoteControl = `
     <div class="rep-provider-note-field">
       <label for="repProviderNote">기관 한줄 안내</label>
-      <input id="repProviderNote" type="text" maxlength="50" value="${escapeHtml(providerNoteValue)}" placeholder="직접수정 및 업데이트" />
-      <div class="rep-provider-note-help">공란으로 두면 기존 안내가 사라집니다. 예: 원장 직접 처방 · 일본어 상담 가능</div>
+      <textarea id="repProviderNote" maxlength="80" rows="2" placeholder="직접수정 및 업데이트">${escapeHtml(providerNoteValue)}</textarea>
+      <div class="rep-provider-note-help">최대 80자까지 입력됩니다. 공란으로 두면 기존 안내가 사라집니다. 예: 원장 직접 처방 · 일본어 상담 가능</div>
     </div>`;
-
   function buildRepItemHtml(item) {
     const key = priceKey(item.drug, item.dose);
     const price = clinic.prices && clinic.prices[key] != null ? clinic.prices[key] : "";
@@ -5036,7 +5044,7 @@ async function handleRepSubmit() {
   const parkingBtn = document.getElementById("repParkingToggle");
   const parkingAvailable = parkingBtn ? parkingBtn.dataset.parking === "true" : false;
   const providerNoteInput = document.getElementById("repProviderNote");
-  const providerNote = providerNoteInput ? providerNoteInput.value.trim().slice(0, 50) : "";
+  const providerNote = providerNoteInput ? providerNoteInput.value.trim().slice(0, 80) : "";
 
   setRepMessage("repSubmitMessage", "저장 중입니다. 창을 닫지 말고 잠시만 기다려주세요.", "loading");
   const submitBtn = document.getElementById("repSubmitBtn");
