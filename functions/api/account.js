@@ -149,7 +149,7 @@ const institutionNo = clean(payload.institution_no);
 
   const parking = String(payload.parking_available || "") === "true" ? "예" : "";
   const parkingUpdatedAt = parking ? new Date().toISOString() : "";
-  const providerNote = clean(payload.provider_note).slice(0, 50);
+  const providerNote = clean(payload.provider_note).slice(0, 80);
 
   await db.prepare(`
     INSERT INTO provider_updates (institution_no, items_json, updated_at, updated_by, status, parking_available, parking_updated_at, provider_note)
