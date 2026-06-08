@@ -3009,8 +3009,13 @@ const PRICE_UPDATE_DOT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 
 function getPriceUpdatedAt(clinic, doseKey) {
   if (!clinic || !doseKey) return null;
-  const raw = clinic.price_updated_at && clinic.price_updated_at[doseKey];
-  if (raw) {
+  const candidates = [
+    clinic.price_updated_at && clinic.price_updated_at[doseKey],
+    clinic.updated_at,
+    clinic.parking_updated_at
+  ];
+  for (const raw of candidates) {
+    if (!raw) continue;
     const d = new Date(raw);
     if (Number.isFinite(d.getTime())) return d;
   }
