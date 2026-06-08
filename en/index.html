@@ -3371,6 +3371,55 @@ function revalidateClinicDataInBackground() {
     if (changed || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
   }).catch(() => {});
 }
+const HARUSENSE_AUTO_REFRESH_MS = 10 * 60 * 1000;
+let HARUSENSE_AUTO_REFRESH_TIMER = null;
+let HARUSENSE_AUTO_REFRESH_RUNNING = false;
+let HARUSENSE_AUTO_REFRESH_BOUND = false;
+let HARUSENSE_LAST_AUTO_REFRESH_AT = 0;
+
+function isRepresentativeModalOpen() {
+  const modal = document.getElementById("repModal");
+  return !!(modal && modal.classList.contains("open"));
+}
+
+async function refreshClinicDataQuietly(reason = "timer") {
+  if (document.hidden) return false;
+  if (isRepresentativeModalOpen()) return false;
+  if (HARUSENSE_AUTO_REFRESH_RUNNING) return false;
+
+  HARUSENSE_AUTO_REFRESH_RUNNING = true;
+  try {
+    const changed = await revalidateClinicData({ force: true });
+    HARUSENSE_LAST_AUTO_REFRESH_AT = Date.now();
+    if (changed || countPinnedClinics(CLINIC_DATA) > 0) refreshClinicDisplay();
+    return changed;
+  } catch (err) {
+    console.info("[Harusense] quiet refresh skipped", reason, err && err.message ? err.message : err);
+    return false;
+  } finally {
+    HARUSENSE_AUTO_REFRESH_RUNNING = false;
+  }
+}
+
+function startClinicAutoRefresh() {
+  if (HARUSENSE_AUTO_REFRESH_TIMER) clearInterval(HARUSENSE_AUTO_REFRESH_TIMER);
+  HARUSENSE_AUTO_REFRESH_TIMER = setInterval(() => refreshClinicDataQuietly("interval"), HARUSENSE_AUTO_REFRESH_MS);
+
+  if (HARUSENSE_AUTO_REFRESH_BOUND) return;
+  HARUSENSE_AUTO_REFRESH_BOUND = true;
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && Date.now() - HARUSENSE_LAST_AUTO_REFRESH_AT > 60 * 1000) {
+      refreshClinicDataQuietly("visible");
+    }
+  });
+
+  window.addEventListener("focus", () => {
+    if (Date.now() - HARUSENSE_LAST_AUTO_REFRESH_AT > 60 * 1000) {
+      refreshClinicDataQuietly("focus");
+    }
+  });
+}
 
 async function loadData(options = {}) {
   const force = options.force === true;
@@ -3768,6 +3817,7 @@ document.addEventListener("DOMContentLoaded", () => {
   paintInlineClinicListEarly();
   applyI18n();
   initLangToggle();
+  startClinicAutoRefresh();
   window.addEventListener("resize", applyBrandTitle);
   const params = new URLSearchParams(location.search);
   const drug = params.get("drug");
