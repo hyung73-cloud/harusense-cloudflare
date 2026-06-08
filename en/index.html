@@ -3014,12 +3014,15 @@ function getPriceUpdatedAt(clinic, doseKey) {
     clinic.updated_at,
     clinic.parking_updated_at
   ];
-  for (const raw of candidates) {
-    if (!raw) continue;
-    const d = new Date(raw);
-    if (Number.isFinite(d.getTime())) return d;
-  }
-  return null;
+  const times = candidates
+    .map(raw => {
+      if (!raw) return null;
+      const d = new Date(raw);
+      return Number.isFinite(d.getTime()) ? d : null;
+    })
+    .filter(Boolean);
+  if (!times.length) return null;
+  return new Date(Math.max(...times.map(d => d.getTime())));
 }
 
 function isRecentPriceUpdate(clinic, doseKey) {
@@ -3226,7 +3229,11 @@ function clinicDataSignature(data) {
     c.prices,
     c.stock,
     c.updated_at,
-    c.price_updated_at
+    c.price_updated_at,
+    c.notes,
+    c.provider_note,
+    c.provider_parking,
+    c.parking_updated_at
   ].join(":")).join("|");
 }
 
