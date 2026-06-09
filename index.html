@@ -4653,6 +4653,30 @@ function setParkingButton(button, available) {
   button.setAttribute("aria-label", available ? "주차 가능" : "주차 정보 없음");
 }
 
+function applyRepresentativeLocalUpdate(apiItems, providerNote, parkingAvailable) {
+  const clinic = representativeClinic();
+  if (!clinic) return;
+  const touchedAt = new Date().toISOString();
+  const prices = { ...(clinic.prices || {}) };
+  const stock = { ...(clinic.stock || {}) };
+  const priceUpdatedAt = { ...(clinic.price_updated_at || {}) };
+
+  Object.entries(apiItems || {}).forEach(([key, item]) => {
+    if (item.price !== "" && Number.isFinite(Number(item.price))) prices[key] = Number(item.price);
+    stock[key] = item.in_stock !== false;
+    priceUpdatedAt[key] = touchedAt;
+  });
+
+  clinic.prices = prices;
+  clinic.stock = stock;
+  clinic.price_updated_at = priceUpdatedAt;
+  clinic.updated_at = touchedAt;
+  clinic.updated_by = REP_ACTIVE_INSTITUTION_NO;
+  clinic.notes = providerNote || "";
+  clinic.provider_note = providerNote || "";
+  clinic.provider_parking = parkingAvailable ? "주차 가능" : "";
+  clinic.parking_updated_at = parkingAvailable ? touchedAt : clinic.parking_updated_at;
+}
 function renderRepresentativeEditor() {
   const clinic = representativeClinic();
   const box = document.getElementById("repPriceFields");
@@ -5063,10 +5087,16 @@ async function handleRepSubmit() {
     });
 
     if (data.ok) {
-      await loadData({ force: true });
+      applyRepresentativeLocalUpdate(apiItems, providerNote, parkingAvailable);
       refreshClinicDisplay();
       renderRepresentativeEditor();
       setRepMessage("repSubmitMessage", "✓ 저장 완료. 지도에 즉시 반영되었습니다. 새로고침해도 유지됩니다.", "success");
+      loadData({ force: true })
+        .then(() => {
+          refreshClinicDisplay();
+          if (REP_ACTIVE_INSTITUTION_NO) renderRepresentativeEditor();
+        })
+        .catch(() => {});
       if (REP_CLOSE_TIMER) clearTimeout(REP_CLOSE_TIMER);
       REP_CLOSE_TIMER = setTimeout(closeRepModal, 3000);
     } else {
