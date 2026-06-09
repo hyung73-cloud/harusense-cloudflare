@@ -599,6 +599,18 @@ body {
     transform: translateY(0);
     opacity: 1;
   }
+  .region-panel-body {
+    width: min(720px, calc(100vw - 32px));
+  }
+  .region-sigungu-row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    row-gap: 8px;
+    padding-bottom: 0;
+  }
+  .region-sigungu-row .region-option {
+    flex-shrink: 1;
+  }
   .region-panel-footer { padding-bottom: 12px; }
   .district-bar {
     padding-right: min(50vw, 780px);
