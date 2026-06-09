@@ -2871,6 +2871,16 @@ function clinicMatchesDeepLink(clinic, target) {
   ].some(value => normalizeClinicLookup(value) === needle);
 }
 
+function findFreshClinicForQr(clinic) {
+  if (!clinic || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return clinic;
+  const keys = [clinic.institution_no, clinic.id, clinic.name].filter(Boolean).map(normalizeClinicLookup);
+  const fresh = CLINIC_DATA.clinics.find(item => {
+    if (!item || isDemoClinic(item)) return false;
+    return [item.institution_no, item.id, item.name].some(value => keys.includes(normalizeClinicLookup(value)));
+  });
+  return fresh || clinic;
+}
+
 function buildClinicDeepLink(clinic) {
   const id = String(clinic && (clinic.institution_no || clinic.id) || "").trim();
   const url = new URL("/", location.origin);
@@ -3126,7 +3136,9 @@ function showQrIntroPopup(clinic) {
 
 async function openQrClinicFromPopup() {
   const backdrop = document.getElementById("qrIntroBackdrop");
-  const clinic = backdrop && backdrop.__clinic;
+  const rawClinic = backdrop && backdrop.__clinic;
+  const clinic = findFreshClinicForQr(rawClinic);
+  if (backdrop) backdrop.__clinic = clinic;
   if (clinic) {
     await Promise.race([
       saveQrFeedbackQuietly(clinic),
