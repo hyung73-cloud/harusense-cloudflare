@@ -849,6 +849,381 @@ body {
 }
 
 /* 데스크탑 — 가운데 정렬 */
+/* ── 관계자 정보 수정 화면 (repEditView) ── */
+#repEditView .rep-modal-header {
+  padding: 12px 16px 10px;
+}
+#repEditView .rep-modal-title { font-size: 15px; }
+#repEditView .rep-modal-sub {
+  font-size: 11px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+#repEditView .rep-modal-body {
+  padding: 10px 14px 6px;
+}
+#repEditView .rep-modal-footer.rep-edit-footer {
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  box-shadow: 0 -4px 16px rgba(17, 24, 39, 0.06);
+}
+.rep-edit-hint {
+  margin: 0 0 8px;
+  padding: 0;
+  background: transparent;
+  color: var(--mute);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.rep-provider-note-field {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+.rep-provider-note-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+.rep-provider-note-field textarea {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid #dbe1ea;
+  border-radius: 12px;
+  padding: 12px 13px;
+  resize: vertical;
+  line-height: 1.45;
+  font-size: 15px;
+  color: #111827;
+  background: #fff;
+}
+.rep-provider-note-field textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+.rep-provider-note-field textarea::placeholder { color: #9ca3af; }
+.rep-provider-note-help {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #6b7280;
+}.rep-price-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rep-board-head {
+  display: none;
+}
+.rep-pair-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.rep-pair-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border-bottom: none;
+}
+.rep-pair-cell {
+  min-width: 0;
+  min-height: 40px;
+}
+.rep-pair-cell--empty { display: none; }
+.rep-cell-tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.rep-pair-cell.mounjaro .rep-cell-tag { color: var(--blue-deep); }
+.rep-pair-cell.wegovy .rep-cell-tag { color: #047857; }
+.rep-item {
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr) 72px;
+  gap: 6px;
+  align-items: center;
+  min-height: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.rep-dose {
+  width: auto;
+  flex-shrink: 0;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+#repEditView .price-input {
+  flex: none;
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+#repEditView .stock-toggle {
+  width: 72px;
+  min-width: 72px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  line-height: 1.1;
+}
+#repEditView .stock-toggle.on {
+  border: 1.5px solid #059669;
+  background: #d1fae5;
+  color: #047857;
+}
+#repEditView .stock-toggle.off {
+  border: 1.5px solid #d1d5db;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.rep-parking-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+}
+.rep-parking-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9a3412;
+  letter-spacing: -0.01em;
+}
+.rep-switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid #9ca3af;
+  border-radius: 999px;
+  background: #d1d5db;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.rep-switch .rep-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(17, 24, 39, 0.28);
+  transition: transform 0.15s ease;
+}
+.rep-switch.on {
+  background: #ea580c;
+  border-color: #c2410c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.28);
+}
+.rep-switch.on .rep-switch-knob {
+  transform: translateX(22px);
+}
+/* 모바일: 약품별로 묶어 세로 나열 */
+@media (max-width: 539px) {
+  .rep-pair-rows {
+    gap: 14px;
+  }
+  .rep-pair-row {
+    display: contents;
+  }
+  .rep-pair-cell.mounjaro { order: 1; }
+  .rep-pair-cell.wegovy { order: 2; }
+  .rep-pair-cell {
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .rep-pair-cell:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+/* 태블릿·PC: 2열 헤더 + 행 높이 맞춤 */
+@media (min-width: 540px) {
+  .rep-board-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .rep-board-head-cell {
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid var(--line-soft);
+  }
+  .rep-board-head-cell.mounjaro {
+    color: var(--blue-deep);
+    background: var(--blue-soft);
+  }
+  .rep-board-head-cell.wegovy {
+    color: #047857;
+    background: #ecfdf5;
+  }
+  .rep-pair-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: stretch;
+    padding: 0 0 6px;
+    border-bottom: none;
+  }
+  .rep-pair-cell--empty {
+    display: block;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .rep-cell-tag { display: none; }
+  .rep-pair-rows { gap: 6px; }
+}
+.rep-edit-footer .rep-button {
+  width: 100%;
+  height: 44px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+.rep-edit-footer .rep-btn-ghost {
+  width: auto;
+  align-self: flex-end;
+  height: auto;
+  min-height: 0;
+  padding: 4px 2px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--mute);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.rep-edit-footer .rep-btn-ghost:active { opacity: 0.7; }
+#repEditView .rep-message {
+  margin-top: 0;
+  min-height: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+@media (max-width: 359px) {
+  .rep-item {
+    grid-template-columns: 44px minmax(0, 1fr) 64px;
+  }
+  #repEditView .stock-toggle {
+    width: 64px;
+    min-width: 64px;
+    font-size: 9px;
+  }
+}
+.price-input {
+  flex: 1; min-width: 0; height: 46px; border: 1px solid var(--line);
+  border-radius: 10px; padding: 0 14px; color: var(--ink);
+  font-family: inherit; font-size: 16px; background: #fff; font-variant-numeric: tabular-nums;
+}
+.price-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.stock-toggle {
+  flex-shrink: 0; min-width: 84px; height: 46px;
+  border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  color: var(--ink-2); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.rep-button {
+  width: 100%; height: 50px; border: none; border-radius: 10px;
+  background: var(--blue); color: #fff; font-family: inherit;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.rep-button.secondary { background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); margin-top: 8px; }
+.rep-message { min-height: 20px; margin-top: 10px; color: var(--mute); font-size: 13px; font-weight: 600; text-align: center; white-space: pre-line; line-height: 1.5; }
+.rep-message.error { color: #dc2626; }
+.rep-message.success { color: var(--verified); }
+.rep-footer-message {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 28px;
+  margin: 0 0 10px;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #fff;
+}
+.rep-footer-message.loading {
+  background: #f8fafc;
+  border-color: #e5e7eb;
+}
+.rep-footer-message.success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+.rep-footer-message.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.rep-footer-message:empty { display: none; }
+#repEditView .rep-footer-message {
+  min-height: 28px;
+  font-size: 12px;
+}
+.rep-message.loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  color: var(--blue);
+}
+.rep-message.loading::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(76, 99, 230, 0.22);
+  border-top-color: var(--blue);
+  border-radius: 999px;
+  animation: repSpin 0.75s linear infinite;
+}
+@keyframes repSpin {
+  to { transform: rotate(360deg); }
+}
+@media (min-width: 768px) {
+  .rep-modal { max-width: 440px; left: 50%; right: auto; transform: translateX(-50%) translateY(100%); }
+  .rep-modal.open { transform: translateX(-50%) translateY(0); }
+}
+
 @media (min-width: 768px) {
   .site-footer-nav { justify-content: center; }
   .footer-chip { flex: 0 0 auto; font-size: 12px; padding: 0 22px; min-height: 38px; }
@@ -2292,6 +2667,7 @@ function setLang(lang) {
   if (lang !== "ko" && lang !== "en") return;
   if (lang === "ko") {
     localStorage.setItem("harusense_lang", "ko");
+    writeLanguageHandoff();
     const dest = new URL("/", location.origin);
     const drug = state.drugKey;
     if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
@@ -2388,6 +2764,26 @@ function buildClinicQrImageUrl(clinic, size = 300) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${data}`;
 }
 
+const LANG_HANDOFF_KEY = "harusense_lang_handoff_v1";
+function writeLanguageHandoff() {
+  try {
+    if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || !CLINIC_DATA.clinics.length) return;
+    sessionStorage.setItem(LANG_HANDOFF_KEY, JSON.stringify({ created_at: Date.now(), data: CLINIC_DATA }));
+  } catch (err) {}
+}
+function takeLanguageHandoff() {
+  try {
+    const raw = sessionStorage.getItem(LANG_HANDOFF_KEY);
+    if (!raw) return null;
+    sessionStorage.removeItem(LANG_HANDOFF_KEY);
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data || !Array.isArray(parsed.data.clinics)) return null;
+    if (Date.now() - Number(parsed.created_at || 0) > 60 * 1000) return null;
+    return parsed.data;
+  } catch (err) {
+    return null;
+  }
+}
 
 function showQrOpeningNotice(message) {
   const el = document.getElementById("qrOpeningNotice");
@@ -3455,6 +3851,12 @@ function applyOverridesInBackground() {
 }
 
 async function bootstrapClinicData() {
+  const handoffData = takeLanguageHandoff();
+  if (handoffData && commitClinicData(stripDemoClinics(handoffData), { force: true })) {
+    applyOverridesInBackground();
+    revalidateClinicDataInBackground();
+    return true;
+  }
   const hadCache = await tryLoadClinicDataFromCache();
   if (hadCache) {
     applyOverridesInBackground();
@@ -4016,32 +4418,65 @@ function renderRepresentativeEditor() {
   document.getElementById("repClinicSub").textContent = `${clinic.address || ""} · ${clinic.phone || "전화번호 미등록"}`;
   const parkingAvailable = normalizeParkingValue(firstValue(clinic.provider_parking, clinic.verified_parking, clinic.parking)).includes("주차 가능");
   const parkingControl = `
-    <div class="rep-parking-card">
-      <div class="rep-parking-title">
-        <span>주차 여부</span>
-        <button class="stock-toggle parking-toggle ${parkingAvailable ? "on" : ""}" type="button" id="repParkingToggle" data-parking="${parkingAvailable ? "true" : "false"}">${parkingAvailable ? "주차 가능" : "주차 정보 없음"}</button>
-      </div>
-      <div class="rep-parking-help">주차 가능 기관은 상세정보에서 빨간색으로 강조됩니다. 불확실하면 켜지 마세요.</div>
+    <div class="rep-parking-bar">
+      <span class="rep-parking-label">주차 가능</span>
+      <button class="rep-switch parking-toggle ${parkingAvailable ? "on" : ""}" type="button" id="repParkingToggle" data-parking="${parkingAvailable ? "true" : "false"}" aria-pressed="${parkingAvailable ? "true" : "false"}" aria-label="${parkingAvailable ? "주차 가능" : "주차 정보 없음"}">
+        <span class="rep-switch-knob"></span>
+      </button>
     </div>`;
   const pendingMapNotice = clinic.pending_map_connection ? `
-    <div class="rep-help">
-      가격/재고 정보는 미리 입력하실 수 있습니다. 6시간 이내 지도핀이 열리면 입력하신 가격/재고 정보가 표시됩니다.
-    </div>` : "";
-  const groups = ["mounjaro", "wegovy"].map(drug => {
-    const items = REP_KEYS.filter(item => item.drug === drug).map(item => {
-      const key = priceKey(item.drug, item.dose);
-      const price = clinic.prices && clinic.prices[key] != null ? clinic.prices[key] : "";
-      const inStock = clinicStockAvailable(clinic, key);
-      return `
-        <div class="rep-item" data-key="${key}">
-          <div class="rep-dose">${item.dose}</div>
-          <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" />
-          <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
-        </div>`;
-    }).join("");
-    return `<div class="rep-drug-title">${DRUG_INFO[drug].fullName}</div>${items}`;
-  }).join("");
-  box.innerHTML = pendingMapNotice + parkingControl + groups;
+    <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
+  const providerNoteValue = String(firstValue(clinic.provider_note, clinic.notes, "")).slice(0, 80);
+  const providerNoteControl = `
+    <div class="rep-provider-note-field">
+      <label for="repProviderNote">기관 한줄 안내</label>
+      <textarea id="repProviderNote" maxlength="80" rows="2" placeholder="직접수정 및 업데이트">${escapeHtml(providerNoteValue)}</textarea>
+      <div class="rep-provider-note-help">최대 80자까지 입력됩니다. 공란으로 두면 기존 안내가 사라집니다. 예: 원장 직접 처방 · 일본어 상담 가능</div>
+    </div>`;
+  function buildRepItemHtml(item) {
+    const key = priceKey(item.drug, item.dose);
+    const price = clinic.prices && clinic.prices[key] != null ? clinic.prices[key] : "";
+    const inStock = clinicStockAvailable(clinic, key);
+    return `
+      <div class="rep-item" data-key="${key}">
+        <div class="rep-dose">${item.dose}</div>
+        <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" placeholder="가격" />
+        <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
+      </div>`;
+  }
+
+  function buildRepPairCell(item, showDrugLabel) {
+    if (!item) return `<div class="rep-pair-cell rep-pair-cell--empty" aria-hidden="true"></div>`;
+    const drug = item.drug;
+    const drugLabel = showDrugLabel
+      ? `<span class="rep-cell-tag">${DRUG_INFO[drug].fullName}</span>`
+      : "";
+    return `
+      <div class="rep-pair-cell ${drug}">
+        ${drugLabel}
+        ${buildRepItemHtml(item)}
+      </div>`;
+  }
+
+  const mounjaroItems = REP_KEYS.filter(item => item.drug === "mounjaro");
+  const wegovyItems = REP_KEYS.filter(item => item.drug === "wegovy");
+  const pairRowCount = Math.max(mounjaroItems.length, wegovyItems.length);
+  const pairRows = Array.from({ length: pairRowCount }, (_, i) => `
+    <div class="rep-pair-row">
+      ${buildRepPairCell(mounjaroItems[i], i === 0)}
+      ${buildRepPairCell(wegovyItems[i], i === 0)}
+    </div>`).join("");
+
+  const priceBoard = `
+    <div class="rep-price-board">
+      <div class="rep-board-head">
+        <div class="rep-board-head-cell mounjaro">${DRUG_INFO.mounjaro.fullName}</div>
+        <div class="rep-board-head-cell wegovy">${DRUG_INFO.wegovy.fullName}</div>
+      </div>
+      <div class="rep-pair-rows">${pairRows}</div>
+    </div>`;
+
+  box.innerHTML = `${pendingMapNotice}${priceBoard}${parkingControl}${providerNoteControl}`;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
     if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
@@ -4354,6 +4789,8 @@ async function handleRepSubmit() {
   });
   const parkingBtn = document.getElementById("repParkingToggle");
   const parkingAvailable = parkingBtn ? parkingBtn.dataset.parking === "true" : false;
+  const providerNoteInput = document.getElementById("repProviderNote");
+  const providerNote = providerNoteInput ? providerNoteInput.value.trim().slice(0, 80) : "";
 
   setRepMessage("repSubmitMessage", "저장 중입니다. 창을 닫지 말고 잠시만 기다려주세요.", "loading");
   const submitBtn = document.getElementById("repSubmitBtn");
@@ -4367,7 +4804,8 @@ async function handleRepSubmit() {
       institution_no: REP_ACTIVE_INSTITUTION_NO,
       password: REP_ACTIVE_PASSWORD,
       items_json: JSON.stringify(apiItems),
-      parking_available: parkingAvailable ? "true" : ""
+      parking_available: parkingAvailable ? "true" : "",
+      provider_note: providerNote
     });
 
     if (data.ok) {
