@@ -4668,6 +4668,7 @@ function initMap() {
       applyI18n();
       if (appLang === "en") startFxRefresh();
       refreshClinicDisplay();
+      fitInitialDefaultMapView();
       openClinicFromDeepLink();
       initRepresentativeForm();
     })
@@ -4676,6 +4677,7 @@ function initMap() {
       ensureMapHasPins().finally(() => {
         document.getElementById("loading").style.display = "none";
         refreshClinicDisplay();
+        fitInitialDefaultMapView();
         openClinicFromDeepLink();
       });
     });
@@ -4809,6 +4811,15 @@ function renderClinicList() {
 function renderResults() {
   renderMarkers();
   renderClinicList();
+}
+
+function fitInitialDefaultMapView() {
+  if (!map || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return;
+  const params = new URLSearchParams(window.location.search || "");
+  if (params.get("clinic")) return;
+  if (state.districtFilter !== "all") return;
+  if (state.region && (state.region.sidoSlug || state.region.sigunguSlug)) return;
+  focusMapByDistrict("all");
 }
 
 // ─────────── Detail sheet ───────────
