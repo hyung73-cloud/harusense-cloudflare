@@ -339,6 +339,9 @@ async function addQrFeedback(db, payload) {
 
   const emoji = clean(payload.emoji).slice(0, 8);
   if (!choices.length && !emoji) return { ok: false, error: "feedback is empty" };
+  if (String(payload.location_verified || "") !== "true") {
+    return { ok: false, error: "QR feedback location check failed" };
+  }
 
   await ensureQrFeedbackTable(db);
   await db.prepare(`
