@@ -2766,6 +2766,7 @@ function setLang(lang) {
     if (!path.startsWith("/en")) {
       const q = new URLSearchParams(location.search);
       const drug = state.drugKey || q.get("drug");
+      writeLanguageHandoff();
       const dest = new URL("/en/", location.origin);
       if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
       location.href = dest.pathname + dest.search;
@@ -2873,6 +2874,26 @@ function buildClinicQrImageUrl(clinic, size = 300) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${data}`;
 }
 
+const LANG_HANDOFF_KEY = "harusense_lang_handoff_v1";
+function writeLanguageHandoff() {
+  try {
+    if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || !CLINIC_DATA.clinics.length) return;
+    sessionStorage.setItem(LANG_HANDOFF_KEY, JSON.stringify({ created_at: Date.now(), data: CLINIC_DATA }));
+  } catch (err) {}
+}
+function takeLanguageHandoff() {
+  try {
+    const raw = sessionStorage.getItem(LANG_HANDOFF_KEY);
+    if (!raw) return null;
+    sessionStorage.removeItem(LANG_HANDOFF_KEY);
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data || !Array.isArray(parsed.data.clinics)) return null;
+    if (Date.now() - Number(parsed.created_at || 0) > 60 * 1000) return null;
+    return parsed.data;
+  } catch (err) {
+    return null;
+  }
+}
 
 function showQrOpeningNotice(message) {
   const el = document.getElementById("qrOpeningNotice");
@@ -4171,6 +4192,12 @@ function applyOverridesInBackground() {
 }
 
 async function bootstrapClinicData() {
+  const handoffData = takeLanguageHandoff();
+  if (handoffData && commitClinicData(stripDemoClinics(handoffData), { force: true })) {
+    applyOverridesInBackground();
+    revalidateClinicDataInBackground();
+    return true;
+  }
   const hadCache = await tryLoadClinicDataFromCache();
   if (hadCache) {
     applyOverridesInBackground();
