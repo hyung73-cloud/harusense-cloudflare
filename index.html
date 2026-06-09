@@ -2133,6 +2133,22 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 .qr-intro-kicker { font-size: 11px; font-weight: 800; color: #2563eb; margin-bottom: 5px; }
 .qr-intro-title { font-size: 18px; font-weight: 900; color: #111827; line-height: 1.3; margin-bottom: 6px; }
 .qr-intro-text { font-size: 13px; color: #4b5563; line-height: 1.55; margin-bottom: 12px; }
+.qr-location-status {
+  margin: -2px 0 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.qr-location-status.ok { background: #ecfdf5; border-color: #bbf7d0; color: #047857; }
+.qr-location-status.blocked { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+.qr-location-status.loading::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 6px; border: 2px solid rgba(37,99,235,.22); border-top-color: #2563eb; border-radius: 50%; vertical-align: -1px; animation: qrSpin .75s linear infinite; }
+.qr-feedback-locked .qr-choice-grid,
+.qr-feedback-locked .qr-choice-hint,
+.qr-feedback-locked .qr-emoji-row { display: none; }
 .qr-choice-grid { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 9px; }
 .qr-choice-btn {
   border: 1px solid #dbe3ef;
@@ -2222,6 +2238,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <div class="qr-intro-kicker">QR 방문 확인</div>
     <div class="qr-intro-title" id="qrIntroTitle">기관 정보를 확인할 준비가 되었습니다</div>
     <div class="qr-intro-text" id="qrIntroText">기관 정보 보기 버튼을 누르면 가격표와 재고 정보를 확인할 수 있습니다.</div>
+    <div class="qr-location-status loading" id="qrLocationStatus">현장 방문 확인을 위해 현재 위치를 확인하고 있습니다.</div>
     <div class="qr-choice-grid" id="qrChoiceGrid" aria-label="방문 확인 선택"></div>
     <div class="qr-choice-hint">최대 2개까지 선택할 수 있습니다.</div>
     <div class="qr-emoji-row" id="qrEmojiRow" aria-label="이모티콘 선택">
@@ -2875,6 +2892,8 @@ function hideQrOpeningNotice(delay = 0) {
   }, delay);
 }
 
+const QR_FEEDBACK_ALLOWED_RADIUS_M = 100;
+
 const QR_FEEDBACK_GROUPS = [
   ["실제 가격 동일", "표시 가격과 같았어요", "가격 변동 없었어요", "오늘 기준 동일했어요", "현장 가격 동일"],
   ["오늘 재고 있었어요", "바로 수령 가능했어요", "재고 확인됐어요", "방문 시 가능했어요", "오늘 기준 확인됨"],
@@ -2891,6 +2910,50 @@ function getQrFeedbackOptions() {
     if (options.length < 5) options.push(group[(first + 2) % group.length]);
   });
   return options.slice(0, 5);
+}
+
+function distanceMetersBetween(lat1, lng1, lat2, lng2) {
+  const toRad = deg => Number(deg) * Math.PI / 180;
+  const r = 6371000;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function setQrFeedbackGate(backdrop, state, message) {
+  if (!backdrop) return;
+  const status = document.getElementById("qrLocationStatus");
+  backdrop.dataset.locationOk = state === "ok" ? "true" : "false";
+  backdrop.classList.toggle("qr-feedback-locked", state !== "ok");
+  if (status) {
+    status.hidden = false;
+    status.className = "qr-location-status " + (state === "ok" ? "ok" : state === "loading" ? "loading" : "blocked");
+    status.textContent = message || "";
+  }
+}
+
+function startQrLocationGate(clinic) {
+  const backdrop = document.getElementById("qrIntroBackdrop");
+  if (!backdrop) return;
+  renderQrFeedbackChoices();
+  setQrFeedbackGate(backdrop, "loading", "현장 방문 확인을 위해 현재 위치를 확인하고 있습니다.");
+  if (!clinic || !hasValidCoords(clinic) || !navigator.geolocation) {
+    setQrFeedbackGate(backdrop, "blocked", "위치 확인이 어려워 방문 멘트는 남길 수 없습니다. 기관 정보는 바로 확인할 수 있습니다.");
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(position => {
+    const distance = distanceMetersBetween(position.coords.latitude, position.coords.longitude, Number(clinic.lat), Number(clinic.lng));
+    backdrop.dataset.locationDistance = String(Math.round(distance));
+    backdrop.dataset.locationAccuracy = String(Math.round(position.coords.accuracy || 0));
+    if (distance <= QR_FEEDBACK_ALLOWED_RADIUS_M) {
+      setQrFeedbackGate(backdrop, "ok", "현장 위치가 확인되었습니다. 방문 확인 멘트를 남길 수 있습니다.");
+    } else {
+      setQrFeedbackGate(backdrop, "blocked", "기관 반경 100m 밖에서는 방문 멘트를 남길 수 없습니다. 기관 정보는 바로 확인할 수 있습니다.");
+    }
+  }, () => {
+    setQrFeedbackGate(backdrop, "blocked", "위치 권한이 없어 방문 멘트는 남길 수 없습니다. 기관 정보는 바로 확인할 수 있습니다.");
+  }, { enableHighAccuracy: true, timeout: 7000, maximumAge: 30000 });
 }
 
 function renderQrFeedbackChoices() {
@@ -2969,10 +3032,13 @@ function collectQrFeedbackPayload(clinic) {
     .slice(0, 2)
     .join("");
   if (!choices.length && !emoji) return null;
+  if (backdrop.dataset.locationOk !== "true") return null;
   return {
     institution_no: String(clinic.institution_no || clinic.id || ""),
     choices_json: JSON.stringify(choices),
     emoji,
+    location_verified: "true",
+    distance_meters: backdrop.dataset.locationDistance || "",
     user_agent: navigator.userAgent || ""
   };
 }
@@ -2996,7 +3062,7 @@ function showQrIntroPopup(clinic) {
   backdrop.__clinic = clinic;
   if (title) title.textContent = (clinic && clinic.name ? clinic.name : "기관") + " 방문 확인";
   if (text) text.textContent = "방문 후 간단한 확인을 남기고, 기관 정보 보기 버튼으로 가격표와 재고 정보를 확인할 수 있습니다.";
-  renderQrFeedbackChoices();
+  startQrLocationGate(clinic);
   loadQrFeedbackHistory(clinic);
   document.querySelectorAll("[data-qr-choice]").forEach(btn => btn.classList.remove("selected"));
   document.querySelectorAll("[data-qr-emoji]").forEach(btn => btn.classList.remove("selected"));
