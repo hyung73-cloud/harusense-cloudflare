@@ -316,7 +316,209 @@ body {
   font-weight: 700;
 }
 
-/* District chips */
+/* Region picker (replaces visible district chip bar) */
+.region-picker {
+  position: relative;
+  margin-top: 8px;
+  width: 100%;
+}
+.region-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+  text-align: left;
+}
+.region-trigger:hover { border-color: var(--mute); }
+.region-picker.is-open .region-trigger,
+.region-trigger[aria-expanded="true"] {
+  border-color: var(--blue);
+  background: #f0f9ff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+}
+.region-trigger-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+.region-trigger-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.region-trigger-chevron {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--mute);
+  transition: transform 0.15s ease;
+}
+.region-picker.is-open .region-trigger-chevron { transform: rotate(180deg); }
+.region-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+  visibility: hidden;
+}
+.region-picker.is-open .region-panel {
+  pointer-events: auto;
+  visibility: visible;
+}
+.region-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.region-picker.is-open .region-panel-backdrop { opacity: 1; }
+.region-panel-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: min(78vh, 640px);
+  margin-top: auto;
+  border-radius: 16px 16px 0 0;
+  background: var(--surface);
+  box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.14);
+  transform: translateY(100%);
+  transition: transform 0.24s ease;
+}
+.region-picker.is-open .region-panel-body { transform: translateY(0); }
+.region-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.region-panel-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.region-panel-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--line-soft);
+  color: var(--ink-2);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+.region-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.region-panel-section { margin-bottom: 14px; }
+.region-panel-section:last-child { margin-bottom: 0; }
+.region-panel-section-label {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+  text-transform: uppercase;
+}
+.region-sido-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.region-option {
+  min-height: 40px;
+  padding: 8px 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.region-option:hover { border-color: var(--mute); color: var(--ink); }
+.region-option.is-selected {
+  border-color: var(--blue);
+  background: #eff6ff;
+  color: var(--blue-deep);
+}
+.region-option.region-option-nation {
+  grid-column: 1 / -1;
+}
+.region-sigungu-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+.region-sigungu-row::-webkit-scrollbar { display: none; }
+.region-sigungu-row .region-option {
+  flex-shrink: 0;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.region-sigungu-row.is-empty { display: none; }
+.region-panel-footer {
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line-soft);
+}
+.region-panel-apply {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+.region-panel-apply:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.region-picker-legacy {
+  display: none !important;
+}
+
+/* District chips (legacy — kept for existing filter JS) */
 .district-bar {
   display: flex;
   gap: 6px;
@@ -368,6 +570,32 @@ body {
   color: #64748b;
 }
 @media (min-width: 900px) {
+  .region-panel {
+    position: absolute;
+    inset: auto;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 1000;
+    display: block;
+    width: min(360px, calc(100vw - 32px));
+    justify-content: flex-start;
+  }
+  .region-panel-backdrop { display: none; }
+  .region-panel-body {
+    margin-top: 0;
+    max-height: min(420px, 70vh);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+    transform: translateY(6px);
+    opacity: 0;
+    transition: transform 0.16s ease, opacity 0.16s ease;
+  }
+  .region-picker.is-open .region-panel-body {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .region-panel-footer { padding-bottom: 12px; }
   .district-bar {
     padding-right: min(50vw, 780px);
   }
@@ -2333,8 +2561,68 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     </div>
   </div>
 
-  <!-- District chips -->
-  <div class="district-bar" id="districtBar">
+  <!-- Region picker (UI shell — filter logic: Codex Phase 1) -->
+  <div class="region-picker" id="regionPicker">
+    <button type="button" class="region-trigger" id="regionTrigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="regionPanel">
+      <span class="region-trigger-icon" aria-hidden="true">📍</span>
+      <span class="region-trigger-label" id="regionTriggerLabel" data-i18n="regionNationWide">전국</span>
+      <span class="region-trigger-chevron" aria-hidden="true">▾</span>
+    </button>
+    <div class="region-panel" id="regionPanel" role="dialog" aria-modal="true" aria-labelledby="regionPanelTitle" hidden>
+      <div class="region-panel-backdrop" id="regionPanelBackdrop" aria-hidden="true"></div>
+      <div class="region-panel-body">
+        <div class="region-panel-header">
+          <h2 class="region-panel-title" id="regionPanelTitle" data-i18n="regionSelectTitle">지역 선택</h2>
+          <button type="button" class="region-panel-close" id="regionPanelClose" aria-label="닫기" data-i18n-aria="regionClose">×</button>
+        </div>
+        <div class="region-panel-content">
+          <section class="region-panel-section" aria-labelledby="regionSidoLabel">
+            <p class="region-panel-section-label" id="regionSidoLabel" data-i18n="regionSidoLabel">시·도</p>
+            <div class="region-sido-grid" id="regionSidoGrid" role="listbox" aria-label="시·도">
+              <button type="button" class="region-option region-option-nation is-selected" data-region-role="sido" data-sido-slug="" data-sido-name="전국" data-i18n="regionNationWide">전국</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="seoul" data-sido-name="서울">서울</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="gyeonggi" data-sido-name="경기">경기</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="incheon" data-sido-name="인천">인천</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="busan" data-sido-name="부산">부산</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="daegu" data-sido-name="대구">대구</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="daejeon" data-sido-name="대전">대전</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="gwangju" data-sido-name="광주">광주</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="ulsan" data-sido-name="울산">울산</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="sejong" data-sido-name="세종">세종</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="gangwon" data-sido-name="강원">강원</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="chungbuk" data-sido-name="충북">충북</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="chungnam" data-sido-name="충남">충남</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="jeonbuk" data-sido-name="전북">전북</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="jeonnam" data-sido-name="전남">전남</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="gyeongbuk" data-sido-name="경북">경북</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="gyeongnam" data-sido-name="경남">경남</button>
+              <button type="button" class="region-option" data-region-role="sido" data-sido-slug="jeju" data-sido-name="제주">제주</button>
+            </div>
+          </section>
+          <section class="region-panel-section region-panel-section-sigungu" id="regionSigunguSection" hidden>
+            <p class="region-panel-section-label" id="regionSigunguLabel" data-i18n="regionSigunguLabel">시·군·구</p>
+            <div class="region-sigungu-row" id="regionSigunguRow" role="listbox" aria-label="시·군·구">
+              <!-- Codex: regions.json + clinics 집계로 동적 렌더 -->
+              <button type="button" class="region-option is-selected" data-region-role="sigungu" data-sigungu-slug="" data-sigungu-name="전체" data-legacy-district="" data-i18n="regionSigunguAll">전체</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="mapo" data-sigungu-name="마포" data-legacy-district="마포구">마포</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="seodaemun" data-sigungu-name="서대문" data-legacy-district="서대문구">서대문</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="yeongdeungpo" data-sigungu-name="영등포" data-legacy-district="영등포구">영등포</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="gangseo" data-sigungu-name="강서" data-legacy-district="강서구">강서</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="yongsan" data-sigungu-name="용산" data-legacy-district="용산구">용산</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="gwanak" data-sigungu-name="관악" data-legacy-district="관악구">관악</button>
+              <button type="button" class="region-option" data-region-role="sigungu" data-sigungu-slug="goyang" data-sigungu-name="고양" data-legacy-district="고양시" data-sido-slug="gyeonggi">고양</button>
+            </div>
+          </section>
+        </div>
+        <div class="region-panel-footer">
+          <button type="button" class="region-panel-apply" id="regionPanelApply" data-i18n="regionApply">적용</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legacy district chips (hidden — existing districtFilter JS) -->
+  <div class="district-bar region-picker-legacy" id="districtBar" hidden aria-hidden="true">
     <button class="chip active" data-district="all" data-i18n="districtAll">전 지역</button>
     <button class="chip" data-district="마포구" data-i18n="districtMapo">마포</button>
     <button class="chip" data-district="서대문구" data-i18n="districtSeodaemun">서대문</button>
@@ -2565,6 +2853,13 @@ const I18N = {
     searchPlaceholder: "병의원·약국 이름·지역 검색",
     searchCancel: "취소",
     districtAll: "전 지역",
+    regionNationWide: "전국",
+    regionSelectTitle: "지역 선택",
+    regionSidoLabel: "시·도",
+    regionSigunguLabel: "시·군·구",
+    regionSigunguAll: "전체",
+    regionApply: "적용",
+    regionClose: "닫기",
     districtMapo: "마포", districtSeodaemun: "서대문", districtYeongdeungpo: "영등포",
     districtGangseo: "강서", districtYongsan: "용산", districtGwanak: "관악",
     districtDongjak: "동작", districtJongno: "종로", districtYangcheon: "양천",
@@ -2618,6 +2913,13 @@ const I18N = {
     searchPlaceholder: "Search clinic, pharmacy, or area",
     searchCancel: "Cancel",
     districtAll: "All areas",
+    regionNationWide: "Nationwide",
+    regionSelectTitle: "Select area",
+    regionSidoLabel: "Province / City",
+    regionSigunguLabel: "District",
+    regionSigunguAll: "All",
+    regionApply: "Apply",
+    regionClose: "Close",
     districtMapo: "Mapo", districtSeodaemun: "Seodaemun", districtYeongdeungpo: "Yeongdeungpo",
     districtGangseo: "Gangseo", districtYongsan: "Yongsan", districtGwanak: "Gwanak",
     districtDongjak: "Dongjak", districtJongno: "Jongno", districtYangcheon: "Yangcheon",
@@ -2837,8 +3139,10 @@ let state = {
   drugKey: "mounjaro",
   dose: "2.5mg",
   districtFilter: "all",
+  region: { sidoSlug: "", sigunguSlug: "", legacyDistrict: "" },
 };
 let CLINIC_DATA = { clinics: [] };
+let REGION_DATA = null;
 /** 화면에 올라온 핀 스냅샷 (아래 commitClinicData·캐시 블록과 함께 동작) */
 let LAST_STABLE_MAP_DATA = null;
 let map = null;
@@ -2849,6 +3153,33 @@ function normalizeClinicLookup(value) {
   return String(value || "").replace(/\s+/g, "").trim().toLowerCase();
 }
 
+function findRegionSidoBySlug(slug) {
+  if (!REGION_DATA || !Array.isArray(REGION_DATA.sidos)) return null;
+  return REGION_DATA.sidos.find(sido => sido.slug === slug) || null;
+}
+
+function findRegionSigunguBySlug(sidoSlug, sigunguSlug) {
+  const sido = findRegionSidoBySlug(sidoSlug);
+  if (!sido || !Array.isArray(sido.sigungu)) return null;
+  return sido.sigungu.find(sigungu => sigungu.slug === sigunguSlug) || null;
+}
+
+function clinicMatchesRegionSelection(clinic) {
+  if (!clinic || !state.region || !state.region.sidoSlug) return true;
+
+  const sidoSlug = state.region.sidoSlug;
+  const sigunguSlug = state.region.sigunguSlug || "";
+  const sigungu = sigunguSlug ? findRegionSigunguBySlug(sidoSlug, sigunguSlug) : null;
+
+  if (sigungu) {
+    return clinic.sigungu_slug === sigunguSlug || clinic.district === sigungu.legacy_district;
+  }
+
+  const sido = findRegionSidoBySlug(sidoSlug);
+  if (!sido || !Array.isArray(sido.sigungu)) return true;
+  const legacySet = new Set(sido.sigungu.map(item => item.legacy_district).filter(Boolean));
+  return clinic.sido_slug === sidoSlug || legacySet.has(clinic.district);
+}
 function getClinicDeepLinkTarget() {
   const params = new URLSearchParams(location.search);
   return ["clinic", "institution", "i"]
@@ -3399,6 +3730,7 @@ function commitClinicData(candidate, options) {
   }
 
   CLINIC_DATA = next;
+  if (window.__hsRegionPickerShell && typeof window.__hsRegionPickerShell.refreshOptions === "function") window.__hsRegionPickerShell.refreshOptions();
   if (nextStats.pinned > 0) {
     LAST_STABLE_MAP_DATA = cloneClinicData(next);
     try {
@@ -3688,23 +4020,24 @@ async function loadClinicOverrides() {
 }
 
 function clinicMatchesDistrict(clinic) {
-  return state.districtFilter === "all" || clinic.district === state.districtFilter;
+  if (state.districtFilter !== "all") return clinic.district === state.districtFilter;
+  return clinicMatchesRegionSelection(clinic);
 }
 
-function focusMapByDistrict(district) {
+function focusMapByRegion() {
   if (!map || !window.google || !google.maps || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return;
 
   const clinics = CLINIC_DATA.clinics.filter(clinic => {
     if (isDemoClinic(clinic)) return false;
     if (!hasValidCoords(clinic)) return false;
-    return district === "all" || clinic.district === district;
+    return clinicMatchesDistrict(clinic);
   });
 
   if (!clinics.length) return;
 
   if (clinics.length === 1) {
     map.panTo({ lat: Number(clinics[0].lat), lng: Number(clinics[0].lng) });
-    map.setZoom(district === "all" ? 11 : 15);
+    map.setZoom(state.region && state.region.sidoSlug ? 15 : 11);
     return;
   }
 
@@ -3718,7 +4051,39 @@ function focusMapByDistrict(district) {
   });
 
   google.maps.event.addListenerOnce(map, "idle", () => {
-    const maxZoom = district === "all" ? 12 : 15;
+    const maxZoom = state.region && state.region.sidoSlug ? 15 : 12;
+    if (map.getZoom() > maxZoom) map.setZoom(maxZoom);
+  });
+}
+
+function focusMapByDistrict(district) {
+  if (!map || !window.google || !google.maps || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return;
+
+  const clinics = CLINIC_DATA.clinics.filter(clinic => {
+    if (isDemoClinic(clinic)) return false;
+    if (!hasValidCoords(clinic)) return false;
+    return district === "all" ? clinicMatchesDistrict(clinic) : clinic.district === district;
+  });
+
+  if (!clinics.length) return;
+
+  if (clinics.length === 1) {
+    map.panTo({ lat: Number(clinics[0].lat), lng: Number(clinics[0].lng) });
+    map.setZoom(district === "all" && !(state.region && state.region.sidoSlug) ? 11 : 15);
+    return;
+  }
+
+  const bounds = new google.maps.LatLngBounds();
+  clinics.forEach(clinic => bounds.extend({ lat: Number(clinic.lat), lng: Number(clinic.lng) }));
+  map.fitBounds(bounds, {
+    top: 72,
+    right: 56,
+    bottom: window.innerWidth <= 640 ? 118 : 72,
+    left: 56
+  });
+
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    const maxZoom = district === "all" && !(state.region && state.region.sidoSlug) ? 12 : 15;
     if (map.getZoom() > maxZoom) map.setZoom(maxZoom);
   });
 }
@@ -4667,7 +5032,7 @@ document.getElementById("drugToggleBar").addEventListener("click", (e) => {
   renderResults();
 });
 
-// District chips
+// District chips (legacy hidden bar — filter logic unchanged)
 document.getElementById("districtBar").addEventListener("click", (e) => {
   const btn = e.target.closest(".chip");
   if (!btn) return;
@@ -4677,6 +5042,250 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   renderResults();
   focusMapByDistrict(state.districtFilter);
 });
+
+// Region picker UI shell + safe legacy district filter wiring
+(function initRegionPickerShell() {
+  const picker = document.getElementById("regionPicker");
+  const trigger = document.getElementById("regionTrigger");
+  const panel = document.getElementById("regionPanel");
+  const backdrop = document.getElementById("regionPanelBackdrop");
+  const closeBtn = document.getElementById("regionPanelClose");
+  const applyBtn = document.getElementById("regionPanelApply");
+  const labelEl = document.getElementById("regionTriggerLabel");
+  const sidoGrid = document.getElementById("regionSidoGrid");
+  const sigunguSection = document.getElementById("regionSigunguSection");
+  const sigunguRow = document.getElementById("regionSigunguRow");
+  if (!picker || !trigger || !panel || !labelEl || !sidoGrid || !sigunguRow) return;
+
+  const enLabels = {
+    seoul: "Seoul", gyeonggi: "Gyeonggi", incheon: "Incheon", busan: "Busan", daegu: "Daegu", daejeon: "Daejeon", gwangju: "Gwangju", ulsan: "Ulsan", sejong: "Sejong", gangwon: "Gangwon", chungbuk: "Chungbuk", chungnam: "Chungnam", jeonbuk: "Jeonbuk", jeonnam: "Jeonnam", gyeongbuk: "Gyeongbuk", gyeongnam: "Gyeongnam", jeju: "Jeju",
+    mapo: "Mapo", seodaemun: "Seodaemun", yeongdeungpo: "Yeongdeungpo", gangseo: "Gangseo", yongsan: "Yongsan", gwanak: "Gwanak", dongjak: "Dongjak", jongno: "Jongno", yangcheon: "Yangcheon", nowon: "Nowon", gwangjin: "Gwangjin", gangnam: "Gangnam", seocho: "Seocho", songpa: "Songpa", gangdong: "Gangdong", seongdong: "Seongdong", jung: "Jung", seongbuk: "Seongbuk", gangbuk: "Gangbuk", dobong: "Dobong", eunpyeong: "Eunpyeong", guro: "Guro", geumcheon: "Geumcheon", jungnang: "Jungnang", goyang: "Goyang", seongnam: "Seongnam", suwon: "Suwon", ansan: "Ansan", yongin: "Yongin", bucheon: "Bucheon"
+  };
+
+  const shellState = {
+    sidoSlug: "",
+    sidoName: I18N[appLang].regionNationWide || "전국",
+    sigunguSlug: "",
+    sigunguName: "",
+    legacyDistrict: ""
+  };
+
+  function regionName(item) {
+    if (!item) return "";
+    if (appLang === "en") return item.name_en || enLabels[item.slug] || item.short || item.name || "";
+    return item.short || item.name || "";
+  }
+
+  function formatRegionLabel() {
+    if (!shellState.sidoSlug) return I18N[appLang].regionNationWide || "전국";
+    if (!shellState.sigunguSlug) return shellState.sidoName;
+    return shellState.sidoName + " · " + shellState.sigunguName;
+  }
+
+  function syncTriggerLabel() {
+    labelEl.textContent = formatRegionLabel();
+  }
+
+  function setPanelOpen(open) {
+    picker.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    panel.hidden = !open;
+    if (open) closeBtn && closeBtn.focus();
+    else trigger.focus();
+  }
+
+  function availableLegacyDistricts() {
+    const set = new Set();
+    const clinics = Array.isArray(CLINIC_DATA && CLINIC_DATA.clinics) ? CLINIC_DATA.clinics : [];
+    clinics.forEach(clinic => {
+      if (!clinic || isDemoClinic(clinic) || !hasValidCoords(clinic)) return;
+      if (clinic.district) set.add(clinic.district);
+      if (clinic.sigungu) set.add(clinic.sigungu);
+    });
+    return set;
+  }
+
+  function availableSidos() {
+    const available = availableLegacyDistricts();
+    const showAll = available.size === 0;
+    const sidos = REGION_DATA && Array.isArray(REGION_DATA.sidos) ? REGION_DATA.sidos : [];
+    return sidos.filter(sido => {
+      if (showAll) return true;
+      return (sido.sigungu || []).some(item => available.has(item.legacy_district));
+    });
+  }
+
+  function availableSigunguForSido(sidoSlug) {
+    const sido = findRegionSidoBySlug(sidoSlug);
+    if (!sido || !Array.isArray(sido.sigungu)) return [];
+    const available = availableLegacyDistricts();
+    if (!available.size) return sido.sigungu;
+    return sido.sigungu.filter(item => available.has(item.legacy_district));
+  }
+
+  function optionButton(attrs, text, selected) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "region-option" + (selected ? " is-selected" : "");
+    Object.entries(attrs).forEach(([key, value]) => btn.dataset[key] = value || "");
+    btn.textContent = text;
+    return btn;
+  }
+
+  function renderSidos() {
+    sidoGrid.innerHTML = "";
+    const nation = optionButton({ regionRole: "sido", sidoSlug: "", sidoName: I18N[appLang].regionNationWide || "전국" }, I18N[appLang].regionNationWide || "전국", !shellState.sidoSlug);
+    nation.classList.add("region-option-nation");
+    sidoGrid.appendChild(nation);
+
+    availableSidos().forEach(sido => {
+      sidoGrid.appendChild(optionButton({ regionRole: "sido", sidoSlug: sido.slug, sidoName: regionName(sido) }, regionName(sido), shellState.sidoSlug === sido.slug));
+    });
+  }
+
+  function renderSigungu() {
+    sigunguRow.innerHTML = "";
+    if (!shellState.sidoSlug) {
+      if (sigunguSection) sigunguSection.hidden = true;
+      return;
+    }
+    if (sigunguSection) sigunguSection.hidden = false;
+    sigunguRow.appendChild(optionButton({ regionRole: "sigungu", sigunguSlug: "", sigunguName: I18N[appLang].regionSigunguAll || "전체", legacyDistrict: "" }, I18N[appLang].regionSigunguAll || "전체", !shellState.sigunguSlug));
+    availableSigunguForSido(shellState.sidoSlug).forEach(item => {
+      sigunguRow.appendChild(optionButton({ regionRole: "sigungu", sigunguSlug: item.slug, sigunguName: regionName(item), legacyDistrict: item.legacy_district || "" }, regionName(item), shellState.sigunguSlug === item.slug));
+    });
+  }
+
+  function selectSidoOption(btn) {
+    if (!btn) return;
+    sidoGrid.querySelectorAll(".region-option").forEach(el => el.classList.remove("is-selected"));
+    btn.classList.add("is-selected");
+    shellState.sidoSlug = btn.dataset.sidoSlug || "";
+    shellState.sidoName = btn.dataset.sidoName || btn.textContent.trim();
+    shellState.sigunguSlug = "";
+    shellState.sigunguName = "";
+    shellState.legacyDistrict = "";
+    renderSigungu();
+  }
+
+  function selectSigunguOption(btn) {
+    if (!btn) return;
+    sigunguRow.querySelectorAll(".region-option").forEach(el => el.classList.remove("is-selected"));
+    btn.classList.add("is-selected");
+    shellState.sigunguSlug = btn.dataset.sigunguSlug || "";
+    shellState.sigunguName = btn.dataset.sigunguName || btn.textContent.trim();
+    shellState.legacyDistrict = btn.dataset.legacyDistrict || "";
+  }
+
+  function syncRegionUrl() {
+    const params = new URLSearchParams(location.search);
+    if (shellState.sidoSlug) params.set("sido", shellState.sidoSlug);
+    else params.delete("sido");
+    if (shellState.sigunguSlug) params.set("sigungu", shellState.sigunguSlug);
+    else params.delete("sigungu");
+    const next = params.toString() ? location.pathname + "?" + params.toString() : location.pathname;
+    history.replaceState(null, "", next + location.hash);
+  }
+
+  function applyRegionSelection() {
+    state.region = {
+      sidoSlug: shellState.sidoSlug || "",
+      sigunguSlug: shellState.sigunguSlug || "",
+      legacyDistrict: shellState.legacyDistrict || ""
+    };
+    const targetDistrict = shellState.legacyDistrict || "all";
+    const legacyChip = Array.from(document.querySelectorAll("#districtBar .chip[data-district]")).find(chip => chip.dataset.district === targetDistrict);
+    if (legacyChip) {
+      legacyChip.click();
+    } else {
+      document.querySelectorAll(".chip[data-district]").forEach(c => c.classList.remove("active"));
+      state.districtFilter = targetDistrict;
+      renderResults();
+      focusMapByRegion();
+    }
+    syncRegionUrl();
+  }
+
+  async function loadRegions() {
+    if (REGION_DATA) return REGION_DATA;
+    try {
+      const res = await fetch("/data/regions.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("regions.json");
+      REGION_DATA = await res.json();
+    } catch (err) {
+      REGION_DATA = { sidos: [] };
+    }
+    return REGION_DATA;
+  }
+
+  async function refreshOptions() {
+    await loadRegions();
+    renderSidos();
+    renderSigungu();
+    syncTriggerLabel();
+  }
+
+  function applyUrlSelection() {
+    const params = new URLSearchParams(location.search);
+    const sidoSlug = params.get("sido") || "";
+    const sigunguSlug = params.get("sigungu") || "";
+    if (!sidoSlug) return;
+    window.__hsRegionPickerShell.setSelection({ sidoSlug, sigunguSlug });
+    syncTriggerLabel();
+    applyRegionSelection();
+  }
+
+  trigger.addEventListener("click", () => setPanelOpen(!picker.classList.contains("is-open")));
+  if (backdrop) backdrop.addEventListener("click", () => setPanelOpen(false));
+  if (closeBtn) closeBtn.addEventListener("click", () => setPanelOpen(false));
+  if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+      syncTriggerLabel();
+      applyRegionSelection();
+      setPanelOpen(false);
+    });
+  }
+
+  sidoGrid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".region-option[data-region-role='sido']");
+    if (!btn) return;
+    selectSidoOption(btn);
+  });
+
+  sigunguRow.addEventListener("click", (e) => {
+    const btn = e.target.closest(".region-option[data-region-role='sigungu']");
+    if (!btn) return;
+    selectSigunguOption(btn);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && picker.classList.contains("is-open")) setPanelOpen(false);
+  });
+
+  window.__hsRegionPickerShell = {
+    getSelection: () => ({ ...shellState }),
+    setSelection: (next) => {
+      if (!next) return;
+      shellState.sidoSlug = next.sidoSlug || "";
+      const sido = findRegionSidoBySlug(shellState.sidoSlug);
+      shellState.sidoName = next.sidoName || regionName(sido) || (I18N[appLang].regionNationWide || "전국");
+      renderSidos();
+      renderSigungu();
+      shellState.sigunguSlug = next.sigunguSlug || "";
+      const sigungu = shellState.sigunguSlug ? findRegionSigunguBySlug(shellState.sidoSlug, shellState.sigunguSlug) : null;
+      shellState.sigunguName = next.sigunguName || regionName(sigungu) || "";
+      shellState.legacyDistrict = next.legacyDistrict || (sigungu && sigungu.legacy_district) || "";
+      renderSidos();
+      renderSigungu();
+      syncTriggerLabel();
+    },
+    refreshOptions,
+    open: () => setPanelOpen(true),
+    close: () => setPanelOpen(false)
+  };
+
+  refreshOptions().then(applyUrlSelection);
+})();
 
 // Guide tabs (현재 가이드 패널은 푸터로 대체됨 — 요소가 없을 때 안전 처리)
 const guideTabsEl = document.getElementById("guideTabs");
