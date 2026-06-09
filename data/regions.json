@@ -1,0 +1,69 @@
+{
+  "version": "2026-06-09-region-ui-shell",
+  "nation": {
+    "slug": "",
+    "name": "전국",
+    "short": "전국"
+  },
+  "sidos": [
+    {
+      "name": "서울특별시",
+      "short": "서울",
+      "slug": "seoul",
+      "sigungu": [
+        { "name": "마포구", "short": "마포", "slug": "mapo", "legacy_district": "마포구" },
+        { "name": "서대문구", "short": "서대문", "slug": "seodaemun", "legacy_district": "서대문구" },
+        { "name": "영등포구", "short": "영등포", "slug": "yeongdeungpo", "legacy_district": "영등포구" },
+        { "name": "강서구", "short": "강서", "slug": "gangseo", "legacy_district": "강서구" },
+        { "name": "용산구", "short": "용산", "slug": "yongsan", "legacy_district": "용산구" },
+        { "name": "관악구", "short": "관악", "slug": "gwanak", "legacy_district": "관악구" },
+        { "name": "동작구", "short": "동작", "slug": "dongjak", "legacy_district": "동작구" },
+        { "name": "종로구", "short": "종로", "slug": "jongno", "legacy_district": "종로구" },
+        { "name": "양천구", "short": "양천", "slug": "yangcheon", "legacy_district": "양천구" },
+        { "name": "노원구", "short": "노원", "slug": "nowon", "legacy_district": "노원구" },
+        { "name": "광진구", "short": "광진", "slug": "gwangjin", "legacy_district": "광진구" },
+        { "name": "강남구", "short": "강남", "slug": "gangnam", "legacy_district": "강남구" },
+        { "name": "서초구", "short": "서초", "slug": "seocho", "legacy_district": "서초구" },
+        { "name": "송파구", "short": "송파", "slug": "songpa", "legacy_district": "송파구" },
+        { "name": "강동구", "short": "강동", "slug": "gangdong", "legacy_district": "강동구" },
+        { "name": "성동구", "short": "성동", "slug": "seongdong", "legacy_district": "성동구" },
+        { "name": "중구", "short": "중구", "slug": "jung", "legacy_district": "중구" },
+        { "name": "성북구", "short": "성북", "slug": "seongbuk", "legacy_district": "성북구" },
+        { "name": "강북구", "short": "강북", "slug": "gangbuk", "legacy_district": "강북구" },
+        { "name": "도봉구", "short": "도봉", "slug": "dobong", "legacy_district": "도봉구" },
+        { "name": "은평구", "short": "은평", "slug": "eunpyeong", "legacy_district": "은평구" },
+        { "name": "구로구", "short": "구로", "slug": "guro", "legacy_district": "구로구" },
+        { "name": "금천구", "short": "금천", "slug": "geumcheon", "legacy_district": "금천구" },
+        { "name": "중랑구", "short": "중랑", "slug": "jungnang", "legacy_district": "중랑구" }
+      ]
+    },
+    {
+      "name": "경기도",
+      "short": "경기",
+      "slug": "gyeonggi",
+      "sigungu": [
+        { "name": "고양시", "short": "고양", "slug": "goyang", "legacy_district": "고양시" },
+        { "name": "성남시", "short": "성남", "slug": "seongnam", "legacy_district": "성남시" },
+        { "name": "수원시", "short": "수원", "slug": "suwon", "legacy_district": "수원시" },
+        { "name": "안산시", "short": "안산", "slug": "ansan", "legacy_district": "안산시" },
+        { "name": "용인시", "short": "용인", "slug": "yongin", "legacy_district": "용인시" },
+        { "name": "부천시", "short": "부천", "slug": "bucheon", "legacy_district": "부천시" }
+      ]
+    },
+    { "name": "인천광역시", "short": "인천", "slug": "incheon", "sigungu": [] },
+    { "name": "부산광역시", "short": "부산", "slug": "busan", "sigungu": [] },
+    { "name": "대구광역시", "short": "대구", "slug": "daegu", "sigungu": [] },
+    { "name": "대전광역시", "short": "대전", "slug": "daejeon", "sigungu": [] },
+    { "name": "광주광역시", "short": "광주", "slug": "gwangju", "sigungu": [] },
+    { "name": "울산광역시", "short": "울산", "slug": "ulsan", "sigungu": [] },
+    { "name": "세종특별자치시", "short": "세종", "slug": "sejong", "sigungu": [] },
+    { "name": "강원특별자치도", "short": "강원", "slug": "gangwon", "sigungu": [] },
+    { "name": "충청북도", "short": "충북", "slug": "chungbuk", "sigungu": [] },
+    { "name": "충청남도", "short": "충남", "slug": "chungnam", "sigungu": [] },
+    { "name": "전북특별자치도", "short": "전북", "slug": "jeonbuk", "sigungu": [] },
+    { "name": "전라남도", "short": "전남", "slug": "jeonnam", "sigungu": [] },
+    { "name": "경상북도", "short": "경북", "slug": "gyeongbuk", "sigungu": [] },
+    { "name": "경상남도", "short": "경남", "slug": "gyeongnam", "sigungu": [] },
+    { "name": "제주특별자치도", "short": "제주", "slug": "jeju", "sigungu": [] }
+  ]
+}
