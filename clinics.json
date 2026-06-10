@@ -272,7 +272,7 @@
     {
       "id": "clinic_excel_008_item",
       "name": "아이엠유의원",
-      "district": "???",
+      "district": "강서구",
       "address": "",
       "lat": 37.5585422,
       "lng": 126.8264079,
@@ -292,8 +292,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "강서구",
       "sido_slug": "seoul",
       "sigungu_slug": "gangseo",
       "region_key": "seoul/gangseo"
@@ -326,7 +326,7 @@
     {
       "id": "clinic_excel_010_365",
       "name": "덕은365의원",
-      "district": "???",
+      "district": "고양시",
       "address": "",
       "lat": 37.5800393,
       "lng": 126.8708873,
@@ -346,8 +346,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "???",
-      "sigungu": "???",
+      "sido": "경기도",
+      "sigungu": "고양시",
       "sido_slug": "gyeonggi",
       "sigungu_slug": "goyang",
       "region_key": "gyeonggi/goyang"
@@ -355,7 +355,7 @@
     {
       "id": "clinic_excel_011_item",
       "name": "다시봄의원",
-      "district": "???",
+      "district": "동작구",
       "address": "",
       "lat": 37.5048589,
       "lng": 126.9658328,
@@ -375,8 +375,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "동작구",
       "sido_slug": "seoul",
       "sigungu_slug": "dongjak",
       "region_key": "seoul/dongjak"
@@ -384,7 +384,7 @@
     {
       "id": "clinic_excel_012_item",
       "name": "필모어의원",
-      "district": "???",
+      "district": "종로구",
       "address": "",
       "lat": 37.5706106,
       "lng": 126.9920933,
@@ -404,8 +404,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "종로구",
       "sido_slug": "seoul",
       "sigungu_slug": "jongno",
       "region_key": "seoul/jongno"
@@ -413,7 +413,7 @@
     {
       "id": "clinic_excel_013_item",
       "name": "종로광장정형외과",
-      "district": "???",
+      "district": "종로구",
       "address": "",
       "lat": 37.5712211,
       "lng": 127.0024872,
@@ -431,8 +431,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "종로구",
       "sido_slug": "seoul",
       "sigungu_slug": "jongno",
       "region_key": "seoul/jongno"
@@ -440,7 +440,7 @@
     {
       "id": "clinic_excel_014_item",
       "name": "목동기운찬마취통증의학과의원",
-      "district": "???",
+      "district": "양천구",
       "address": "",
       "lat": 37.5370203,
       "lng": 126.8714588,
@@ -460,8 +460,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "양천구",
       "sido_slug": "seoul",
       "sigungu_slug": "yangcheon",
       "region_key": "seoul/yangcheon"
@@ -469,7 +469,7 @@
     {
       "id": "clinic_excel_015_item",
       "name": "엄소아과의원",
-      "district": "???",
+      "district": "노원구",
       "address": "",
       "lat": 37.6774161,
       "lng": 127.054858,
@@ -489,8 +489,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "노원구",
       "sido_slug": "seoul",
       "sigungu_slug": "nowon",
       "region_key": "seoul/nowon"
@@ -498,7 +498,7 @@
     {
       "id": "clinic_excel_016_item",
       "name": "웰빙내과의원",
-      "district": "???",
+      "district": "고양시",
       "address": "",
       "lat": 37.67018,
       "lng": 126.7619286,
@@ -518,8 +518,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "???",
-      "sigungu": "???",
+      "sido": "경기도",
+      "sigungu": "고양시",
       "sido_slug": "gyeonggi",
       "sigungu_slug": "goyang",
       "region_key": "gyeonggi/goyang"
@@ -527,7 +527,7 @@
     {
       "id": "clinic_excel_017_365",
       "name": "미래365가정의학과의원",
-      "district": "???",
+      "district": "강서구",
       "address": "",
       "lat": 37.5583609,
       "lng": 126.8550758,
@@ -547,8 +547,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "강서구",
       "sido_slug": "seoul",
       "sigungu_slug": "gangseo",
       "region_key": "seoul/gangseo"
@@ -556,7 +556,7 @@
     {
       "id": "clinic_excel_018_item",
       "name": "서울투탑재활의학과",
-      "district": "???",
+      "district": "광진구",
       "address": "",
       "lat": 37.556481,
       "lng": 127.0820772,
@@ -578,8 +578,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "광진구",
       "sido_slug": "seoul",
       "sigungu_slug": "gwangjin",
       "region_key": "seoul/gwangjin"
@@ -587,7 +587,7 @@
     {
       "id": "clinic_excel_019_item",
       "name": "샤프성형외과의원",
-      "district": "???",
+      "district": "강남구",
       "address": "",
       "lat": 37.5037492,
       "lng": 127.0235048,
@@ -607,8 +607,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "강남구",
       "sido_slug": "seoul",
       "sigungu_slug": "gangnam",
       "region_key": "seoul/gangnam"
@@ -674,7 +674,7 @@
     {
       "id": "clinic_excel_022_365",
       "name": "강동이엠365의원",
-      "district": "???",
+      "district": "강동구",
       "address": "",
       "lat": 37.5725851,
       "lng": 127.1758394,
@@ -694,8 +694,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "강동구",
       "sido_slug": "seoul",
       "sigungu_slug": "gangdong",
       "region_key": "seoul/gangdong"
@@ -703,7 +703,7 @@
     {
       "id": "clinic_excel_023_item",
       "name": "서울수정형외과의원",
-      "district": "???",
+      "district": "강북구",
       "address": "",
       "lat": 37.625137,
       "lng": 127.0268646,
@@ -719,8 +719,8 @@
       },
       "notes": "",
       "source": "excel_v4_verified",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "강북구",
       "sido_slug": "seoul",
       "sigungu_slug": "gangbuk",
       "region_key": "seoul/gangbuk"
@@ -825,7 +825,7 @@
     {
       "id": "pharmacy_04_item",
       "name": "두리봄약국",
-      "district": "???",
+      "district": "마포구",
       "address": "",
       "lat": 37.5447911,
       "lng": 126.9495627,
@@ -846,8 +846,8 @@
       "notes": "",
       "source": "excel_v4_verified",
       "type": "pharmacy",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "마포구",
       "sido_slug": "seoul",
       "sigungu_slug": "mapo",
       "region_key": "seoul/mapo"
@@ -855,7 +855,7 @@
     {
       "id": "pharmacy_05_item",
       "name": "피크약국",
-      "district": "???",
+      "district": "마포구",
       "address": "",
       "lat": 37.5508223,
       "lng": 126.9150691,
@@ -876,8 +876,8 @@
       "notes": "",
       "source": "excel_v4_verified",
       "type": "pharmacy",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "마포구",
       "sido_slug": "seoul",
       "sigungu_slug": "mapo",
       "region_key": "seoul/mapo"
@@ -885,7 +885,7 @@
     {
       "id": "pharmacy_06_item",
       "name": "셀약국",
-      "district": "???",
+      "district": "마포구",
       "address": "",
       "lat": 37.5507977,
       "lng": 126.9167221,
@@ -906,8 +906,8 @@
       "notes": "",
       "source": "excel_v4_verified",
       "type": "pharmacy",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "마포구",
       "sido_slug": "seoul",
       "sigungu_slug": "mapo",
       "region_key": "seoul/mapo"
@@ -915,7 +915,7 @@
     {
       "id": "pharmacy_07_item",
       "name": "청심약국",
-      "district": "???",
+      "district": "마포구",
       "address": "지우지말것/",
       "lat": 37.551053,
       "lng": 126.9067976,
@@ -926,8 +926,8 @@
       "notes": "",
       "source": "excel_v4_verified",
       "type": "pharmacy",
-      "sido": "?????",
-      "sigungu": "???",
+      "sido": "서울특별시",
+      "sigungu": "마포구",
       "sido_slug": "seoul",
       "sigungu_slug": "mapo",
       "region_key": "seoul/mapo"
