@@ -192,4 +192,16 @@
     <changefreq>weekly</changefreq>
     <priority>0.84</priority>
   </url>
+  <url>
+    <loc>https://harusense.com/mounjaro/seoul/</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.86</priority>
+  </url>
+  <url>
+    <loc>https://harusense.com/wegovy/seoul/</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.86</priority>
+  </url>
 </urlset>
