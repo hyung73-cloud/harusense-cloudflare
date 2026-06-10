@@ -1,0 +1,173 @@
+<!--
+  clinic-detail.body.html — generate-seo-pages.js renderClinicPage() body 템플릿
+  Codex: catalog.groups + clinic.prices/stock 루프로 치환. 가격 없는 group/product는 .is-hidden 또는 블록 생략.
+
+  Placeholders:
+    {{CLINIC_NAME}}           기관명
+    {{CLINIC_TYPE}}           병·의원 | 약국
+    {{REGION_LABEL}}          서울특별시 마포구
+    {{ADDRESS}}               전체 주소
+    {{PHONE}}                 전화 (없으면 CTA 숨김)
+    {{MAP_DEEP_LINK}}         /?clinic={institution_no}  ← GLP-1 지도만
+    {{UPDATED_AT}}            최근 업데이트 (선택)
+    {{PARKING_TEXT}}          주차 안내 (선택, 없으면 chip 숨김)
+    {{PROVIDER_NOTE}}         기관 한줄 안내 (notes)
+    {{REGION_LINKS_HTML}}     seo_enabled 품목 지역 링크만
+-->
+
+<div class="cd-breadcrumbs">
+  <a href="/">홈</a> / <a href="/clinic/">기관</a> / {{CLINIC_NAME}}
+</div>
+
+<section class="cd-hero">
+  <h1>{{CLINIC_NAME}} 가격 정보</h1>
+  <p class="cd-lead">{{REGION_LABEL}} {{CLINIC_TYPE}} · 방문 전 전화 확인을 권장합니다.</p>
+  <div class="cd-meta">
+    <span class="cd-chip">{{CLINIC_TYPE}}</span>
+    <span class="cd-chip">{{ADDRESS}}</span>
+    <!-- {{#if PHONE}} --><span class="cd-chip">{{PHONE}}</span><!-- {{/if}} -->
+    <!-- {{#if UPDATED_AT}} --><span class="cd-chip cd-chip-muted">업데이트 {{UPDATED_AT}}</span><!-- {{/if}} -->
+    <!-- {{#if PARKING_TEXT}} --><span class="cd-chip cd-chip-muted">주차 {{PARKING_TEXT}}</span><!-- {{/if}} -->
+  </div>
+  <div class="cd-cta-row">
+    <!-- map_enabled=true 그룹(GLP-1)만 지도 딥링크 -->
+    <a class="cd-cta-btn cd-cta-map" href="{{MAP_DEEP_LINK}}">GLP-1 지도에서 보기</a>
+    <!-- {{#if PHONE}} --><a class="cd-cta-btn cd-cta-phone" href="tel:{{PHONE_TEL}}">전화하기</a><!-- {{/if}} -->
+    <!-- {{#if NAVER_MAP_URL}} --><a class="cd-cta-btn cd-cta-naver" href="{{NAVER_MAP_URL}}" rel="noopener">네이버지도</a><!-- {{/if}} -->
+  </div>
+</section>
+
+<!-- 선택: 품목 요약 pill (데이터 있는 그룹만) -->
+<!-- {{#if HAS_TREATMENT_NAV}} -->
+<nav class="cd-treatment-nav" aria-label="표시 품목">
+  <!-- {{#each visible_groups}} -->
+  <a class="cd-treatment-pill is-{{GROUP_KEY}}" href="#cd-group-{{GROUP_KEY}}">{{GROUP_KO}}</a>
+  <!-- {{/each}} -->
+</nav>
+<!-- {{/if}} -->
+
+<div class="cd-section-head">
+  <h2>표시 가격</h2>
+  <span class="cd-small">수집 시점 기준 · 기관 확인 권장</span>
+</div>
+
+<!-- ═══ GROUP: glp1 (map_enabled, seo_enabled) ═══ -->
+<!-- Codex: group.products 중 prices에 1개 이상 있을 때만 .cd-group 출력 -->
+<section class="cd-group is-glp1" id="cd-group-glp1" data-group-key="glp1">
+  <div class="cd-group-head">
+    <h3>GLP-1 비만주사 <span class="cd-group-badge">지도 표시</span></h3>
+  </div>
+  <div class="cd-group-body">
+
+    <!-- PRODUCT: mounjaro -->
+    <div class="cd-product" data-product-key="mounjaro">
+      <p class="cd-product-title">마운자로 <span>용량별</span></p>
+      <table class="cd-price-table">
+        <thead><tr><th>용량</th><th>표시 가격</th><th>재고</th></tr></thead>
+        <tbody>
+          <!-- {{#each mounjaro.variants}} -->
+          <!-- {{#if price mounjaro_{variant}}} -->
+          <tr data-price-key="mounjaro_{{VARIANT}}">
+            <td>{{VARIANT}}</td>
+            <td class="cd-price">{{PRICE_FORMATTED}}</td>
+            <td class="cd-stock {{STOCK_CLASS}}">{{STOCK_LABEL}}</td>
+          </tr>
+          <!-- {{/if}} -->
+          <!-- {{/each}} -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PRODUCT: wegovy -->
+    <div class="cd-product" data-product-key="wegovy">
+      <p class="cd-product-title">위고비 <span>용량별</span></p>
+      <table class="cd-price-table">
+        <thead><tr><th>용량</th><th>표시 가격</th><th>재고</th></tr></thead>
+        <tbody>
+          <!-- {{#each wegovy.variants}} — price_key: wegovy_{variant} -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ GROUP: botox (map_enabled=false, clinic detail only) ═══ -->
+<section class="cd-group is-botox" id="cd-group-botox" data-group-key="botox">
+  <div class="cd-group-head">
+    <h3>보톡스 <span class="cd-group-badge">상세페이지만</span></h3>
+  </div>
+  <div class="cd-group-body">
+    <div class="cd-service-grid">
+      <!-- price_key: botox_forehead_1회, botox_glabella_1회, botox_jaw_1회, botox_trapezius_1회 -->
+      <!-- {{#each botox.products}} — 가격 있을 때만 .cd-service-item -->
+      <div class="cd-service-item" data-price-key="botox_forehead_1회">
+        <span class="cd-service-name">이마보톡스</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+      <div class="cd-service-item" data-price-key="botox_glabella_1회">
+        <span class="cd-service-name">미간보톡스</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+      <div class="cd-service-item" data-price-key="botox_jaw_1회">
+        <span class="cd-service-name">사각턱보톡스</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+      <div class="cd-service-item" data-price-key="botox_trapezius_1회">
+        <span class="cd-service-name">승모근보톡스</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+    </div>
+    <!-- 그룹 전체 가격 없음: -->
+    <!-- <div class="cd-empty-group">보톡스 가격 정보 수집중입니다.</div> -->
+  </div>
+</section>
+
+<!-- ═══ GROUP: iv (map_enabled=false, clinic detail only) ═══ -->
+<section class="cd-group is-iv" id="cd-group-iv" data-group-key="iv">
+  <div class="cd-group-head">
+    <h3>수액·주사 <span class="cd-group-badge">상세페이지만</span></h3>
+  </div>
+  <div class="cd-group-body">
+    <div class="cd-service-grid">
+      <!-- iv_nutrition_1회, iv_cinderella_1회, iv_white_1회, iv_garlic_1회 -->
+      <div class="cd-service-item" data-price-key="iv_nutrition_1회">
+        <span class="cd-service-name">영양수액</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+      <div class="cd-service-item" data-price-key="iv_cinderella_1회">
+        <span class="cd-service-name">신데렐라주사</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+      <div class="cd-service-item" data-price-key="iv_white_1회">
+        <span class="cd-service-name">백옥주사</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+      <div class="cd-service-item" data-price-key="iv_garlic_1회">
+        <span class="cd-service-name">마늘주사</span>
+        <span class="cd-service-price">{{PRICE_OR_EMPTY}}</span>
+        <span class="cd-service-meta">1회 기준</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- {{#if PROVIDER_NOTE}} -->
+<div class="cd-section-head"><h2>기관 안내</h2></div>
+<div class="cd-note">{{PROVIDER_NOTE}}</div>
+<!-- {{/if}} -->
+
+<!-- {{#if REGION_LINKS_HTML}} — seo_enabled 품목(mounjaro/wegovy)만 -->
+<div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div>
+<div class="cd-region-links">{{REGION_LINKS_HTML}}</div>
+<!-- {{/if}} -->
+
+<div class="cd-section-head"><h2>확인 안내</h2></div>
+<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 가격정보 지도입니다. GLP-1(마운자로·위고비)은 가격지도에서 비교할 수 있으며, 보톡스·수액·주사 가격은 기관 상세페이지에 순차 반영됩니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p>
