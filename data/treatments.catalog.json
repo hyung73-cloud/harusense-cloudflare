@@ -1,7 +1,7 @@
 {
-  "version": "2026-06-10-treatment-catalog-v1",
-  "status": "planning",
-  "note": "This catalog is the source of truth for future treatment expansion. Current live SEO generator still supports only mounjaro and wegovy until explicitly upgraded.",
+  "version": "2026-06-11-treatment-catalog-service-complete-v2",
+  "status": "stable-draft",
+  "note": "GLP-1 is active for map and regional SEO. Botox, IV/injection, and vaccine are ready for clinic detail pages only; regional SEO stays disabled until enough real prices exist.",
   "groups": [
     {
       "group_key": "glp1",
@@ -34,13 +34,17 @@
       "ko": "보톡스",
       "seo_enabled": false,
       "map_enabled": false,
-      "expansion_status": "draft",
-      "recommended_first_step": "기관 상세페이지 안에 보톡스 가격 섹션부터 추가하고, 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "expansion_status": "clinic-detail-ready",
+      "recommended_first_step": "기관 상세페이지에 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
       "products": [
         { "product_key": "forehead_botox", "ko": "이마보톡스", "root": "botox/forehead", "price_key_prefix": "botox_forehead", "unit_type": "service", "variants": ["1회"] },
         { "product_key": "glabella_botox", "ko": "미간보톡스", "root": "botox/glabella", "price_key_prefix": "botox_glabella", "unit_type": "service", "variants": ["1회"] },
         { "product_key": "jaw_botox", "ko": "사각턱보톡스", "root": "botox/jaw", "price_key_prefix": "botox_jaw", "unit_type": "service", "variants": ["1회"] },
-        { "product_key": "trapezius_botox", "ko": "승모근보톡스", "root": "botox/trapezius", "price_key_prefix": "botox_trapezius", "unit_type": "service", "variants": ["1회"] }
+        { "product_key": "trapezius_botox", "ko": "승모근보톡스", "root": "botox/trapezius", "price_key_prefix": "botox_trapezius", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "calf_botox", "ko": "종아리보톡스", "root": "botox/calf", "price_key_prefix": "botox_calf", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "armpit_botox", "ko": "겨드랑이보톡스", "root": "botox/armpit", "price_key_prefix": "botox_armpit", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "chin_botox", "ko": "턱끝보톡스", "root": "botox/chin", "price_key_prefix": "botox_chin", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "mouth_corner_botox", "ko": "입꼬리보톡스", "root": "botox/mouth-corner", "price_key_prefix": "botox_mouth_corner", "unit_type": "service", "variants": ["1회"] }
       ]
     },
     {
@@ -48,25 +52,50 @@
       "ko": "수액·주사",
       "seo_enabled": false,
       "map_enabled": false,
-      "expansion_status": "draft",
-      "recommended_first_step": "기관 상세페이지 안에 수액·주사 가격 섹션부터 추가하고, 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "expansion_status": "clinic-detail-ready",
+      "recommended_first_step": "기관 상세페이지에 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
       "products": [
-        { "product_key": "nutrition_iv", "ko": "영양수액", "root": "iv/nutrition", "price_key_prefix": "iv_nutrition", "unit_type": "service", "variants": ["1회"] },
-        { "product_key": "cinderella_injection", "ko": "신데렐라주사", "root": "iv/cinderella", "price_key_prefix": "iv_cinderella", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "cold_iv", "ko": "감기 수액", "root": "iv/cold", "price_key_prefix": "iv_cold", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "enteritis_iv", "ko": "장염 수액", "root": "iv/enteritis", "price_key_prefix": "iv_enteritis", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "flu_iv", "ko": "독감 수액", "root": "iv/flu", "price_key_prefix": "iv_flu", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "fatigue_iv", "ko": "만성피로 수액", "root": "iv/fatigue", "price_key_prefix": "iv_fatigue", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "hangover_iv", "ko": "숙취 수액", "root": "iv/hangover", "price_key_prefix": "iv_hangover", "unit_type": "service", "variants": ["1회"] },
         { "product_key": "white_injection", "ko": "백옥주사", "root": "iv/white", "price_key_prefix": "iv_white", "unit_type": "service", "variants": ["1회"] },
-        { "product_key": "garlic_injection", "ko": "마늘주사", "root": "iv/garlic", "price_key_prefix": "iv_garlic", "unit_type": "service", "variants": ["1회"] }
+        { "product_key": "placenta_injection", "ko": "태반주사", "root": "iv/placenta", "price_key_prefix": "iv_placenta", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "cinderella_injection", "ko": "신데렐라주사", "root": "iv/cinderella", "price_key_prefix": "iv_cinderella", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "garlic_injection", "ko": "마늘주사", "root": "iv/garlic", "price_key_prefix": "iv_garlic", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "vitamin_injection", "ko": "비타민주사", "root": "iv/vitamin", "price_key_prefix": "iv_vitamin", "unit_type": "service", "variants": ["1회"] }
+      ]
+    },
+    {
+      "group_key": "vaccine",
+      "ko": "예방접종",
+      "seo_enabled": false,
+      "map_enabled": false,
+      "expansion_status": "clinic-detail-ready",
+      "recommended_first_step": "기관 상세페이지에 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "products": [
+        { "product_key": "flu_vaccine", "ko": "독감예방접종", "root": "vaccine/flu", "price_key_prefix": "vaccine_flu", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "shingles_vaccine", "ko": "대상포진예방접종", "root": "vaccine/shingles", "price_key_prefix": "vaccine_shingles", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "pneumococcus_vaccine", "ko": "폐렴구균예방접종", "root": "vaccine/pneumococcus", "price_key_prefix": "vaccine_pneumococcus", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "hepatitis_b_vaccine", "ko": "B형간염예방접종", "root": "vaccine/hepatitis-b", "price_key_prefix": "vaccine_hepatitis_b", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "hepatitis_a_vaccine", "ko": "A형간염예방접종", "root": "vaccine/hepatitis-a", "price_key_prefix": "vaccine_hepatitis_a", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "hpv_vaccine", "ko": "자궁경부암예방접종", "root": "vaccine/hpv", "price_key_prefix": "vaccine_hpv", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "tdap_vaccine", "ko": "파상풍예방접종", "root": "vaccine/tdap", "price_key_prefix": "vaccine_tdap", "unit_type": "service", "variants": ["1회"] }
       ]
     }
   ],
   "rules": {
     "add_product_flow": [
       "1. treatments.catalog.json에 product를 먼저 추가합니다.",
-      "2. check-treatment-catalog.js로 중복 slug/price key를 검사합니다.",
-      "3. 기관 상세페이지 섹션부터 활성화합니다.",
-      "4. 최소 데이터가 쌓인 뒤 지역 SEO 페이지를 활성화합니다.",
-      "5. sitemap.xml에 들어가기 전 check-seo-output.js를 통과해야 합니다."
+      "2. 입력창 저장 key와 price_key_prefix가 같은지 확인합니다.",
+      "3. 실제 가격 데이터가 충분해지기 전에는 seo_enabled=false를 유지합니다.",
+      "4. 기관 상세페이지에는 가격이 있는 항목만 표시합니다."
     ],
-    "seo_activation_rule": "새 품목은 기관 상세페이지 섹션으로 먼저 시작하고, 지역별 가격 페이지는 같은 지역에 표시 가능한 기관이 충분할 때만 켭니다.",
-    "live_safety_rule": "seo_enabled=false인 품목은 sitemap과 지역 페이지에 자동 노출하지 않습니다."
+    "safety": [
+      "지도 가격지도에는 map_enabled=true인 GLP-1만 사용합니다.",
+      "보톡스/수액/예방접종은 기관 상세페이지 확장용입니다.",
+      "빈 가격 항목은 화면에 노출하지 않습니다."
+    ]
   }
 }

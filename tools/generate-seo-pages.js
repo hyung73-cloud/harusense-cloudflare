@@ -56,7 +56,7 @@ function money(value) { return Number.isFinite(Number(value)) ? Number(value).to
 function canonical(pathname) { return `${SITE}${pathname}`; }
 function cleanRegionText(value) { const text = String(value || "").trim(); return text && !text.includes("?") ? text : ""; }
 function slugifyLoose(value) { return String(value || "").toLowerCase().replace(/[^a-z0-9가-힣]+/g, "-").replace(/^-+|-+$/g, "") || "item"; }
-function priceKey(product, variant) { return `${product.price_key_prefix}_${variant}`; }
+function priceKey(product, variant) { return product.unit_type === "service" ? product.price_key_prefix : `${product.price_key_prefix}_${variant}`; }
 function productHasPrice(clinic, product) { return (product.variants || []).some(variant => Number.isFinite(Number(clinic.prices?.[priceKey(product, variant)]))); }
 function groupHasPrice(clinic, group) { return (group.products || []).some(product => productHasPrice(clinic, product)); }
 function lowestProductPrice(clinic, product) { const prices = (product.variants || []).map(variant => Number(clinic.prices?.[priceKey(product, variant)])).filter(Number.isFinite); return prices.length ? Math.min(...prices) : null; }
@@ -342,4 +342,5 @@ function main() {
 }
 
 main();
+
 
