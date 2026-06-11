@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <script>
 (function () {
@@ -1247,6 +1247,89 @@ body {
   background: #f3f4f6;
   color: #6b7280;
 }
+
+.rep-service-board {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.rep-service-group {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+.rep-service-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 13px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  -webkit-tap-highlight-color: transparent;
+}
+.rep-service-summary::-webkit-details-marker { display: none; }
+.rep-service-summary::after {
+  content: "+";
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  color: var(--blue-deep);
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.rep-service-group[open] .rep-service-summary::after { content: "-"; }
+.rep-service-count {
+  margin-left: auto;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
+}
+.rep-service-help {
+  margin: -2px 13px 10px;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.rep-service-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+  padding: 0 13px 13px;
+}
+.rep-service-item {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) minmax(112px, 138px);
+  gap: 8px;
+  align-items: center;
+}
+.rep-service-name {
+  min-width: 0;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+#repEditView .rep-service-price {
+  height: 36px;
+  min-height: 36px;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 14px;
+}
+@media (min-width: 540px) {
+  .rep-service-list { grid-template-columns: 1fr 1fr; }
+}
+
 .rep-parking-bar {
   display: flex;
   align-items: center;
@@ -4971,6 +5054,56 @@ const REP_KEYS = [
   { drug: "wegovy", dose: "2.4mg" },
 ];
 
+const REP_SERVICE_GROUPS = [
+  {
+    key: "iv",
+    label: "IV therapy",
+    help: "Enter only the services currently offered. Leave blank to hide.",
+    items: [
+      { key: "iv_cold", label: "Cold IV" },
+      { key: "iv_enteritis", label: "Enteritis IV" },
+      { key: "iv_flu", label: "Flu IV" },
+      { key: "iv_fatigue", label: "Chronic fatigue IV" },
+      { key: "iv_hangover", label: "Hangover IV" },
+      { key: "iv_white", label: "Glutathione injection" },
+      { key: "iv_placenta", label: "Placenta injection" },
+      { key: "iv_cinderella", label: "Cinderella injection" },
+      { key: "iv_garlic", label: "Garlic injection" },
+      { key: "iv_vitamin", label: "Vitamin injection" }
+    ]
+  },
+  {
+    key: "botox",
+    label: "Botox",
+    help: "Enter representative prices for items you provide.",
+    items: [
+      { key: "botox_forehead", label: "Forehead Botox" },
+      { key: "botox_glabella", label: "Glabella Botox" },
+      { key: "botox_jaw", label: "Jaw Botox" },
+      { key: "botox_trapezius", label: "Trapezius Botox" },
+      { key: "botox_calf", label: "Calf Botox" },
+      { key: "botox_armpit", label: "Underarm Botox" },
+      { key: "botox_chin", label: "Chin Botox" },
+      { key: "botox_mouth_corner", label: "Mouth corner Botox" }
+    ]
+  },
+  {
+    key: "vaccine",
+    label: "Vaccination",
+    help: "Enter prices for available vaccines only.",
+    items: [
+      { key: "vaccine_flu", label: "Flu vaccine" },
+      { key: "vaccine_shingles", label: "Shingles vaccine" },
+      { key: "vaccine_pneumococcus", label: "Pneumococcal vaccine" },
+      { key: "vaccine_hepatitis_b", label: "Hepatitis B vaccine" },
+      { key: "vaccine_hepatitis_a", label: "Hepatitis A vaccine" },
+      { key: "vaccine_hpv", label: "HPV vaccine" },
+      { key: "vaccine_tdap", label: "Tdap vaccine" }
+    ]
+  }
+];
+
+
 // 로그인한 요양기관을 DB 데이터에서 찾기 (요양기관번호 기준)
 function representativeClinic() {
   const clinic = (CLINIC_DATA.clinics || []).find(
@@ -5100,6 +5233,29 @@ function renderRepresentativeEditor() {
       </div>`;
   }
 
+  function buildRepServiceItemHtml(item) {
+    const price = clinic.prices && clinic.prices[item.key] != null ? clinic.prices[item.key] : "";
+    return `
+      <label class="rep-service-item">
+        <span class="rep-service-name">${item.label}</span>
+        <input class="price-input rep-service-price" data-price-key="${item.key}" inputmode="numeric" value="${price}" placeholder="Price" />
+      </label>`;
+  }
+
+  function buildRepServiceGroupHtml(group) {
+    return `
+      <details class="rep-service-group" data-service-group="${group.key}">
+        <summary class="rep-service-summary">
+          <span>${group.label}</span>
+          <small class="rep-service-count">${group.items.length}?</small>
+        </summary>
+        <p class="rep-service-help">${group.help}</p>
+        <div class="rep-service-list">${group.items.map(buildRepServiceItemHtml).join("")}</div>
+      </details>`;
+  }
+
+  const serviceBoards = `<div class="rep-service-board">${REP_SERVICE_GROUPS.map(buildRepServiceGroupHtml).join("")}</div>`;
+
   const mounjaroItems = REP_KEYS.filter(item => item.drug === "mounjaro");
   const wegovyItems = REP_KEYS.filter(item => item.drug === "wegovy");
   const pairRowCount = Math.max(mounjaroItems.length, wegovyItems.length);
@@ -5118,7 +5274,7 @@ function renderRepresentativeEditor() {
       <div class="rep-pair-rows">${pairRows}</div>
     </div>`;
 
-  box.innerHTML = `${pendingMapNotice}${priceBoard}${parkingControl}${providerNoteControl}`;
+  box.innerHTML = `${pendingMapNotice}${priceBoard}${serviceBoards}${parkingControl}${providerNoteControl}`;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
     if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
@@ -5685,3 +5841,4 @@ window.initMap = initMap;
 
 </body>
 </html>
+
