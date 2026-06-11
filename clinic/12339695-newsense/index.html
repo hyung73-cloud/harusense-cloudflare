@@ -419,6 +419,68 @@
 <tr data-price-key="wegovy_1.0mg"><td>1.0mg</td><td class="cd-price">309,000원</td><td class="cd-stock ">재고 있음</td></tr>
 <tr data-price-key="wegovy_1.7mg"><td>1.7mg</td><td class="cd-price">369,000원</td><td class="cd-stock ">재고 있음</td></tr>
 <tr data-price-key="wegovy_2.4mg"><td>2.4mg</td><td class="cd-price">429,000원</td><td class="cd-stock ">재고 있음</td></tr></tbody></table></div></div></section>
+<section class="cd-group cd-live-service-section is-hidden" id="cd-live-service-section" data-institution-no="12339695">
+  <div class="cd-group-head">
+    <h3>추가 진료 항목 <span class="cd-group-badge">뉴센스 테스트</span></h3>
+  </div>
+  <div class="cd-group-body">
+    <p class="cd-small">기관이 직접 입력한 수액·보톡스·예방접종 가격입니다.</p>
+    <div class="cd-live-service-body"></div>
+  </div>
+</section>
+<script>
+(function(){
+  var section = document.getElementById("cd-live-service-section");
+  if (!section) return;
+  var institutionNo = section.getAttribute("data-institution-no");
+  if (institutionNo !== "12339695") return;
+  var groups = [{"title":"수액치료","items":[["iv_cold","감기 수액"],["iv_enteritis","장염 수액"],["iv_flu","독감 수액"],["iv_fatigue","만성피로 수액"],["iv_hangover","숙취 수액"],["iv_white","백옥주사"],["iv_placenta","태반주사"],["iv_cinderella","신데렐라주사"],["iv_garlic","마늘주사"],["iv_vitamin","비타민주사"]]},{"title":"보톡스","items":[["botox_forehead","이마 보톡스"],["botox_glabella","미간 보톡스"],["botox_jaw","사각턱 보톡스"],["botox_trapezius","승모근 보톡스"],["botox_calf","종아리 보톡스"],["botox_armpit","겨드랑이 보톡스"],["botox_chin","자갈턱 보톡스"],["botox_mouth_corner","입꼬리 보톡스"]]},{"title":"예방접종","items":[["vaccine_flu","독감 예방접종"],["vaccine_shingles","대상포진 예방접종"],["vaccine_pneumococcus","폐렴구균 예방접종"],["vaccine_hepatitis_b","B형간염 예방접종"],["vaccine_hepatitis_a","A형간염 예방접종"],["vaccine_hpv","HPV 예방접종"],["vaccine_tdap","Tdap 예방접종"]]}];
+  function formatPrice(value) {
+    var n = Number(String(value || "").replace(/[^0-9]/g, ""));
+    return n > 0 ? n.toLocaleString("ko-KR") + "원" : "";
+  }
+  function getPrice(items, key) {
+    var row = items && items[key];
+    if (!row) return "";
+    if (typeof row === "object") return formatPrice(row.price || row.value || row.amount);
+    return formatPrice(row);
+  }
+  function escHtml(value) {
+    return String(value || "").replace(/[&<>\"]/g, function(ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[ch] || ch;
+    });
+  }
+  fetch("/api/account", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getClinicOverrides" })
+  })
+  .then(function(res){ return res.json(); })
+  .then(function(data){
+    var updates = data && data.updates || [];
+    var update = updates.find(function(row){ return String(row.institution_no || "") === institutionNo; });
+    var items = update && update.items;
+    if (!items) return;
+    var html = "";
+    groups.forEach(function(group){
+      var rows = "";
+      group.items.forEach(function(pair){
+        var price = getPrice(items, pair[0]);
+        if (!price) return;
+        rows += '<div class="cd-service-item"><span class="cd-service-name">' + escHtml(pair[1]) + '</span><span class="cd-service-price">' + escHtml(price) + '</span></div>';
+      });
+      if (rows) {
+        html += '<div class="cd-live-service-group"><h4>' + escHtml(group.title) + '</h4><div class="cd-service-grid">' + rows + '</div></div>';
+      }
+    });
+    if (!html) return;
+    var body = section.querySelector(".cd-live-service-body");
+    if (body) body.innerHTML = html;
+    section.classList.remove("is-hidden");
+  })
+  .catch(function(){});
+})();
+</script>
 <div class="cd-section-head"><h2>기관 안내</h2></div><div class="cd-note">원장 직접 처방 · 일본어 상담 가능</div>
 <div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div><div class="cd-region-links"><a class="cd-chip cd-chip-primary" href="/mounjaro/seoul/mapo/">마포구 마운자로 가격</a>
 <a class="cd-chip cd-chip-primary" href="/wegovy/seoul/mapo/">마포구 위고비 가격</a></div>

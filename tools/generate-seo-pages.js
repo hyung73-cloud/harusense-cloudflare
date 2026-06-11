@@ -6,6 +6,40 @@ const OUT_ROOT = process.env.HARUSENSE_SEO_OUTPUT_ROOT ? path.resolve(process.en
 const SITE = "https://harusense.com";
 const TODAY = new Date().toISOString().slice(0, 10);
 const PUBLIC_SERVICE_DETAIL_ENABLED = false;
+const PUBLIC_SERVICE_DETAIL_TEST_INSTITUTION_NO = "12339695";
+const LIVE_SERVICE_GROUPS = [
+  { title: "\uC218\uC561\uCE58\uB8CC", items: [
+    ["iv_cold", "\uAC10\uAE30 \uC218\uC561"],
+    ["iv_enteritis", "\uC7A5\uC5FC \uC218\uC561"],
+    ["iv_flu", "\uB3C5\uAC10 \uC218\uC561"],
+    ["iv_fatigue", "\uB9CC\uC131\uD53C\uB85C \uC218\uC561"],
+    ["iv_hangover", "\uC219\uCDE8 \uC218\uC561"],
+    ["iv_white", "\uBC31\uC625\uC8FC\uC0AC"],
+    ["iv_placenta", "\uD0DC\uBC18\uC8FC\uC0AC"],
+    ["iv_cinderella", "\uC2E0\uB370\uB810\uB77C\uC8FC\uC0AC"],
+    ["iv_garlic", "\uB9C8\uB298\uC8FC\uC0AC"],
+    ["iv_vitamin", "\uBE44\uD0C0\uBBFC\uC8FC\uC0AC"]
+  ]},
+  { title: "\uBCF4\uD1A1\uC2A4", items: [
+    ["botox_forehead", "\uC774\uB9C8 \uBCF4\uD1A1\uC2A4"],
+    ["botox_glabella", "\uBBF8\uAC04 \uBCF4\uD1A1\uC2A4"],
+    ["botox_jaw", "\uC0AC\uAC01\uD131 \uBCF4\uD1A1\uC2A4"],
+    ["botox_trapezius", "\uC2B9\uBAA8\uADFC \uBCF4\uD1A1\uC2A4"],
+    ["botox_calf", "\uC885\uC544\uB9AC \uBCF4\uD1A1\uC2A4"],
+    ["botox_armpit", "\uACA8\uB4DC\uB791\uC774 \uBCF4\uD1A1\uC2A4"],
+    ["botox_chin", "\uC790\uAC08\uD131 \uBCF4\uD1A1\uC2A4"],
+    ["botox_mouth_corner", "\uC785\uAF2C\uB9AC \uBCF4\uD1A1\uC2A4"]
+  ]},
+  { title: "\uC608\uBC29\uC811\uC885", items: [
+    ["vaccine_flu", "\uB3C5\uAC10 \uC608\uBC29\uC811\uC885"],
+    ["vaccine_shingles", "\uB300\uC0C1\uD3EC\uC9C4 \uC608\uBC29\uC811\uC885"],
+    ["vaccine_pneumococcus", "\uD3D0\uB834\uAD6C\uADE0 \uC608\uBC29\uC811\uC885"],
+    ["vaccine_hepatitis_b", "B\uD615\uAC04\uC5FC \uC608\uBC29\uC811\uC885"],
+    ["vaccine_hepatitis_a", "A\uD615\uAC04\uC5FC \uC608\uBC29\uC811\uC885"],
+    ["vaccine_hpv", "HPV \uC608\uBC29\uC811\uC885"],
+    ["vaccine_tdap", "Tdap \uC608\uBC29\uC811\uC885"]
+  ]}
+];
 
 const REGION_NAMES = {
   seoul: "서울특별시", gyeonggi: "경기도", incheon: "인천광역시", busan: "부산광역시",
@@ -154,6 +188,76 @@ function renderAllTreatmentGroups(clinic, catalog) {
   return (catalog.groups || []).filter(group => group.group_key === "glp1" || PUBLIC_SERVICE_DETAIL_ENABLED).map(group => renderGroup(clinic, group)).filter(Boolean).join("\n");
 }
 
+function renderLiveServiceBlock(clinic) {
+  const institutionNo = String(clinic.institution_no || "").trim();
+  if (institutionNo !== PUBLIC_SERVICE_DETAIL_TEST_INSTITUTION_NO) return "";
+  const groupsJson = JSON.stringify(LIVE_SERVICE_GROUPS);
+  return [
+    '<section class="cd-group cd-live-service-section is-hidden" id="cd-live-service-section" data-institution-no="' + esc(institutionNo) + '">',
+    '  <div class="cd-group-head">',
+    '    <h3>\uCD94\uAC00 \uC9C4\uB8CC \uD56D\uBAA9 <span class="cd-group-badge">\uB274\uC13C\uC2A4 \uD14C\uC2A4\uD2B8</span></h3>',
+    '  </div>',
+    '  <div class="cd-group-body">',
+    '    <p class="cd-small">\uAE30\uAD00\uC774 \uC9C1\uC811 \uC785\uB825\uD55C \uC218\uC561\u00B7\uBCF4\uD1A1\uC2A4\u00B7\uC608\uBC29\uC811\uC885 \uAC00\uACA9\uC785\uB2C8\uB2E4.</p>',
+    '    <div class="cd-live-service-body"></div>',
+    '  </div>',
+    '</section>',
+    '<script>',
+    '(function(){',
+    '  var section = document.getElementById("cd-live-service-section");',
+    '  if (!section) return;',
+    '  var institutionNo = section.getAttribute("data-institution-no");',
+    '  if (institutionNo !== "' + esc(institutionNo) + '") return;',
+    '  var groups = ' + groupsJson + ';',
+    '  function formatPrice(value) {',
+    '    var n = Number(String(value || "").replace(/[^0-9]/g, ""));',
+    '    return n > 0 ? n.toLocaleString("ko-KR") + "\uC6D0" : "";',
+    '  }',
+    '  function getPrice(items, key) {',
+    '    var row = items && items[key];',
+    '    if (!row) return "";',
+    '    if (typeof row === "object") return formatPrice(row.price || row.value || row.amount);',
+    '    return formatPrice(row);',
+    '  }',
+    '  function escHtml(value) {',
+    '    return String(value || "").replace(/[&<>\\"]/g, function(ch) {',
+    '      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\\\"": "&quot;" }[ch] || ch;',
+    '    });',
+    '  }',
+    '  fetch("/api/account", {',
+    '    method: "POST",',
+    '    headers: { "Content-Type": "application/json" },',
+    '    body: JSON.stringify({ action: "getClinicOverrides" })',
+    '  })',
+    '  .then(function(res){ return res.json(); })',
+    '  .then(function(data){',
+    '    var updates = data && data.updates || [];',
+    '    var update = updates.find(function(row){ return String(row.institution_no || "") === institutionNo; });',
+    '    var items = update && update.items;',
+    '    if (!items) return;',
+    '    var html = "";',
+    '    groups.forEach(function(group){',
+    '      var rows = "";',
+    '      group.items.forEach(function(pair){',
+    '        var price = getPrice(items, pair[0]);',
+    '        if (!price) return;',
+    '        rows += \'<div class="cd-service-item"><span class="cd-service-name">\' + escHtml(pair[1]) + \'</span><span class="cd-service-price">\' + escHtml(price) + \'</span></div>\';',
+    '      });',
+    '      if (rows) {',
+    '        html += \'<div class="cd-live-service-group"><h4>\' + escHtml(group.title) + \'</h4><div class="cd-service-grid">\' + rows + \'</div></div>\';',
+    '      }',
+    '    });',
+    '    if (!html) return;',
+    '    var body = section.querySelector(".cd-live-service-body");',
+    '    if (body) body.innerHTML = html;',
+    '    section.classList.remove("is-hidden");',
+    '  })',
+    '  .catch(function(){});',
+    '})();',
+    '</script>'
+  ].join("\n");
+}
+
 function regionLinksForClinic(clinic, catalog) {
   const links = [];
   const { sidoSlug, sigunguSlug } = regionSlugParts(clinic);
@@ -200,6 +304,7 @@ function renderClinicPage(clinic, catalog) {
 ${renderTreatmentNav(clinic, catalog)}
 <div class="cd-section-head"><h2>표시 가격</h2><span class="cd-small">수집 시점 기준 · 기관 확인 권장</span></div>
 ${renderAllTreatmentGroups(clinic, catalog)}
+${renderLiveServiceBlock(clinic)}
 ${providerNote ? `<div class="cd-section-head"><h2>기관 안내</h2></div><div class="cd-note">${esc(providerNote)}</div>` : ""}
 ${regionLinks ? `<div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div><div class="cd-region-links">${regionLinks}</div>` : ""}
 <div class="cd-section-head"><h2>확인 안내</h2></div>
