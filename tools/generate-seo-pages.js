@@ -1,10 +1,11 @@
-﻿const fs = require("fs");
+const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const OUT_ROOT = process.env.HARUSENSE_SEO_OUTPUT_ROOT ? path.resolve(process.env.HARUSENSE_SEO_OUTPUT_ROOT) : ROOT;
 const SITE = "https://harusense.com";
 const TODAY = new Date().toISOString().slice(0, 10);
+const PUBLIC_SERVICE_DETAIL_ENABLED = false;
 
 const REGION_NAMES = {
   seoul: "서울특별시", gyeonggi: "경기도", incheon: "인천광역시", busan: "부산광역시",
@@ -114,7 +115,7 @@ function pageShell({ title, description, canonicalPath, body, jsonLd = [] }) {
 }
 
 function renderTreatmentNav(clinic, catalog) {
-  const groups = (catalog.groups || []).filter(group => groupHasPrice(clinic, group));
+  const groups = (catalog.groups || []).filter(group => (group.group_key === "glp1" || PUBLIC_SERVICE_DETAIL_ENABLED) && groupHasPrice(clinic, group));
   if (groups.length < 2) return "";
   return `<nav class="cd-treatment-nav" aria-label="표시 품목">${groups.map(group => `<a class="cd-treatment-pill is-${esc(group.group_key)}" href="#cd-group-${esc(group.group_key)}">${esc(group.ko)}</a>`).join("")}</nav>`;
 }
@@ -150,7 +151,7 @@ function renderGroup(clinic, group) {
 }
 
 function renderAllTreatmentGroups(clinic, catalog) {
-  return (catalog.groups || []).map(group => renderGroup(clinic, group)).filter(Boolean).join("\n");
+  return (catalog.groups || []).filter(group => group.group_key === "glp1" || PUBLIC_SERVICE_DETAIL_ENABLED).map(group => renderGroup(clinic, group)).filter(Boolean).join("\n");
 }
 
 function regionLinksForClinic(clinic, catalog) {
@@ -202,7 +203,7 @@ ${renderAllTreatmentGroups(clinic, catalog)}
 ${providerNote ? `<div class="cd-section-head"><h2>기관 안내</h2></div><div class="cd-note">${esc(providerNote)}</div>` : ""}
 ${regionLinks ? `<div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div><div class="cd-region-links">${regionLinks}</div>` : ""}
 <div class="cd-section-head"><h2>확인 안내</h2></div>
-<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 가격정보 지도입니다. GLP-1 가격은 지도에서 비교할 수 있으며, 보톡스·수액·주사 가격은 기관 상세페이지에 순차 반영합니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p>`;
+<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 GLP-1 가격정보 지도입니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p>`;
 
   write(`clinic/${slug}/index.html`, pageShell({
     title: `${clinic.name} ${treatmentPart} 가격 | 하루센스`,
@@ -228,7 +229,7 @@ function renderClinicHub(clinics, catalog, regionalPaths) {
     return `<a class="card" href="/clinic/${slug}/"><strong>${esc(clinic.name)}</strong><div class="small">${esc(regionLabel(clinic))} · ${esc(typeLabel(clinic))}</div><div class="meta">${priceChips}</div></a>`;
   }).join("\n");
   const regionLinks = regionalPaths.map(p => `<a class="cd-chip cd-chip-primary" href="${p.url}">${esc(p.label)}</a>`).join("\n");
-  const body = `<section class="cd-hero"><h1>마운자로·위고비 가격 등록 기관</h1><p class="cd-lead">하루센스 가격지도에 표시되는 병·의원과 약국의 상세 가격정보입니다. 향후 보톡스와 수액·주사 가격도 기관 상세페이지에 순차 반영됩니다.</p><div class="cd-meta"><span class="cd-chip cd-chip-primary">기관 상세 ${clinics.length}곳</span><span class="cd-chip cd-chip-primary">지역 가격 ${regionalPaths.length}개</span><span class="cd-chip">광고비 0원</span></div></section><div class="cd-section-head"><h2>지역별 가격 바로가기</h2></div><div class="cd-region-links">${regionLinks}</div><div class="cd-section-head"><h2>기관 목록</h2></div><div class="grid">${items}</div>`;
+  const body = `<section class="cd-hero"><h1>마운자로·위고비 가격 등록 기관</h1><p class="cd-lead">하루센스 가격지도에 표시되는 병·의원과 약국의 마운자로·위고비 가격정보입니다.</p><div class="cd-meta"><span class="cd-chip cd-chip-primary">기관 상세 ${clinics.length}곳</span><span class="cd-chip cd-chip-primary">지역 가격 ${regionalPaths.length}개</span><span class="cd-chip">광고비 0원</span></div></section><div class="cd-section-head"><h2>지역별 가격 바로가기</h2></div><div class="cd-region-links">${regionLinks}</div><div class="cd-section-head"><h2>기관 목록</h2></div><div class="grid">${items}</div>`;
   write("clinic/index.html", pageShell({ title: "마운자로·위고비 가격 등록 기관 | 하루센스", description: "하루센스에 등록된 병·의원과 약국의 마운자로 가격, 위고비 가격, 재고 정보를 확인하세요.", canonicalPath: "/clinic/", body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: "기관", url: "/clinic/" }])] }));
   return "/clinic/";
 }
