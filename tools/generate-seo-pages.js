@@ -48,6 +48,10 @@ const LEGACY_CLINIC_SLUGS = {
 function stripBom(text) { return String(text || "").replace(/^\uFEFF/, ""); }
 function readText(file) { return stripBom(fs.readFileSync(path.join(ROOT, file), "utf8")); }
 function readJson(file) { return JSON.parse(readText(file)); }
+function readJsonFlexible(file) {
+  if (path.isAbsolute(file)) return JSON.parse(stripBom(fs.readFileSync(file, "utf8")));
+  return readJson(file);
+}
 function readOptionalText(file) { try { return readText(file); } catch { return ""; } }
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
 function write(file, html) { const target = path.join(OUT_ROOT, file); ensureDir(path.dirname(target)); fs.writeFileSync(target, html, "utf8"); }
@@ -301,7 +305,8 @@ function updateSitemap(paths, catalog) {
 }
 
 function main() {
-  const raw = readJson("clinics.json");
+  const clinicsFile = process.env.HARUSENSE_CLINICS_FILE || "clinics.json";
+  const raw = readJsonFlexible(clinicsFile);
   const catalog = readJson("data/treatments.catalog.json");
   const clinics = (Array.isArray(raw) ? raw : raw.clinics || []).filter(clinic => !isDemo(clinic) && validCoords(clinic) && clinic.name && hasAnyCatalogPrice(clinic, catalog));
   const paths = [];
@@ -342,5 +347,6 @@ function main() {
 }
 
 main();
+
 
 
