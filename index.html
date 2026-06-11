@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -5630,14 +5630,17 @@ function renderRepresentativeEditor() {
       <details class="rep-service-group" data-service-group="${group.key}">
         <summary class="rep-service-summary">
           <span>${group.label}</span>
-          <small class="rep-service-count">${group.items.length}?</small>
+          <small class="rep-service-count">${group.items.length}개</small>
         </summary>
         <p class="rep-service-help">${group.help}</p>
         <div class="rep-service-list">${group.items.map(buildRepServiceItemHtml).join("")}</div>
       </details>`;
   }
 
-  const serviceBoards = `<div class="rep-service-board">${REP_SERVICE_GROUPS.map(buildRepServiceGroupHtml).join("")}</div>`;
+  const showServiceBoards = String(REP_ACTIVE_INSTITUTION_NO || "") === "12339695";
+  const serviceBoards = showServiceBoards
+    ? `<div class="rep-service-board">${REP_SERVICE_GROUPS.map(buildRepServiceGroupHtml).join("")}</div>`
+    : "";
 
   const mounjaroItems = REP_KEYS.filter(item => item.drug === "mounjaro");
   const wegovyItems = REP_KEYS.filter(item => item.drug === "wegovy");
