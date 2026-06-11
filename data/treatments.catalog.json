@@ -1,0 +1,72 @@
+{
+  "version": "2026-06-10-treatment-catalog-v1",
+  "status": "planning",
+  "note": "This catalog is the source of truth for future treatment expansion. Current live SEO generator still supports only mounjaro and wegovy until explicitly upgraded.",
+  "groups": [
+    {
+      "group_key": "glp1",
+      "ko": "GLP-1 비만주사",
+      "seo_enabled": true,
+      "map_enabled": true,
+      "products": [
+        {
+          "product_key": "mounjaro",
+          "ko": "마운자로",
+          "root": "mounjaro",
+          "price_key_prefix": "mounjaro",
+          "unit_type": "dose",
+          "variants": ["2.5mg", "5mg", "7.5mg", "10mg"],
+          "keywords": ["마운자로 가격지도", "마운자로 가격", "마운자로 지도"]
+        },
+        {
+          "product_key": "wegovy",
+          "ko": "위고비",
+          "root": "wegovy",
+          "price_key_prefix": "wegovy",
+          "unit_type": "dose",
+          "variants": ["0.25mg", "0.5mg", "1.0mg", "1.7mg", "2.4mg"],
+          "keywords": ["위고비 가격지도", "위고비 가격", "위고비 지도"]
+        }
+      ]
+    },
+    {
+      "group_key": "botox",
+      "ko": "보톡스",
+      "seo_enabled": false,
+      "map_enabled": false,
+      "expansion_status": "draft",
+      "recommended_first_step": "기관 상세페이지 안에 보톡스 가격 섹션부터 추가하고, 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "products": [
+        { "product_key": "forehead_botox", "ko": "이마보톡스", "root": "botox/forehead", "price_key_prefix": "botox_forehead", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "glabella_botox", "ko": "미간보톡스", "root": "botox/glabella", "price_key_prefix": "botox_glabella", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "jaw_botox", "ko": "사각턱보톡스", "root": "botox/jaw", "price_key_prefix": "botox_jaw", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "trapezius_botox", "ko": "승모근보톡스", "root": "botox/trapezius", "price_key_prefix": "botox_trapezius", "unit_type": "service", "variants": ["1회"] }
+      ]
+    },
+    {
+      "group_key": "iv",
+      "ko": "수액·주사",
+      "seo_enabled": false,
+      "map_enabled": false,
+      "expansion_status": "draft",
+      "recommended_first_step": "기관 상세페이지 안에 수액·주사 가격 섹션부터 추가하고, 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "products": [
+        { "product_key": "nutrition_iv", "ko": "영양수액", "root": "iv/nutrition", "price_key_prefix": "iv_nutrition", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "cinderella_injection", "ko": "신데렐라주사", "root": "iv/cinderella", "price_key_prefix": "iv_cinderella", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "white_injection", "ko": "백옥주사", "root": "iv/white", "price_key_prefix": "iv_white", "unit_type": "service", "variants": ["1회"] },
+        { "product_key": "garlic_injection", "ko": "마늘주사", "root": "iv/garlic", "price_key_prefix": "iv_garlic", "unit_type": "service", "variants": ["1회"] }
+      ]
+    }
+  ],
+  "rules": {
+    "add_product_flow": [
+      "1. treatments.catalog.json에 product를 먼저 추가합니다.",
+      "2. check-treatment-catalog.js로 중복 slug/price key를 검사합니다.",
+      "3. 기관 상세페이지 섹션부터 활성화합니다.",
+      "4. 최소 데이터가 쌓인 뒤 지역 SEO 페이지를 활성화합니다.",
+      "5. sitemap.xml에 들어가기 전 check-seo-output.js를 통과해야 합니다."
+    ],
+    "seo_activation_rule": "새 품목은 기관 상세페이지 섹션으로 먼저 시작하고, 지역별 가격 페이지는 같은 지역에 표시 가능한 기관이 충분할 때만 켭니다.",
+    "live_safety_rule": "seo_enabled=false인 품목은 sitemap과 지역 페이지에 자동 노출하지 않습니다."
+  }
+}

@@ -4,12 +4,391 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>광진구 마운자로 가격지도 | 하루센스</title>
-  <meta name="description" content="광진구 마운자로 가격을 지역별로 비교해보세요. 하루센스가 병·의원과 약국의 GLP-1 비만주사 가격정보를 제공합니다.">
+  <meta name="description" content="광진구 마운자로 가격을 지역별로 비교해보세요. 하루센스가 병·의원과 약국의 가격정보를 제공합니다.">
   <link rel="canonical" href="https://harusense.com/mounjaro/seoul/gwangjin/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://harusense.com/"},{"@type":"ListItem","position":2,"name":"마운자로","item":"https://harusense.com/mounjaro/"},{"@type":"ListItem","position":3,"name":"서울특별시","item":"https://harusense.com/mounjaro/seoul/"},{"@type":"ListItem","position":4,"name":"광진구","item":"https://harusense.com/mounjaro/seoul/gwangjin/"}]}</script>
   <style>
-    :root{--ink:#111827;--muted:#64748b;--line:#e5e7eb;--soft:#f8fafc;--blue:#2563eb;--green:#059669}
-    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;color:var(--ink);background:#f6f7fb;line-height:1.65}a{color:inherit}.header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:3}.header-inner{max-width:980px;margin:0 auto;padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}.brand{font-weight:800;text-decoration:none}.back{color:var(--blue);text-decoration:none;font-weight:700;font-size:14px}main{max-width:980px;margin:0 auto;padding:28px 20px 64px}.hero{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 14px 34px rgba(15,23,42,.06)}h1{margin:0 0 10px;font-size:30px;line-height:1.25}h2{margin:34px 0 14px;font-size:22px}.lead{margin:0;color:var(--muted);font-size:16px}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.chip{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:#fff;font-size:14px;color:#334155;text-decoration:none}.chip.strong{color:var(--green);border-color:#bbf7d0;background:#f0fdf4;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;text-decoration:none;display:block}.card:hover{border-color:#bfdbfe;box-shadow:0 10px 24px rgba(37,99,235,.08)}.small{color:var(--muted);font-size:13px}table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:table}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left}th{background:#f8fafc;color:#334155;font-size:14px}.price{color:#1d4ed8;font-weight:800;white-space:nowrap}.stock{color:var(--green);font-weight:700;font-size:13px}.note{background:#eff6ff;border-left:4px solid var(--blue);border-radius:12px;padding:14px 16px}.breadcrumbs{font-size:13px;color:var(--muted);margin-bottom:14px}.breadcrumbs a{color:var(--muted);text-decoration:none}@media(max-width:640px){.header-inner{padding:14px 16px}main{padding:18px 14px 48px}.hero{padding:22px;border-radius:14px}h1{font-size:24px}table{font-size:14px}th,td{padding:10px}}
-  </style>
+    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;color:#111827;background:#f6f7fb;line-height:1.65}a{color:inherit}.cd-header{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:3}.cd-header-inner{max-width:980px;margin:0 auto;padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}.cd-brand{font-weight:800;text-decoration:none;color:#111827}.cd-back{color:#2563eb;text-decoration:none;font-weight:700;font-size:14px}.cd-main{max-width:980px;margin:0 auto;padding:28px 20px 64px}@media(max-width:640px){.cd-header-inner{padding:14px 16px}.cd-main{padding:18px 14px 48px}}
+  
+/**
+ * 하루센스 기관 상세 SEO 페이지 — clinic-detail v1
+ * 방향 A: 기존 SEO 페이지(hero + chip + soft bg) 개선
+ * generate-seo-pages.js pageShell 과 병합하거나 link 태그로 포함
+ */
+
+:root {
+  --ink: #111827;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --line: #e5e7eb;
+  --line-soft: #f1f5f9;
+  --soft: #f8fafc;
+  --blue: #2563eb;
+  --blue-deep: #1d4ed8;
+  --blue-soft: #eff6ff;
+  --green: #059669;
+  --green-soft: #f0fdf4;
+  --purple: #7c3aed;
+  --purple-soft: #f5f3ff;
+  --teal: #0d9488;
+  --teal-soft: #f0fdfa;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+}
+
+/* ── Shell (pageShell 호환) ── */
+.cd-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.cd-header-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+.cd-brand {
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 15px;
+}
+.cd-back {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.cd-main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+.cd-breadcrumbs {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.cd-breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* ── Hero ── */
+.cd-hero {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+.cd-hero h1 {
+  margin: 0 0 10px;
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.cd-lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+.cd-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.cd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #fff;
+  font-size: 14px;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.cd-chip strong { font-weight: 700; }
+.cd-chip.cd-chip-muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+.cd-chip.cd-chip-primary {
+  color: var(--green);
+  border-color: #bbf7d0;
+  background: var(--green-soft);
+  font-weight: 700;
+}
+.cd-chip.cd-chip-action {
+  color: var(--blue-deep);
+  border-color: #bfdbfe;
+  background: var(--blue-soft);
+  font-weight: 700;
+}
+.cd-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.cd-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+.cd-cta-btn.cd-cta-map {
+  background: var(--blue);
+  color: #fff;
+}
+.cd-cta-btn.cd-cta-phone {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.cd-cta-btn.cd-cta-naver {
+  background: #fff;
+  color: var(--ink-2);
+  border-color: var(--line);
+}
+
+/* ── Section headings ── */
+.cd-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 34px 0 14px;
+  flex-wrap: wrap;
+}
+.cd-section-head h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.cd-section-head .cd-small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── Treatment summary pills (optional quick nav) ── */
+.cd-treatment-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.cd-treatment-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.cd-treatment-pill.is-glp1 { border-color: #bfdbfe; background: var(--blue-soft); color: var(--blue-deep); }
+.cd-treatment-pill.is-botox { border-color: #ddd6fe; background: var(--purple-soft); color: var(--purple); }
+.cd-treatment-pill.is-iv { border-color: #99f6e4; background: var(--teal-soft); color: var(--teal); }
+
+/* ── Group card (catalog.groups[]) ── */
+.cd-group {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+.cd-group.is-hidden { display: none; }
+.cd-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--soft);
+}
+.cd-group-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cd-group-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.cd-group.is-glp1 .cd-group-head { background: linear-gradient(90deg, #f8fafc 0%, #eff6ff 100%); }
+.cd-group.is-glp1 .cd-group-badge { color: var(--blue-deep); border-color: #bfdbfe; }
+.cd-group.is-botox .cd-group-head { background: linear-gradient(90deg, #f8fafc 0%, #f5f3ff 100%); }
+.cd-group.is-botox .cd-group-badge { color: var(--purple); border-color: #ddd6fe; }
+.cd-group.is-iv .cd-group-head { background: linear-gradient(90deg, #f8fafc 0%, #f0fdfa 100%); }
+.cd-group.is-iv .cd-group-badge { color: var(--teal); border-color: #99f6e4; }
+.cd-group-body { padding: 12px 16px 16px; }
+
+/* ── Product block (catalog.products[]) ── */
+.cd-product {
+  margin-bottom: 12px;
+}
+.cd-product:last-child { margin-bottom: 0; }
+.cd-product.is-hidden { display: none; }
+.cd-product-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.cd-product-title span {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+/* ── Price table (compact) ── */
+.cd-price-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.cd-price-table th,
+.cd-price-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  text-align: left;
+}
+.cd-price-table th {
+  background: var(--soft);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 700;
+}
+.cd-price-table tr:last-child td { border-bottom: none; }
+.cd-price {
+  color: var(--blue-deep);
+  font-weight: 800;
+  white-space: nowrap;
+}
+.cd-stock {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+}
+.cd-stock.is-unknown { color: var(--muted); font-weight: 600; }
+
+/* ── Service grid (botox / iv — 1회 단위) ── */
+.cd-service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.cd-service-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background: var(--soft);
+}
+.cd-service-item.is-hidden { display: none; }
+.cd-service-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.cd-service-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--blue-deep);
+}
+.cd-service-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── Note / disclaimer ── */
+.cd-note {
+  background: var(--blue-soft);
+  border-left: 4px solid var(--blue);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.cd-disclaimer {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.cd-empty-group {
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  background: var(--soft);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--line);
+}
+
+/* ── Region links (seo_enabled products only) ── */
+.cd-region-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .cd-header-inner { padding: 14px 16px; }
+  .cd-brand { font-size: 13px; max-width: 62vw; line-height: 1.3; }
+  .cd-main { padding: 18px 14px 48px; }
+  .cd-hero { padding: 22px; border-radius: var(--radius-md); }
+  .cd-hero h1 { font-size: 24px; }
+  .cd-cta-row { flex-direction: column; }
+  .cd-cta-btn { width: 100%; }
+  .cd-service-grid { grid-template-columns: 1fr; }
+  .cd-price-table { font-size: 13px; }
+  .cd-price-table th,
+  .cd-price-table td { padding: 8px 10px; }
+  .cd-section-head h2 { font-size: 19px; }
+}
+</style>
 </head>
-<body><header class="header"><div class="header-inner"><a class="brand" href="/">하루센스 마운자로·위고비 가격지도</a><a class="back" href="/">← 지도로</a></div></header><main><div class="breadcrumbs"><a href="/">홈</a> / <a href="/mounjaro/">마운자로</a> / <a href="/mounjaro/seoul/">서울특별시</a> / 광진구</div><section class="hero"><h1>광진구 마운자로 가격지도</h1><p class="lead">서울특별시 광진구에서 확인된 마운자로 가격을 낮은 가격 순으로 정리했습니다.</p><div class="meta"><span class="chip strong">1곳 표시</span><a class="chip strong" href="/?drug=mounjaro&district=%EA%B4%91%EC%A7%84%EA%B5%AC">지도에서 보기</a><span class="chip">방문 전 전화 확인 권장</span></div></section><h2>광진구 마운자로 가격 낮은 순</h2><table><thead><tr><th>기관</th><th>최저 표시 가격</th><th>전화</th></tr></thead><tbody><tr><td><a href="/clinic/clinic_excel_020_item-samsung-shinnae/">삼성신내과의원</a><div class="small"></div></td><td class="price">360,000원부터</td><td></td></tr></tbody></table><h2>가격 확인 기준</h2><p class="small">병·의원 표시 가격은 진료비와 약제비를 포함한 실제결제 총비용 기준입니다. 약국 표시 가격은 조제비와 약값을 포함한 실제결제 총비용 기준입니다.</p></main></body></html>
+<body>
+  <header class="cd-header"><div class="cd-header-inner"><a class="cd-brand" href="/">하루센스 마운자로·위고비 가격지도</a><a class="cd-back" href="/">← 지도로</a></div></header>
+  <main class="cd-main"><div class="breadcrumbs"><a href="/">홈</a> / <a href="/mounjaro/">마운자로</a> / <a href="/mounjaro/seoul/">서울특별시</a> / 광진구</div><section class="hero"><h1>광진구 마운자로 가격지도</h1><p class="lead">서울특별시 광진구에서 확인된 마운자로 가격을 낮은 가격 순으로 정리했습니다.</p><div class="meta"><span class="chip strong">1곳 표시</span><a class="chip strong" href="/?drug=mounjaro&district=%EA%B4%91%EC%A7%84%EA%B5%AC">지도에서 보기</a><span class="chip">방문 전 전화 확인 권장</span></div></section><h2>광진구 마운자로 가격 낮은 순</h2><table><thead><tr><th>기관</th><th>최저 표시 가격</th><th>전화</th></tr></thead><tbody><tr><td><a href="/clinic/clinic_excel_020_item-samsung-shinnae/">삼성신내과의원</a><div class="small"></div></td><td class="price">360,000원부터</td><td></td></tr></tbody></table><h2>가격 확인 기준</h2><p class="small">병·의원 표시 가격은 진료비와 약제비를 포함한 실제결제 총비용 기준입니다. 약국 표시 가격은 조제비와 약값을 포함한 실제결제 총비용 기준입니다.</p></main>
+</body>
+</html>

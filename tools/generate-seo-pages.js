@@ -1,4 +1,4 @@
-const fs = require("fs");
+﻿const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -6,39 +6,89 @@ const OUT_ROOT = process.env.HARUSENSE_SEO_OUTPUT_ROOT ? path.resolve(process.en
 const SITE = "https://harusense.com";
 const TODAY = new Date().toISOString().slice(0, 10);
 
-const DRUGS = {
-  mounjaro: { ko: "마운자로", doses: ["2.5mg", "5mg", "7.5mg", "10mg"], root: "mounjaro" },
-  wegovy: { ko: "위고비", doses: ["0.25mg", "0.5mg", "1.0mg", "1.7mg", "2.4mg"], root: "wegovy" }
+const REGION_NAMES = {
+  seoul: "서울특별시", gyeonggi: "경기도", incheon: "인천광역시", busan: "부산광역시",
+  daegu: "대구광역시", daejeon: "대전광역시", gwangju: "광주광역시", ulsan: "울산광역시",
+  sejong: "세종특별자치시", gangwon: "강원특별자치도", chungbuk: "충청북도", chungnam: "충청남도",
+  jeonbuk: "전북특별자치도", jeonnam: "전라남도", gyeongbuk: "경상북도", gyeongnam: "경상남도", jeju: "제주특별자치도"
+};
+const SIGUNGU_NAMES = {
+  mapo: "마포구", seodaemun: "서대문구", yeongdeungpo: "영등포구", gangseo: "강서구", yongsan: "용산구",
+  gwanak: "관악구", dongjak: "동작구", jongno: "종로구", yangcheon: "양천구", nowon: "노원구",
+  gwangjin: "광진구", gangnam: "강남구", seocho: "서초구", songpa: "송파구", gangdong: "강동구",
+  seongdong: "성동구", jung: "중구", seongbuk: "성북구", gangbuk: "강북구", dobong: "도봉구",
+  eunpyeong: "은평구", guro: "구로구", geumcheon: "금천구", jungnang: "중랑구",
+  goyang: "고양시", seongnam: "성남시", suwon: "수원시", ansan: "안산시", yongin: "용인시", bucheon: "부천시"
+};
+const DISTRICT_SLUGS = {
+  "마포구": "mapo", "서대문구": "seodaemun", "영등포구": "yeongdeungpo", "강서구": "gangseo", "용산구": "yongsan",
+  "관악구": "gwanak", "동작구": "dongjak", "종로구": "jongno", "양천구": "yangcheon", "노원구": "nowon",
+  "광진구": "gwangjin", "강남구": "gangnam", "서초구": "seocho", "송파구": "songpa", "강동구": "gangdong",
+  "성동구": "seongdong", "중구": "jung", "성북구": "seongbuk", "강북구": "gangbuk", "도봉구": "dobong",
+  "은평구": "eunpyeong", "구로구": "guro", "금천구": "geumcheon", "중랑구": "jungnang",
+  "고양시": "goyang", "성남시": "seongnam", "수원시": "suwon", "안산시": "ansan", "용인시": "yongin", "부천시": "bucheon"
+};
+const LEGACY_CLINIC_SLUGS = {
+  "clinic_12339695": "12339695-newsense",
+  "clinic_excel_001_item": "clinic_excel_001_item-seoulbaram",
+  "clinic_excel_002_item": "clinic_excel_002_item-weviang",
+  "clinic_excel_003_item": "clinic_excel_003_item-yonsei-withus",
+  "clinic_excel_004_item": "clinic_excel_004_item-nakseongdae-ttobon",
+  "clinic_excel_005_item": "clinic_excel_005_item-seoyeouido",
+  "clinic_excel_006_item": "clinic_excel_006_item-lohas",
+  "clinic_excel_007_item": "clinic_excel_007_item-drkim-ent",
+  "clinic_excel_009_item": "clinic_excel_009_item-vands",
+  "clinic_excel_020_item": "clinic_excel_020_item-samsung-shinnae",
+  "clinic_excel_021_item": "clinic_excel_021_item-gangseo-imu",
+  "pharmacy_01_item": "pharmacy_01_item-tuntun-pharmacy",
+  "pharmacy_02_item": "pharmacy_02_item-malgeun-pharmacy",
+  "pharmacy_03_item": "pharmacy_03_item-seran-pharmacy"
 };
 
-const REGION_NAMES = { seoul: "서울", gyeonggi: "경기", incheon: "인천", busan: "부산", daegu: "대구", daejeon: "대전", gwangju: "광주", ulsan: "울산", sejong: "세종", gangwon: "강원", chungbuk: "충북", chungnam: "충남", jeonbuk: "전북", jeonnam: "전남", gyeongbuk: "경북", gyeongnam: "경남", jeju: "제주" };
-const DISTRICT_SLUGS = { "마포구": "mapo", "서대문구": "seodaemun", "영등포구": "yeongdeungpo", "강서구": "gangseo", "용산구": "yongsan", "관악구": "gwanak", "동작구": "dongjak", "종로구": "jongno", "양천구": "yangcheon", "노원구": "nowon", "광진구": "gwangjin", "강남구": "gangnam", "서초구": "seocho", "송파구": "songpa", "고양시": "goyang", "성남시": "seongnam", "수원시": "suwon", "안산시": "ansan", "용인시": "yongin", "부천시": "bucheon" };
-const SIGUNGU_NAMES = { mapo: "\uB9C8\uD3EC\uAD6C", seodaemun: "\uC11C\uB300\uBB38\uAD6C", yeongdeungpo: "\uC601\uB4F1\uD3EC\uAD6C", gangseo: "\uAC15\uC11C\uAD6C", yongsan: "\uC6A9\uC0B0\uAD6C", gwanak: "\uAD00\uC545\uAD6C", dongjak: "\uB3D9\uC791\uAD6C", jongno: "\uC885\uB85C\uAD6C", yangcheon: "\uC591\uCC9C\uAD6C", nowon: "\uB178\uC6D0\uAD6C", gwangjin: "\uAD11\uC9C4\uAD6C", gangnam: "\uAC15\uB0A8\uAD6C", seocho: "\uC11C\uCD08\uAD6C", songpa: "\uC1A1\uD30C\uAD6C", gangdong: "\uAC15\uB3D9\uAD6C", gangbuk: "\uAC15\uBD81\uAD6C", goyang: "\uACE0\uC591\uC2DC", seongnam: "\uC131\uB0A8\uC2DC", suwon: "\uC218\uC6D0\uC2DC", ansan: "\uC548\uC0B0\uC2DC", yongin: "\uC6A9\uC778\uC2DC", bucheon: "\uBD80\uCC9C\uC2DC" };
-const LEGACY_CLINIC_SLUGS = { "clinic_12339695": "12339695-newsense", "clinic_excel_001_item": "clinic_excel_001_item-seoulbaram", "clinic_excel_002_item": "clinic_excel_002_item-weviang", "clinic_excel_003_item": "clinic_excel_003_item-yonsei-withus", "clinic_excel_004_item": "clinic_excel_004_item-nakseongdae-ttobon", "clinic_excel_005_item": "clinic_excel_005_item-seoyeouido", "clinic_excel_006_item": "clinic_excel_006_item-lohas", "clinic_excel_007_item": "clinic_excel_007_item-drkim-ent", "clinic_excel_009_item": "clinic_excel_009_item-vands", "clinic_excel_020_item": "clinic_excel_020_item-samsung-shinnae", "clinic_excel_021_item": "clinic_excel_021_item-gangseo-imu", "pharmacy_01_item": "pharmacy_01_item-tuntun-pharmacy", "pharmacy_02_item": "pharmacy_02_item-malgeun-pharmacy", "pharmacy_03_item": "pharmacy_03_item-seran-pharmacy" };
-
-function readJson(file) { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); }
+function stripBom(text) { return String(text || "").replace(/^\uFEFF/, ""); }
+function readText(file) { return stripBom(fs.readFileSync(path.join(ROOT, file), "utf8")); }
+function readJson(file) { return JSON.parse(readText(file)); }
+function readOptionalText(file) { try { return readText(file); } catch { return ""; } }
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
 function write(file, html) { const target = path.join(OUT_ROOT, file); ensureDir(path.dirname(target)); fs.writeFileSync(target, html, "utf8"); }
 function esc(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 function money(value) { return Number.isFinite(Number(value)) ? Number(value).toLocaleString("ko-KR") + "원" : "정보 수집중"; }
-function priceKey(drug, dose) { return `${drug}_${dose}`; }
-function hasAnyDrugPrice(clinic, drug) { return DRUGS[drug].doses.some(dose => Number.isFinite(Number(clinic.prices?.[priceKey(drug, dose)]))); }
-function lowestDrugPrice(clinic, drug) { const prices = DRUGS[drug].doses.map(dose => Number(clinic.prices?.[priceKey(drug, dose)])).filter(Number.isFinite); return prices.length ? Math.min(...prices) : null; }
-function hasAnyPrice(clinic) { return hasAnyDrugPrice(clinic, "mounjaro") || hasAnyDrugPrice(clinic, "wegovy"); }
+function canonical(pathname) { return `${SITE}${pathname}`; }
+function cleanRegionText(value) { const text = String(value || "").trim(); return text && !text.includes("?") ? text : ""; }
+function slugifyLoose(value) { return String(value || "").toLowerCase().replace(/[^a-z0-9가-힣]+/g, "-").replace(/^-+|-+$/g, "") || "item"; }
+function priceKey(product, variant) { return `${product.price_key_prefix}_${variant}`; }
+function productHasPrice(clinic, product) { return (product.variants || []).some(variant => Number.isFinite(Number(clinic.prices?.[priceKey(product, variant)]))); }
+function groupHasPrice(clinic, group) { return (group.products || []).some(product => productHasPrice(clinic, product)); }
+function lowestProductPrice(clinic, product) { const prices = (product.variants || []).map(variant => Number(clinic.prices?.[priceKey(product, variant)])).filter(Number.isFinite); return prices.length ? Math.min(...prices) : null; }
+function hasAnyCatalogPrice(clinic, catalog) { return (catalog.groups || []).some(group => groupHasPrice(clinic, group)); }
 function validCoords(clinic) { return Number.isFinite(Number(clinic.lat)) && Number.isFinite(Number(clinic.lng)); }
 function isDemo(clinic) { const id = String(clinic.id || "").toLowerCase(); const name = String(clinic.name || ""); return id.includes("sample") || id.includes("fallback") || name.includes("샘플"); }
 function typeLabel(clinic) { return clinic.type === "pharmacy" || String(clinic.name || "").includes("약국") ? "약국" : "병·의원"; }
-function slugifyLoose(value) { return String(value || "").toLowerCase().replace(/[^a-z0-9가-힣]+/g, "-").replace(/^-+|-+$/g, "") || "item"; }
 function clinicSlug(clinic) { if (LEGACY_CLINIC_SLUGS[clinic.id]) return LEGACY_CLINIC_SLUGS[clinic.id]; const no = String(clinic.institution_no || "").trim(); if (no) return `${no}-${slugifyLoose(clinic.name).slice(0, 32)}`; return `${slugifyLoose(clinic.id || "clinic")}-${slugifyLoose(clinic.name).slice(0, 32)}`; }
 function regionSlugParts(clinic) { const sidoSlug = clinic.sido_slug || (clinic.region_key ? String(clinic.region_key).split("/")[0] : "") || "seoul"; const sigunguSlug = clinic.sigungu_slug || DISTRICT_SLUGS[clinic.sigungu] || DISTRICT_SLUGS[clinic.district] || slugifyLoose(clinic.sigungu || clinic.district); return { sidoSlug, sigunguSlug }; }
-function cleanRegionText(value) { const text = String(value || "").trim(); return text && !text.includes("?") ? text : ""; }
 function clinicSidoName(clinic) { const parts = regionSlugParts(clinic); return cleanRegionText(clinic.sido) || REGION_NAMES[parts.sidoSlug] || parts.sidoSlug || ""; }
 function clinicSigunguName(clinic) { const parts = regionSlugParts(clinic); return cleanRegionText(clinic.sigungu) || cleanRegionText(clinic.district) || SIGUNGU_NAMES[parts.sigunguSlug] || parts.sigunguSlug || ""; }
 function regionLabel(clinic) { return `${clinicSidoName(clinic)} ${clinicSigunguName(clinic)}`.trim(); }
 function hasUsableRegion(clinic) { const parts = regionSlugParts(clinic); const label = clinicSigunguName(clinic); return Boolean(parts.sidoSlug && parts.sigunguSlug && parts.sigunguSlug !== "item" && label); }
-function canonical(pathname) { return `${SITE}${pathname}`; }
-
+function stockLabel(clinic, key) { return clinic.stock?.[key] === false ? "확인 필요" : "재고 있음"; }
+function stockClass(clinic, key) { return clinic.stock?.[key] === false ? "is-unknown" : ""; }
+function phoneTel(phone) { return String(phone || "").replace(/[^0-9+]/g, ""); }
 function breadcrumbJson(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: canonical(item.url) })) }; }
+
+function flattenProducts(catalog) { return (catalog.groups || []).flatMap(group => (group.products || []).map(product => ({ ...product, group }))); }
+function seoProducts(catalog) { return flattenProducts(catalog).filter(product => product.group?.seo_enabled); }
+function mapEnabledGroups(catalog) { return (catalog.groups || []).filter(group => group.map_enabled); }
+function primarySeoProductNames(clinic, catalog) { return seoProducts(catalog).filter(product => productHasPrice(clinic, product)).map(product => product.ko); }
+function pageTitleTreatmentPart(clinic, catalog) { const names = primarySeoProductNames(clinic, catalog); return names.length ? names.join("·") : "가격"; }
+
+function baseCss() {
+  const templateCss = readOptionalText("templates/clinic-detail.css");
+  const shellCss = `
+    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;color:#111827;background:#f6f7fb;line-height:1.65}a{color:inherit}.cd-header{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:3}.cd-header-inner{max-width:980px;margin:0 auto;padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}.cd-brand{font-weight:800;text-decoration:none;color:#111827}.cd-back{color:#2563eb;text-decoration:none;font-weight:700;font-size:14px}.cd-main{max-width:980px;margin:0 auto;padding:28px 20px 64px}@media(max-width:640px){.cd-header-inner{padding:14px 16px}.cd-main{padding:18px 14px 48px}}
+  `;
+  return shellCss + "\n" + templateCss;
+}
+
 function pageShell({ title, description, canonicalPath, body, jsonLd = [] }) {
   const json = jsonLd.length ? jsonLd.map(item => `<script type="application/ld+json">${JSON.stringify(item)}</script>`).join("\n") : "";
   return `<!doctype html>
@@ -50,41 +100,221 @@ function pageShell({ title, description, canonicalPath, body, jsonLd = [] }) {
   <meta name="description" content="${esc(description)}">
   <link rel="canonical" href="${canonical(canonicalPath)}">
   ${json}
-  <style>
-    :root{--ink:#111827;--muted:#64748b;--line:#e5e7eb;--soft:#f8fafc;--blue:#2563eb;--green:#059669}
-    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;color:var(--ink);background:#f6f7fb;line-height:1.65}a{color:inherit}.header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:3}.header-inner{max-width:980px;margin:0 auto;padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}.brand{font-weight:800;text-decoration:none}.back{color:var(--blue);text-decoration:none;font-weight:700;font-size:14px}main{max-width:980px;margin:0 auto;padding:28px 20px 64px}.hero{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 14px 34px rgba(15,23,42,.06)}h1{margin:0 0 10px;font-size:30px;line-height:1.25}h2{margin:34px 0 14px;font-size:22px}.lead{margin:0;color:var(--muted);font-size:16px}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.chip{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:#fff;font-size:14px;color:#334155;text-decoration:none}.chip.strong{color:var(--green);border-color:#bbf7d0;background:#f0fdf4;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;text-decoration:none;display:block}.card:hover{border-color:#bfdbfe;box-shadow:0 10px 24px rgba(37,99,235,.08)}.small{color:var(--muted);font-size:13px}table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:table}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left}th{background:#f8fafc;color:#334155;font-size:14px}.price{color:#1d4ed8;font-weight:800;white-space:nowrap}.stock{color:var(--green);font-weight:700;font-size:13px}.note{background:#eff6ff;border-left:4px solid var(--blue);border-radius:12px;padding:14px 16px}.breadcrumbs{font-size:13px;color:var(--muted);margin-bottom:14px}.breadcrumbs a{color:var(--muted);text-decoration:none}@media(max-width:640px){.header-inner{padding:14px 16px}main{padding:18px 14px 48px}.hero{padding:22px;border-radius:14px}h1{font-size:24px}table{font-size:14px}th,td{padding:10px}}
-  </style>
+  <style>${baseCss()}</style>
 </head>
-<body><header class="header"><div class="header-inner"><a class="brand" href="/">하루센스 마운자로·위고비 가격지도</a><a class="back" href="/">← 지도로</a></div></header><main>${body}</main></body></html>`;
+<body>
+  <header class="cd-header"><div class="cd-header-inner"><a class="cd-brand" href="/">하루센스 마운자로·위고비 가격지도</a><a class="cd-back" href="/">← 지도로</a></div></header>
+  <main class="cd-main">${body}</main>
+</body>
+</html>`;
 }
 
-function clinicPriceTable(clinic) { const rows = []; for (const [drug, info] of Object.entries(DRUGS)) { for (const dose of info.doses) { const key = priceKey(drug, dose); const price = clinic.prices?.[key]; if (!Number.isFinite(Number(price))) continue; rows.push(`<tr><td>${info.ko}</td><td>${dose}</td><td class="price">${money(price)}</td><td class="stock">${clinic.stock?.[key] === false ? "확인 필요" : "재고 있음"}</td></tr>`); } } return rows.length ? `<table><thead><tr><th>약제</th><th>용량</th><th>표시 가격</th><th>재고</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : `<div class="note">가격 정보 수집중입니다. 정확한 가격은 기관에 직접 확인해주세요.</div>`; }
-function regionLinksForClinic(clinic) { const links = []; const { sidoSlug, sigunguSlug } = regionSlugParts(clinic); const sigunguName = clinicSigunguName(clinic); if (hasAnyDrugPrice(clinic, "mounjaro")) links.push(`<a class="chip strong" href="/mounjaro/${sidoSlug}/${sigunguSlug}/">${sigunguName} ${DRUGS.mounjaro.ko} \uAC00\uACA9</a>`); if (hasAnyDrugPrice(clinic, "wegovy")) links.push(`<a class="chip strong" href="/wegovy/${sidoSlug}/${sigunguSlug}/">${sigunguName} ${DRUGS.wegovy.ko} \uAC00\uACA9</a>`); return links.length ? `<h2>\uC774 \uC9C0\uC5ED \uAC00\uACA9 \uB354 \uBCF4\uAE30</h2><div class="meta">${links.join("")}</div>` : ""; }
+function renderTreatmentNav(clinic, catalog) {
+  const groups = (catalog.groups || []).filter(group => groupHasPrice(clinic, group));
+  if (groups.length < 2) return "";
+  return `<nav class="cd-treatment-nav" aria-label="표시 품목">${groups.map(group => `<a class="cd-treatment-pill is-${esc(group.group_key)}" href="#cd-group-${esc(group.group_key)}">${esc(group.ko)}</a>`).join("")}</nav>`;
+}
 
-function renderClinicPage(clinic) { const slug = clinicSlug(clinic); const pathName = `/clinic/${slug}/`; const body = `<div class="breadcrumbs"><a href="/">홈</a> / <a href="/clinic/">기관</a> / ${esc(clinic.name)}</div><section class="hero"><h1>${esc(clinic.name)} 마운자로·위고비 가격</h1><p class="lead">${esc(regionLabel(clinic))} ${esc(typeLabel(clinic))} 가격정보입니다. 방문 전 전화 확인을 권장합니다.</p><div class="meta"><span class="chip">${esc(typeLabel(clinic))}</span><span class="chip">${esc(clinic.address || regionLabel(clinic))}</span>${clinic.phone ? `<span class="chip">${esc(clinic.phone)}</span>` : ""}<a class="chip strong" href="/?clinic=${encodeURIComponent(clinic.institution_no || clinic.id)}">지도에서 보기</a></div></section><h2>표시 가격</h2>${clinicPriceTable(clinic)}${clinic.notes ? `<h2>기관 안내</h2><div class="note">${esc(clinic.notes)}</div>` : ""}${regionLinksForClinic(clinic)}<h2>확인 안내</h2><p class="small">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 가격정보 지도입니다. 표시 가격은 수집 시점 기준이며, 실제 방문 전 기관에 최종 확인해주세요.</p>`; write(`clinic/${slug}/index.html`, pageShell({ title: `${clinic.name} 마운자로·위고비 가격 | 하루센스`, description: `${regionLabel(clinic)} ${clinic.name}의 마운자로 가격, 위고비 가격, 재고 정보를 하루센스 가격지도에서 확인하세요.`, canonicalPath: pathName, body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: "기관", url: "/clinic/" }, { name: clinic.name, url: pathName }]), { "@context": "https://schema.org", "@type": typeLabel(clinic) === "약국" ? "Pharmacy" : "MedicalClinic", name: clinic.name, address: clinic.address || undefined, telephone: clinic.phone || undefined, url: canonical(pathName) }] })); return pathName; }
-function renderClinicHub(clinics, regionalPaths) { const items = clinics.map(clinic => { const slug = clinicSlug(clinic); const m = lowestDrugPrice(clinic, "mounjaro"); const w = lowestDrugPrice(clinic, "wegovy"); return `<a class="card" href="/clinic/${slug}/"><strong>${esc(clinic.name)}</strong><div class="small">${esc(regionLabel(clinic))} · ${esc(typeLabel(clinic))}</div><div class="meta">${m ? `<span class="chip">마운자로 ${money(m)}부터</span>` : ""}${w ? `<span class="chip">위고비 ${money(w)}부터</span>` : ""}</div></a>`; }).join("\n"); const regionLinks = regionalPaths.map(p => `<a class="chip strong" href="${p.url}">${esc(p.label)}</a>`).join("\n"); const body = `<section class="hero"><h1>마운자로·위고비 가격 등록 기관</h1><p class="lead">하루센스 가격지도에 표시되는 병·의원과 약국의 상세 가격정보입니다. 지역별 마운자로 가격, 위고비 가격을 함께 확인할 수 있습니다.</p><div class="meta"><span class="chip strong">기관 상세 ${clinics.length}곳</span><span class="chip strong">지역 가격 ${regionalPaths.length}개</span><span class="chip">광고비 0원</span></div></section><h2>지역별 가격 바로가기</h2><div class="meta">${regionLinks}</div><h2>기관 목록</h2><div class="grid">${items}</div>`; write("clinic/index.html", pageShell({ title: "마운자로·위고비 가격 등록 기관 | 하루센스", description: "하루센스에 등록된 병·의원과 약국의 마운자로 가격, 위고비 가격, 재고 정보를 확인하세요.", canonicalPath: "/clinic/", body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: "기관", url: "/clinic/" }])] })); return "/clinic/"; }
-function renderRegionPage(drug, sidoSlug, sigunguSlug, clinics) { const info = DRUGS[drug]; const sample = clinics[0]; const sidoName = clinicSidoName(sample); const sigunguName = clinicSigunguName(sample); const pathName = `/${info.root}/${sidoSlug}/${sigunguSlug}/`; const rows = clinics.map(clinic => ({ clinic, price: lowestDrugPrice(clinic, drug) })).filter(item => item.price).sort((a, b) => a.price - b.price).map(({ clinic, price }) => `<tr><td><a href="/clinic/${clinicSlug(clinic)}/">${esc(clinic.name)}</a><div class="small">${esc(clinic.address || "")}</div></td><td class="price">${money(price)}부터</td><td>${esc(clinic.phone || "")}</td></tr>`).join("\n"); const body = `<div class="breadcrumbs"><a href="/">홈</a> / <a href="/${info.root}/">${info.ko}</a> / <a href="/${info.root}/${sidoSlug}/">${esc(sidoName)}</a> / ${esc(sigunguName)}</div><section class="hero"><h1>${esc(sigunguName)} ${info.ko} 가격지도</h1><p class="lead">${esc(sidoName)} ${esc(sigunguName)}에서 확인된 ${info.ko} 가격을 낮은 가격 순으로 정리했습니다.</p><div class="meta"><span class="chip strong">${clinics.length}곳 표시</span><a class="chip strong" href="/?drug=${drug}&district=${encodeURIComponent(sigunguName)}">지도에서 보기</a><span class="chip">방문 전 전화 확인 권장</span></div></section><h2>${esc(sigunguName)} ${info.ko} 가격 낮은 순</h2><table><thead><tr><th>기관</th><th>최저 표시 가격</th><th>전화</th></tr></thead><tbody>${rows}</tbody></table><h2>가격 확인 기준</h2><p class="small">병·의원 표시 가격은 진료비와 약제비를 포함한 실제결제 총비용 기준입니다. 약국 표시 가격은 조제비와 약값을 포함한 실제결제 총비용 기준입니다.</p>`; write(`${info.root}/${sidoSlug}/${sigunguSlug}/index.html`, pageShell({ title: `${sigunguName} ${info.ko} 가격지도 | 하루센스`, description: `${sigunguName} ${info.ko} 가격을 지역별로 비교해보세요. 하루센스가 병·의원과 약국의 GLP-1 비만주사 가격정보를 제공합니다.`, canonicalPath: pathName, body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: info.ko, url: `/${info.root}/` }, { name: sidoName, url: `/${info.root}/${sidoSlug}/` }, { name: sigunguName, url: pathName }])] })); return { url: pathName, label: `${sigunguName} ${info.ko} 가격` }; }
-function renderSidoHub(drug, sidoSlug, regionPages) { const info = DRUGS[drug]; const sidoName = REGION_NAMES[sidoSlug] || sidoSlug; const pathName = `/${info.root}/${sidoSlug}/`; const links = regionPages.filter(page => page.drug === drug && page.sidoSlug === sidoSlug).map(page => `<a class="card" href="${page.url}"><strong>${esc(page.label)}</strong><div class="small">지역별 ${info.ko} 가격 비교</div></a>`).join("\n"); if (!links) return null; const body = `<section class="hero"><h1>${sidoName} ${info.ko} 가격지도</h1><p class="lead">${sidoName} 지역의 ${info.ko} 가격 페이지를 구·시 단위로 확인하세요.</p></section><h2>지역 선택</h2><div class="grid">${links}</div>`; write(`${info.root}/${sidoSlug}/index.html`, pageShell({ title: `${sidoName} ${info.ko} 가격지도 | 하루센스`, description: `${sidoName} ${info.ko} 가격을 구·시 단위로 비교해보세요.`, canonicalPath: pathName, body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: info.ko, url: `/${info.root}/` }, { name: sidoName, url: pathName }])] })); return pathName; }
-function updateSitemap(paths) { const sitemapPath = path.join(ROOT, "sitemap.xml"); const outputSitemapPath = path.join(OUT_ROOT, "sitemap.xml"); let existing = ""; try { existing = fs.readFileSync(sitemapPath, "utf8"); } catch {} const urls = new Set(); for (const match of existing.matchAll(/<loc>(.*?)<\/loc>/g)) { const url = match[1].trim(); if (url.startsWith(SITE)) { const p = url.replace(SITE, "") || "/"; if (!/^\/(mounjaro|wegovy)\/[^/]+\/item\/?$/.test(p)) urls.add(p); } } paths.forEach(p => urls.add(p)); const sorted = Array.from(urls).sort((a, b) => a.localeCompare(b)); const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sorted.map(p => `  <url><loc>${SITE}${p}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`; ensureDir(path.dirname(outputSitemapPath)); fs.writeFileSync(outputSitemapPath, xml, "utf8"); }
+function renderGlpProduct(clinic, product) {
+  const rows = (product.variants || []).map(variant => {
+    const key = priceKey(product, variant);
+    const price = clinic.prices?.[key];
+    if (!Number.isFinite(Number(price))) return "";
+    return `<tr data-price-key="${esc(key)}"><td>${esc(variant)}</td><td class="cd-price">${money(price)}</td><td class="cd-stock ${stockClass(clinic, key)}">${stockLabel(clinic, key)}</td></tr>`;
+  }).filter(Boolean).join("\n");
+  if (!rows) return "";
+  return `<div class="cd-product" data-product-key="${esc(product.product_key)}"><p class="cd-product-title">${esc(product.ko)} <span>${product.unit_type === "dose" ? "용량별" : "가격"}</span></p><table class="cd-price-table"><thead><tr><th>${product.unit_type === "dose" ? "용량" : "항목"}</th><th>표시 가격</th><th>재고</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderServiceProduct(clinic, product) {
+  return (product.variants || []).map(variant => {
+    const key = priceKey(product, variant);
+    const price = clinic.prices?.[key];
+    if (!Number.isFinite(Number(price))) return "";
+    return `<div class="cd-service-item" data-price-key="${esc(key)}"><span class="cd-service-name">${esc(product.ko)}</span><span class="cd-service-price">${money(price)}</span><span class="cd-service-meta">${esc(variant)} 기준</span></div>`;
+  }).filter(Boolean).join("\n");
+}
+
+function renderGroup(clinic, group) {
+  if (!groupHasPrice(clinic, group)) return "";
+  const isGlp = group.group_key === "glp1";
+  const productHtml = (group.products || []).map(product => isGlp ? renderGlpProduct(clinic, product) : renderServiceProduct(clinic, product)).filter(Boolean).join("\n");
+  if (!productHtml) return "";
+  const body = isGlp ? productHtml : `<div class="cd-service-grid">${productHtml}</div>`;
+  const badge = group.map_enabled ? "지도 표시" : "상세페이지";
+  return `<section class="cd-group is-${esc(group.group_key)}" id="cd-group-${esc(group.group_key)}" data-group-key="${esc(group.group_key)}"><div class="cd-group-head"><h3>${esc(group.ko)} <span class="cd-group-badge">${badge}</span></h3></div><div class="cd-group-body">${body}</div></section>`;
+}
+
+function renderAllTreatmentGroups(clinic, catalog) {
+  return (catalog.groups || []).map(group => renderGroup(clinic, group)).filter(Boolean).join("\n");
+}
+
+function regionLinksForClinic(clinic, catalog) {
+  const links = [];
+  const { sidoSlug, sigunguSlug } = regionSlugParts(clinic);
+  const sigunguName = clinicSigunguName(clinic);
+  for (const product of seoProducts(catalog)) {
+    if (!productHasPrice(clinic, product)) continue;
+    links.push(`<a class="cd-chip cd-chip-primary" href="/${product.root}/${sidoSlug}/${sigunguSlug}/">${esc(sigunguName)} ${esc(product.ko)} 가격</a>`);
+  }
+  return links.length ? links.join("\n") : "";
+}
+
+function renderClinicPage(clinic, catalog) {
+  const slug = clinicSlug(clinic);
+  const pathName = `/clinic/${slug}/`;
+  const treatmentPart = pageTitleTreatmentPart(clinic, catalog);
+  const regionLinks = regionLinksForClinic(clinic, catalog);
+  const mapGroups = mapEnabledGroups(catalog).filter(group => groupHasPrice(clinic, group));
+  const hasMapCta = mapGroups.length > 0;
+  const mapDeepLink = `/?clinic=${encodeURIComponent(clinic.institution_no || clinic.id)}`;
+  const naverUrl = clinic.naver_url || clinic.naverMapUrl || "";
+  const providerNote = clinic.provider_note || clinic.notes || "";
+  const parkingText = clinic.parking_available || clinic.provider_parking || "";
+  const updatedAt = clinic.updated_at ? String(clinic.updated_at).slice(0, 10) : "";
+  const address = clinic.address || regionLabel(clinic);
+  const phone = clinic.phone || "";
+  const body = `
+<div class="cd-breadcrumbs"><a href="/">홈</a> / <a href="/clinic/">기관</a> / ${esc(clinic.name)}</div>
+<section class="cd-hero">
+  <h1>${esc(clinic.name)} 가격 정보</h1>
+  <p class="cd-lead">${esc(regionLabel(clinic))} ${esc(typeLabel(clinic))} · 방문 전 전화 확인을 권장합니다.</p>
+  <div class="cd-meta">
+    <span class="cd-chip">${esc(typeLabel(clinic))}</span>
+    <span class="cd-chip">${esc(address)}</span>
+    ${phone ? `<span class="cd-chip">${esc(phone)}</span>` : ""}
+    ${updatedAt ? `<span class="cd-chip cd-chip-muted">업데이트 ${esc(updatedAt)}</span>` : ""}
+    ${parkingText ? `<span class="cd-chip cd-chip-muted">주차 ${esc(parkingText)}</span>` : ""}
+  </div>
+  <div class="cd-cta-row">
+    ${hasMapCta ? `<a class="cd-cta-btn cd-cta-map" href="${esc(mapDeepLink)}">GLP-1 지도에서 보기</a>` : ""}
+    ${phone ? `<a class="cd-cta-btn cd-cta-phone" href="tel:${esc(phoneTel(phone))}">전화하기</a>` : ""}
+    ${naverUrl ? `<a class="cd-cta-btn cd-cta-naver" href="${esc(naverUrl)}" rel="noopener">네이버 지도</a>` : ""}
+  </div>
+</section>
+${renderTreatmentNav(clinic, catalog)}
+<div class="cd-section-head"><h2>표시 가격</h2><span class="cd-small">수집 시점 기준 · 기관 확인 권장</span></div>
+${renderAllTreatmentGroups(clinic, catalog)}
+${providerNote ? `<div class="cd-section-head"><h2>기관 안내</h2></div><div class="cd-note">${esc(providerNote)}</div>` : ""}
+${regionLinks ? `<div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div><div class="cd-region-links">${regionLinks}</div>` : ""}
+<div class="cd-section-head"><h2>확인 안내</h2></div>
+<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 가격정보 지도입니다. GLP-1 가격은 지도에서 비교할 수 있으며, 보톡스·수액·주사 가격은 기관 상세페이지에 순차 반영합니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p>`;
+
+  write(`clinic/${slug}/index.html`, pageShell({
+    title: `${clinic.name} ${treatmentPart} 가격 | 하루센스`,
+    description: `${regionLabel(clinic)} ${clinic.name}의 ${treatmentPart} 가격과 재고 정보를 하루센스에서 확인하세요.`,
+    canonicalPath: pathName,
+    body,
+    jsonLd: [
+      breadcrumbJson([{ name: "홈", url: "/" }, { name: "기관", url: "/clinic/" }, { name: clinic.name, url: pathName }]),
+      { "@context": "https://schema.org", "@type": typeLabel(clinic) === "약국" ? "Pharmacy" : "MedicalClinic", name: clinic.name, address: clinic.address || undefined, telephone: clinic.phone || undefined, url: canonical(pathName) }
+    ]
+  }));
+  return pathName;
+}
+
+function renderClinicHub(clinics, catalog, regionalPaths) {
+  const products = seoProducts(catalog);
+  const items = clinics.map(clinic => {
+    const slug = clinicSlug(clinic);
+    const priceChips = products.map(product => {
+      const price = lowestProductPrice(clinic, product);
+      return price ? `<span class="cd-chip">${esc(product.ko)} ${money(price)}부터</span>` : "";
+    }).filter(Boolean).join("");
+    return `<a class="card" href="/clinic/${slug}/"><strong>${esc(clinic.name)}</strong><div class="small">${esc(regionLabel(clinic))} · ${esc(typeLabel(clinic))}</div><div class="meta">${priceChips}</div></a>`;
+  }).join("\n");
+  const regionLinks = regionalPaths.map(p => `<a class="cd-chip cd-chip-primary" href="${p.url}">${esc(p.label)}</a>`).join("\n");
+  const body = `<section class="cd-hero"><h1>마운자로·위고비 가격 등록 기관</h1><p class="cd-lead">하루센스 가격지도에 표시되는 병·의원과 약국의 상세 가격정보입니다. 향후 보톡스와 수액·주사 가격도 기관 상세페이지에 순차 반영됩니다.</p><div class="cd-meta"><span class="cd-chip cd-chip-primary">기관 상세 ${clinics.length}곳</span><span class="cd-chip cd-chip-primary">지역 가격 ${regionalPaths.length}개</span><span class="cd-chip">광고비 0원</span></div></section><div class="cd-section-head"><h2>지역별 가격 바로가기</h2></div><div class="cd-region-links">${regionLinks}</div><div class="cd-section-head"><h2>기관 목록</h2></div><div class="grid">${items}</div>`;
+  write("clinic/index.html", pageShell({ title: "마운자로·위고비 가격 등록 기관 | 하루센스", description: "하루센스에 등록된 병·의원과 약국의 마운자로 가격, 위고비 가격, 재고 정보를 확인하세요.", canonicalPath: "/clinic/", body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: "기관", url: "/clinic/" }])] }));
+  return "/clinic/";
+}
+
+function renderRegionPage(product, sidoSlug, sigunguSlug, clinics) {
+  const sample = clinics[0];
+  const sidoName = clinicSidoName(sample);
+  const sigunguName = clinicSigunguName(sample);
+  const pathName = `/${product.root}/${sidoSlug}/${sigunguSlug}/`;
+  const rows = clinics.map(clinic => ({ clinic, price: lowestProductPrice(clinic, product) }))
+    .filter(item => item.price)
+    .sort((a, b) => a.price - b.price)
+    .map(({ clinic, price }) => `<tr><td><a href="/clinic/${clinicSlug(clinic)}/">${esc(clinic.name)}</a><div class="small">${esc(clinic.address || "")}</div></td><td class="price">${money(price)}부터</td><td>${esc(clinic.phone || "")}</td></tr>`)
+    .join("\n");
+  const body = `<div class="breadcrumbs"><a href="/">홈</a> / <a href="/${product.root}/">${esc(product.ko)}</a> / <a href="/${product.root}/${sidoSlug}/">${esc(sidoName)}</a> / ${esc(sigunguName)}</div><section class="hero"><h1>${esc(sigunguName)} ${esc(product.ko)} 가격지도</h1><p class="lead">${esc(sidoName)} ${esc(sigunguName)}에서 확인된 ${esc(product.ko)} 가격을 낮은 가격 순으로 정리했습니다.</p><div class="meta"><span class="chip strong">${clinics.length}곳 표시</span><a class="chip strong" href="/?drug=${product.product_key}&district=${encodeURIComponent(sigunguName)}">지도에서 보기</a><span class="chip">방문 전 전화 확인 권장</span></div></section><h2>${esc(sigunguName)} ${esc(product.ko)} 가격 낮은 순</h2><table><thead><tr><th>기관</th><th>최저 표시 가격</th><th>전화</th></tr></thead><tbody>${rows}</tbody></table><h2>가격 확인 기준</h2><p class="small">병·의원 표시 가격은 진료비와 약제비를 포함한 실제결제 총비용 기준입니다. 약국 표시 가격은 조제비와 약값을 포함한 실제결제 총비용 기준입니다.</p>`;
+  write(`${product.root}/${sidoSlug}/${sigunguSlug}/index.html`, pageShell({ title: `${sigunguName} ${product.ko} 가격지도 | 하루센스`, description: `${sigunguName} ${product.ko} 가격을 지역별로 비교해보세요. 하루센스가 병·의원과 약국의 가격정보를 제공합니다.`, canonicalPath: pathName, body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: product.ko, url: `/${product.root}/` }, { name: sidoName, url: `/${product.root}/${sidoSlug}/` }, { name: sigunguName, url: pathName }])] }));
+  return { url: pathName, label: `${sigunguName} ${product.ko} 가격` };
+}
+
+function renderSidoHub(product, sidoSlug, regionPages) {
+  const sidoName = REGION_NAMES[sidoSlug] || sidoSlug;
+  const pathName = `/${product.root}/${sidoSlug}/`;
+  const links = regionPages.filter(page => page.productKey === product.product_key && page.sidoSlug === sidoSlug).map(page => `<a class="card" href="${page.url}"><strong>${esc(page.label)}</strong><div class="small">지역별 ${esc(product.ko)} 가격 비교</div></a>`).join("\n");
+  if (!links) return null;
+  const body = `<section class="hero"><h1>${sidoName} ${esc(product.ko)} 가격지도</h1><p class="lead">${sidoName} 지역의 ${esc(product.ko)} 가격 페이지를 구·시 단위로 확인하세요.</p></section><h2>지역 선택</h2><div class="grid">${links}</div>`;
+  write(`${product.root}/${sidoSlug}/index.html`, pageShell({ title: `${sidoName} ${product.ko} 가격지도 | 하루센스`, description: `${sidoName} ${product.ko} 가격을 구·시 단위로 비교해보세요.`, canonicalPath: pathName, body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: product.ko, url: `/${product.root}/` }, { name: sidoName, url: pathName }])] }));
+  return pathName;
+}
+
+function updateSitemap(paths, catalog) {
+  const sitemapPath = path.join(ROOT, "sitemap.xml");
+  const outputSitemapPath = path.join(OUT_ROOT, "sitemap.xml");
+  let existing = "";
+  try { existing = fs.readFileSync(sitemapPath, "utf8"); } catch {}
+  const urls = new Set();
+  const seoRoots = seoProducts(catalog).map(product => product.root.replace(/\//g, "\\/"));
+  const staleItemPattern = seoRoots.length ? new RegExp(`^\\/(?:${seoRoots.join("|")})\\/[^/]+\\/item\\/?$`) : null;
+  for (const match of existing.matchAll(/<loc>(.*?)<\/loc>/g)) {
+    const url = match[1].trim();
+    if (url.startsWith(SITE)) {
+      const p = url.replace(SITE, "") || "/";
+      if (!staleItemPattern || !staleItemPattern.test(p)) urls.add(p);
+    }
+  }
+  paths.forEach(p => urls.add(p));
+  const sorted = Array.from(urls).sort((a, b) => a.localeCompare(b));
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sorted.map(p => `  <url><loc>${SITE}${p}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+  ensureDir(path.dirname(outputSitemapPath));
+  fs.writeFileSync(outputSitemapPath, xml, "utf8");
+}
 
 function main() {
   const raw = readJson("clinics.json");
-  const clinics = (Array.isArray(raw) ? raw : raw.clinics || []).filter(clinic => !isDemo(clinic) && validCoords(clinic) && clinic.name && hasAnyPrice(clinic));
+  const catalog = readJson("data/treatments.catalog.json");
+  const clinics = (Array.isArray(raw) ? raw : raw.clinics || []).filter(clinic => !isDemo(clinic) && validCoords(clinic) && clinic.name && hasAnyCatalogPrice(clinic, catalog));
   const paths = [];
   const regionPages = [];
-  clinics.forEach(clinic => paths.push(renderClinicPage(clinic)));
-  for (const drug of Object.keys(DRUGS)) {
+  clinics.forEach(clinic => paths.push(renderClinicPage(clinic, catalog)));
+
+  for (const product of seoProducts(catalog)) {
     const groups = new Map();
-    clinics.filter(clinic => hasAnyDrugPrice(clinic, drug) && hasUsableRegion(clinic)).forEach(clinic => { const parts = regionSlugParts(clinic); const key = `${parts.sidoSlug}/${parts.sigunguSlug}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(clinic); });
-    for (const [key, group] of groups) { const [sidoSlug, sigunguSlug] = key.split("/"); const page = renderRegionPage(drug, sidoSlug, sigunguSlug, group); regionPages.push({ ...page, drug, sidoSlug, sigunguSlug }); paths.push(page.url); }
+    clinics.filter(clinic => productHasPrice(clinic, product) && hasUsableRegion(clinic)).forEach(clinic => {
+      const parts = regionSlugParts(clinic);
+      const key = `${parts.sidoSlug}/${parts.sigunguSlug}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(clinic);
+    });
+    for (const [key, group] of groups) {
+      const [sidoSlug, sigunguSlug] = key.split("/");
+      const page = renderRegionPage(product, sidoSlug, sigunguSlug, group);
+      regionPages.push({ ...page, productKey: product.product_key, root: product.root, sidoSlug, sigunguSlug });
+      paths.push(page.url);
+    }
   }
-  const sidoDrugPairs = new Set(regionPages.map(page => `${page.drug}/${page.sidoSlug}`));
-  for (const pair of sidoDrugPairs) { const [drug, sidoSlug] = pair.split("/"); const hub = renderSidoHub(drug, sidoSlug, regionPages); if (hub) paths.push(hub); }
-  paths.push(renderClinicHub(clinics, regionPages));
-  updateSitemap(paths);
-  const report = ["# SEO 자동 생성 결과", "", `- 실행일: ${TODAY}`, `- 상세페이지 대상 기관: ${clinics.length}곳`, `- 지역 가격 페이지: ${regionPages.length}개`, `- 시도 허브 페이지: ${sidoDrugPairs.size}개`, "- sitemap.xml: 갱신 완료", "", "## 운영 흐름", "", "1. 지도 데이터(clinics.json)에 신규기관 좌표와 가격/재고가 반영됩니다.", "2. 이 생성기를 실행하면 기관 상세페이지와 지역별 가격페이지가 자동으로 갱신됩니다.", "3. GitHub에는 clinic 폴더, mounjaro 폴더, wegovy 폴더, sitemap.xml을 올리면 됩니다.", "", "## 생성된 지역 페이지", "", ...regionPages.map(page => `- ${page.label}: ${page.url}`)].join("\n");
+
+  const sidoProductPairs = new Set(regionPages.map(page => `${page.productKey}|${page.sidoSlug}`));
+  const seoProductMap = new Map(seoProducts(catalog).map(product => [product.product_key, product]));
+  for (const pair of sidoProductPairs) {
+    const [productKey, sidoSlug] = pair.split("|");
+    const product = seoProductMap.get(productKey);
+    const hub = product ? renderSidoHub(product, sidoSlug, regionPages) : null;
+    if (hub) paths.push(hub);
+  }
+  paths.push(renderClinicHub(clinics, catalog, regionPages));
+  updateSitemap(paths, catalog);
+
+  const report = ["# SEO 자동 생성 결과", "", `- 실행일: ${TODAY}`, `- 상세페이지 대상 기관: ${clinics.length}곳`, `- 지역 가격 페이지: ${regionPages.length}개`, `- 시도 허브 페이지: ${sidoProductPairs.size}개`, "- sitemap.xml: 갱신 완료", "", "## 운영 흐름", "", "1. 지도 데이터(clinics.json)에 신규기관 좌표와 가격/재고가 반영됩니다.", "2. 생성기를 실행하면 기관 상세페이지와 지역별 가격페이지가 자동으로 갱신됩니다.", "3. GitHub에는 clinic 폴더, mounjaro 폴더, wegovy 폴더, sitemap.xml을 올리면 됩니다.", "", "## 생성된 지역 페이지", "", ...regionPages.map(page => `- ${page.label}: ${page.url}`)].join("\n");
   ensureDir(path.join(OUT_ROOT, "seo-planning"));
   fs.writeFileSync(path.join(OUT_ROOT, "seo-planning", "SEO_자동생성_실행결과.md"), report, "utf8");
-  console.log(JSON.stringify({ ok: true, outputRoot: OUT_ROOT, clinics: clinics.length, regionPages: regionPages.length, hubs: sidoDrugPairs.size, paths: paths.length }, null, 2));
+  console.log(JSON.stringify({ ok: true, outputRoot: OUT_ROOT, clinics: clinics.length, regionPages: regionPages.length, hubs: sidoProductPairs.size, paths: paths.length }, null, 2));
 }
+
 main();
