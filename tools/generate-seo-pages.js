@@ -234,16 +234,40 @@ function renderRegionPage(product, sidoSlug, sigunguSlug, clinics) {
   const sidoName = clinicSidoName(sample);
   const sigunguName = clinicSigunguName(sample);
   const pathName = `/${product.root}/${sidoSlug}/${sigunguSlug}/`;
-  const rows = clinics.map(clinic => ({ clinic, price: lowestProductPrice(clinic, product) }))
+  const priced = clinics.map(clinic => ({ clinic, price: lowestProductPrice(clinic, product) }))
     .filter(item => item.price)
-    .sort((a, b) => a.price - b.price)
-    .map(({ clinic, price }) => `<tr><td><a href="/clinic/${clinicSlug(clinic)}/">${esc(clinic.name)}</a><div class="small">${esc(clinic.address || "")}</div></td><td class="price">${money(price)}부터</td><td>${esc(clinic.phone || "")}</td></tr>`)
-    .join("\n");
-  const body = `<div class="breadcrumbs"><a href="/">홈</a> / <a href="/${product.root}/">${esc(product.ko)}</a> / <a href="/${product.root}/${sidoSlug}/">${esc(sidoName)}</a> / ${esc(sigunguName)}</div><section class="hero"><h1>${esc(sigunguName)} ${esc(product.ko)} 가격지도</h1><p class="lead">${esc(sidoName)} ${esc(sigunguName)}에서 확인된 ${esc(product.ko)} 가격을 낮은 가격 순으로 정리했습니다.</p><div class="meta"><span class="chip strong">${clinics.length}곳 표시</span><a class="chip strong" href="/?drug=${product.product_key}&district=${encodeURIComponent(sigunguName)}">지도에서 보기</a><span class="chip">방문 전 전화 확인 권장</span></div></section><h2>${esc(sigunguName)} ${esc(product.ko)} 가격 낮은 순</h2><table><thead><tr><th>기관</th><th>최저 표시 가격</th><th>전화</th></tr></thead><tbody>${rows}</tbody></table><h2>가격 확인 기준</h2><p class="small">병·의원 표시 가격은 진료비와 약제비를 포함한 실제결제 총비용 기준입니다. 약국 표시 가격은 조제비와 약값을 포함한 실제결제 총비용 기준입니다.</p>`;
+    .sort((a, b) => a.price - b.price);
+  const rows = priced.map(({ clinic, price }) => {
+    const phone = clinic.phone || "";
+    const phoneCell = phone ? `<a class="cd-cta-btn cd-cta-phone" href="tel:${esc(phoneTel(phone))}">${esc(phone)}</a>` : `<span class="cd-small">확인 필요</span>`;
+    return `<tr><td><a href="/clinic/${clinicSlug(clinic)}/"><strong>${esc(clinic.name)}</strong></a><div class="cd-small">${esc(clinic.address || regionLabel(clinic) || "")}</div></td><td class="cd-price">${money(price)}부터</td><td>${phoneCell}</td></tr>`;
+  }).join("\n");
+  const emptyRow = `<tr><td colspan="3"><span class="cd-small">현재 표시 가능한 가격을 정리 중입니다.</span></td></tr>`;
+  const body = `
+    <div class="cd-breadcrumbs"><a href="/">홈</a> / <a href="/${product.root}/">${esc(product.ko)}</a> / <a href="/${product.root}/${sidoSlug}/">${esc(sidoName)}</a> / ${esc(sigunguName)}</div>
+    <section class="cd-hero">
+      <h1>${esc(sigunguName)} ${esc(product.ko)} 가격지도</h1>
+      <p class="cd-lead">${esc(sidoName)} ${esc(sigunguName)}에서 확인된 ${esc(product.ko)} 가격을 낮은 가격 순으로 정리했습니다.</p>
+      <div class="cd-meta">
+        <span class="cd-chip cd-chip-primary">${clinics.length}곳 표시</span>
+        <a class="cd-chip cd-chip-action" href="/?drug=${product.product_key}&district=${encodeURIComponent(sigunguName)}">지도에서 보기</a>
+        <span class="cd-chip">방문 전 전화 확인 권장</span>
+      </div>
+    </section>
+    <div class="cd-section-head"><h2>${esc(sigunguName)} ${esc(product.ko)} 가격 낮은 순</h2><span class="cd-small">최저 표시 가격 기준</span></div>
+    <section class="cd-group is-glp1">
+      <div class="cd-group-head"><h3>${esc(product.ko)} 가격 정보</h3><span class="cd-group-badge">지역 가격</span></div>
+      <div class="cd-group-body">
+        <table class="cd-price-table"><thead><tr><th>기관</th><th>최저 표시 가격</th><th>전화</th></tr></thead><tbody>${rows || emptyRow}</tbody></table>
+      </div>
+    </section>
+    <div class="cd-section-head"><h2>가격 확인 기준</h2></div>
+    <section class="cd-group">
+      <div class="cd-group-body"><p class="cd-small">병·의원 표시 가격은 진료비와 약제비를 포함한 실제결제 총비용 기준입니다. 약국 표시 가격은 조제비와 약값을 포함한 실제결제 총비용 기준입니다.</p></div>
+    </section>`;
   write(`${product.root}/${sidoSlug}/${sigunguSlug}/index.html`, pageShell({ title: `${sigunguName} ${product.ko} 가격지도 | 하루센스`, description: `${sigunguName} ${product.ko} 가격을 지역별로 비교해보세요. 하루센스가 병·의원과 약국의 가격정보를 제공합니다.`, canonicalPath: pathName, body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: product.ko, url: `/${product.root}/` }, { name: sidoName, url: `/${product.root}/${sidoSlug}/` }, { name: sigunguName, url: pathName }])] }));
   return { url: pathName, label: `${sigunguName} ${product.ko} 가격` };
 }
-
 function renderSidoHub(product, sidoSlug, regionPages) {
   const sidoName = REGION_NAMES[sidoSlug] || sidoSlug;
   const pathName = `/${product.root}/${sidoSlug}/`;
@@ -318,3 +342,4 @@ function main() {
 }
 
 main();
+
