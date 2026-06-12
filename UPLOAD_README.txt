@@ -6,6 +6,7 @@ Upload these items to the GitHub repository root:
 - wegovy/
 - sitemap.xml
 - seo-planning/
+- SERVICE_EXPANSION_GUIDE.md
 - tools/generate-seo-pages.js
 - tools/check-seo-release-safety.js
 - tools/check-service-catalog-sync.js

@@ -22,6 +22,7 @@ const generatedItems = [
 const sourceItems = [
   "RUN_SEO_UPLOAD_PACKAGE.bat",
   "SEO_UPLOAD_OPERATING_NOTE.md",
+  "SERVICE_EXPANSION_GUIDE.md",
   "SEO_업로드묶음_만들기.bat",
   "SEO_업로드_운영메모.md",
   "tools/build-seo-upload-package.js",
@@ -145,6 +146,7 @@ function writeUploadGuide() {
     "- wegovy/",
     "- sitemap.xml",
     "- seo-planning/",
+    "- SERVICE_EXPANSION_GUIDE.md",
     "- tools/generate-seo-pages.js",
     "- tools/check-seo-release-safety.js",
     "- tools/check-service-catalog-sync.js",
