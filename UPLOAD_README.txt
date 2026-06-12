@@ -8,6 +8,7 @@ Upload these items to the GitHub repository root:
 - seo-planning/
 - SERVICE_EXPANSION_GUIDE.md
 - SERVICE_PROFILE_ROLLOUT.md
+- SEO_RELEASE_ROLLBACK.md
 - tools/generate-seo-pages.js
 - tools/check-seo-release-safety.js
 - tools/check-service-catalog-sync.js
