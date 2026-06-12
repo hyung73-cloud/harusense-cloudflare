@@ -5038,11 +5038,32 @@ const ACCOUNT_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoYPEt
 /** true = 운영자가 시트에서 위도/경도 입력 후 지도표시상태=반영 처리한 신청기관만 지도에 추가합니다. 자동좌표는 사용하지 않습니다. */
 const SUBMITTED_CLINICS_ON_MAP = true;
 const REP_SERVICE_PROFILE_INSTITUTION_NOS = new Set(["12339695"]);
+let REP_SERVICE_PROFILE_ALLOWLIST_READY = false;
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
 let REP_ACTIVE_CLINIC_ID = null;
 let REP_LOGIN_CLINIC = null;
 let REP_CLOSE_TIMER = null;
+
+async function loadRepServiceProfileAllowlist() {
+  if (REP_SERVICE_PROFILE_ALLOWLIST_READY) return;
+  try {
+    const response = await fetch("/data/service-profile-allowlist.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("allowlist unavailable");
+    const data = await response.json();
+    const list = data.enabled_institution_nos || data.enabled_institutions || [];
+    const normalized = list.map(value => String(value || "").trim()).filter(Boolean);
+    if (normalized.length) {
+      REP_SERVICE_PROFILE_INSTITUTION_NOS.clear();
+      normalized.forEach(value => REP_SERVICE_PROFILE_INSTITUTION_NOS.add(value));
+    }
+  } catch (err) {
+    // Keep the safe default: Newsense only.
+  } finally {
+    REP_SERVICE_PROFILE_ALLOWLIST_READY = true;
+  }
+}
+
 const REP_KEYS = [
   { drug: "mounjaro", dose: "2.5mg" },
   { drug: "mounjaro", dose: "5mg" },
@@ -5500,6 +5521,7 @@ async function handleRepLogin() {
       REP_ACTIVE_PASSWORD = pw;
       REP_ACTIVE_CLINIC_ID = data.clinic ? data.clinic.id : null;
       REP_LOGIN_CLINIC = buildRepresentativeFallbackClinic(data.clinic, id);
+      await loadRepServiceProfileAllowlist();
 
       if (data.must_change_password) {
         document.getElementById("repNewPassword").value = "";
@@ -5558,6 +5580,7 @@ async function handleRepPasswordChange() {
     if (data.ok) {
       REP_ACTIVE_PASSWORD = newPassword;
       setRepMessage("repPasswordMessage", "비밀번호가 변경되었습니다.", "success");
+      await loadRepServiceProfileAllowlist();
       showRepresentativeEditor(true);
     } else {
       setRepMessage("repPasswordMessage", data.error || "비밀번호 변경에 실패했습니다.", "error");
