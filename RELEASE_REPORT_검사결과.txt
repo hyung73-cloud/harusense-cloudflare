@@ -1,0 +1,80 @@
+﻿하루센스 SEO 릴리스 검사 결과
+
+생성 시각: 2026. 6. 12. 오후 3:41:13
+작업 폴더: C:\Users\user\Documents\Codex\harusense_service_allowlist_work
+생성 폴더: C:\Users\user\Documents\Codex\harusense_SEO_BUILD_20260612-154113
+업로드 폴더: C:\Users\user\Documents\Codex\harusense_UPLOAD_ONLY_seo_release_20260612-154113
+
+검사 결과:
+1. SEO 페이지 생성: 통과 (191ms)
+   {
+     "ok": true,
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-154113",
+     "clinics": 30,
+     "regionPages": 18,
+     "hubs": 3,
+     "paths": 52
+   }
+2. 품목 코드 동기화 검사: 통과 (77ms)
+   {
+     "ok": true,
+     "referenceFile": "data/treatments.catalog.json",
+     "serviceKeyCount": 25,
+     "files": {
+       "index.html": 25,
+       "en/index.html": 25,
+       "tools/generate-seo-pages.js": 25,
+       "data/treatments.catalog.json": 25
+     },
+     "mismatches": []
+   }
+3. 뉴센스 시범 노출 검사: 통과 (98ms)
+   {
+     "ok": true,
+     "mode": "allowlist",
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-154113",
+     "totalClinicPages": 31,
+     "serviceProfilePages": 1,
+     "allowedInstitutionNos": [
+       "12339695"
+     ],
+     "serviceInstitutionNos": [
+       "12339695"
+     ],
+     "unexpectedInstitutionNos": [],
+     "missingInstitutionNos": []
+   }
+4. SEO 릴리스 안전 검사: 통과 (115ms)
+   {
+     "ok": true,
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-154113",
+     "brokenTextFiles": [],
+     "serviceProfile": {
+       "mode": "allowlist",
+       "servicePages": [
+         {
+           "file": "clinic/12339695-newsense/index.html",
+           "institutionNo": "12339695"
+         }
+       ],
+       "unexpected": [],
+       "missing": []
+     },
+     "sitemap": {
+       "exists": true,
+       "urls": 52,
+       "broken": false
+     }
+   }
+
+공개 범위:
+- 추가 진료 항목은 뉴센스의원만 시범 공개
+- 다른 기관 상세페이지에는 추가 진료 항목이 나오면 안 됨
+
+업로드 후 확인:
+- https://harusense.com/clinic/12339695-newsense/
+- https://harusense.com/mounjaro/seoul/mapo/
+- https://harusense.com/wegovy/seoul/mapo/
+- https://harusense.com/sitemap.xml
+
+메인 지도/로그인/QR/API/Apps Script는 이번 묶음에 포함하지 않았습니다.
