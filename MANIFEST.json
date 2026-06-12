@@ -1,7 +1,7 @@
 {
-  "createdAt": "2026-06-12T08:03:31.550Z",
-  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-170330",
-  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-170330",
+  "createdAt": "2026-06-12T08:16:04.870Z",
+  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-171604",
+  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-171604",
   "purpose": "SEO/detail-page upload package only",
   "excludedByDesign": [
     "index.html",
@@ -11,12 +11,6 @@
     "Apps Script"
   ],
   "topLevelItems": [
-    {
-      "name": "RELEASE_REPORT_check-result.txt",
-      "type": "file",
-      "bytes": 2203,
-      "sha256": "d28c3fd4e23d405ee7aeba54772a18d10cc5a11e0dc5c01af9f6cca3ed01b0a9"
-    },
     {
       "name": "RUN_SEO_UPLOAD_PACKAGE.bat",
       "type": "file",
@@ -80,8 +74,8 @@
     {
       "name": "tools",
       "type": "directory",
-      "fileCount": 5,
-      "totalBytes": 50510
+      "fileCount": 6,
+      "totalBytes": 53828
     },
     {
       "name": "wegovy",

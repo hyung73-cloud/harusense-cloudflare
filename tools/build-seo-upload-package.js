@@ -29,6 +29,7 @@ const sourceItems = [
   "tools/check-seo-release-safety.js",
   "tools/check-service-catalog-sync.js",
   "tools/check-service-profile-output.js",
+  "tools/check-upload-package.js",
   "data/treatments.catalog.json",
 ];
 
@@ -63,9 +64,11 @@ function main() {
   }
 
   writeUploadGuide();
-  writeReleaseReport();
   writeManifest();
   writeVerifyLinks();
+  writeReleaseReport();
+  runStep("Check upload package completeness", "tools/check-upload-package.js", [uploadDir]);
+  writeReleaseReport();
 
   console.log(JSON.stringify({
     ok: true,
