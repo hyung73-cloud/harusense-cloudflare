@@ -1,0 +1,74 @@
+Harusense SEO release check result
+
+Created at: 2026-06-12T06:59:22.514Z
+Work root: C:\Users\user\Documents\Codex\harusense_service_allowlist_work
+Build folder: C:\Users\user\Documents\Codex\harusense_SEO_BUILD_20260612-155921
+Upload folder: C:\Users\user\Documents\Codex\harusense_UPLOAD_ONLY_seo_release_20260612-155921
+
+Checks:
+1. Generate SEO pages: PASS (189ms)
+   {
+     "ok": true,
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-155921",
+     "clinics": 30,
+     "regionPages": 18,
+     "hubs": 3,
+     "paths": 52
+   }
+2. Check service catalog sync: PASS (82ms)
+   {
+     "ok": true,
+     "referenceFile": "data/treatments.catalog.json",
+     "serviceKeyCount": 25,
+     "files": {
+       "index.html": 25,
+       "en/index.html": 25,
+       "tools/generate-seo-pages.js": 25,
+       "data/treatments.catalog.json": 25
+     },
+     "mismatches": []
+   }
+3. Check Newsense-only service profile: PASS (94ms)
+   {
+     "ok": true,
+     "mode": "allowlist",
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-155921",
+     "totalClinicPages": 31,
+     "serviceProfilePages": 1,
+     "allowedInstitutionNos": [
+       "12339695"
+     ],
+     "serviceInstitutionNos": [
+       "12339695"
+     ],
+     "unexpectedInstitutionNos": [],
+     "missingInstitutionNos": []
+   }
+4. Check SEO release safety: PASS (139ms)
+   {
+     "ok": true,
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-155921",
+     "brokenTextFiles": [],
+     "serviceProfile": {
+       "mode": "allowlist",
+       "servicePages": [
+         {
+           "file": "clinic/12339695-newsense/index.html",
+           "institutionNo": "12339695"
+         }
+       ],
+       "unexpected": [],
+       "missing": []
+     },
+     "sitemap": {
+       "exists": true,
+       "urls": 52,
+       "broken": false
+     }
+   }
+
+Public scope:
+- Additional service sections are shown only on Newsense clinic detail page.
+- Other clinic detail pages must not show additional service sections yet.
+
+This package does not include main map, login, QR, API, or Apps Script files.
