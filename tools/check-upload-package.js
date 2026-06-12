@@ -17,6 +17,7 @@ const requiredTopLevel = [
   "RELEASE_REPORT_check-result.txt",
   "POST_UPLOAD_CHECKLIST.txt",
   "SERVICE_EXPANSION_GUIDE.md",
+  "SERVICE_PROFILE_ROLLOUT.md",
   "VERIFY_LINKS.html",
   "UPLOAD_README.txt",
 ];
@@ -36,6 +37,7 @@ const requiredFiles = [
   "tools/check-service-profile-output.js",
   "tools/check-upload-package.js",
   "SERVICE_EXPANSION_GUIDE.md",
+  "SERVICE_PROFILE_ROLLOUT.md",
   "clinic/12339695-newsense/index.html",
   "mounjaro/seoul/mapo/index.html",
   "wegovy/seoul/mapo/index.html",

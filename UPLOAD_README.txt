@@ -7,6 +7,7 @@ Upload these items to the GitHub repository root:
 - sitemap.xml
 - seo-planning/
 - SERVICE_EXPANSION_GUIDE.md
+- SERVICE_PROFILE_ROLLOUT.md
 - tools/generate-seo-pages.js
 - tools/check-seo-release-safety.js
 - tools/check-service-catalog-sync.js
