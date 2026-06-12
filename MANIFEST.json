@@ -1,7 +1,7 @@
 {
-  "createdAt": "2026-06-12T07:30:05.212Z",
-  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-163004",
-  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-163004",
+  "createdAt": "2026-06-12T08:03:31.550Z",
+  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-170330",
+  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-170330",
   "purpose": "SEO/detail-page upload package only",
   "excludedByDesign": [
     "index.html",
@@ -15,7 +15,31 @@
       "name": "RELEASE_REPORT_check-result.txt",
       "type": "file",
       "bytes": 2203,
-      "sha256": "8882f5417a18099eddabd66053b1e338430dda86d5575e7f2807d6481dc07a3c"
+      "sha256": "d28c3fd4e23d405ee7aeba54772a18d10cc5a11e0dc5c01af9f6cca3ed01b0a9"
+    },
+    {
+      "name": "RUN_SEO_UPLOAD_PACKAGE.bat",
+      "type": "file",
+      "bytes": 452,
+      "sha256": "68ecbe6de5e128565d308fa363453854563ed7c1aa5199b9a8b60691df02aba8"
+    },
+    {
+      "name": "SEO_UPLOAD_OPERATING_NOTE.md",
+      "type": "file",
+      "bytes": 928,
+      "sha256": "955e3c4737b7c2b4dc221644dae9d40e5c752ea30a21b321816eb0639723becf"
+    },
+    {
+      "name": "SEO_업로드_운영메모.md",
+      "type": "file",
+      "bytes": 1539,
+      "sha256": "e02df806318ff483a6fb17d42357f494655edf1e41904e64fc72125515ac9fcd"
+    },
+    {
+      "name": "SEO_업로드묶음_만들기.bat",
+      "type": "file",
+      "bytes": 452,
+      "sha256": "68ecbe6de5e128565d308fa363453854563ed7c1aa5199b9a8b60691df02aba8"
     },
     {
       "name": "UPLOAD_README.txt",
@@ -56,8 +80,8 @@
     {
       "name": "tools",
       "type": "directory",
-      "fileCount": 4,
-      "totalBytes": 40608
+      "fileCount": 5,
+      "totalBytes": 50510
     },
     {
       "name": "wegovy",

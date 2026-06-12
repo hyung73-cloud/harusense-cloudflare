@@ -1,21 +1,21 @@
 Harusense SEO release check result
 
-Created at: 2026-06-12T07:30:05.211Z
+Created at: 2026-06-12T08:03:31.548Z
 Work root: C:\Users\user\Documents\Codex\harusense_service_allowlist_work
-Build folder: C:\Users\user\Documents\Codex\harusense_SEO_BUILD_20260612-163004
-Upload folder: C:\Users\user\Documents\Codex\harusense_UPLOAD_ONLY_seo_release_20260612-163004
+Build folder: C:\Users\user\Documents\Codex\harusense_SEO_BUILD_20260612-170330
+Upload folder: C:\Users\user\Documents\Codex\harusense_UPLOAD_ONLY_seo_release_20260612-170330
 
 Checks:
-1. Generate SEO pages: PASS (184ms)
+1. Generate SEO pages: PASS (186ms)
    {
      "ok": true,
-     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-163004",
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-170330",
      "clinics": 30,
      "regionPages": 18,
      "hubs": 3,
      "paths": 52
    }
-2. Check service catalog sync: PASS (79ms)
+2. Check service catalog sync: PASS (80ms)
    {
      "ok": true,
      "referenceFile": "data/treatments.catalog.json",
@@ -28,11 +28,11 @@ Checks:
      },
      "mismatches": []
    }
-3. Check Newsense-only service profile: PASS (102ms)
+3. Check Newsense-only service profile: PASS (112ms)
    {
      "ok": true,
      "mode": "allowlist",
-     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-163004",
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-170330",
      "totalClinicPages": 31,
      "serviceProfilePages": 1,
      "allowedInstitutionNos": [
@@ -44,10 +44,10 @@ Checks:
      "unexpectedInstitutionNos": [],
      "missingInstitutionNos": []
    }
-4. Check SEO release safety: PASS (131ms)
+4. Check SEO release safety: PASS (106ms)
    {
      "ok": true,
-     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-163004",
+     "outputRoot": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-170330",
      "brokenTextFiles": [],
      "serviceProfile": {
        "mode": "allowlist",
