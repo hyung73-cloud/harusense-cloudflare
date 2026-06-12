@@ -433,7 +433,6 @@
   var section = document.getElementById("cd-live-service-section");
   if (!section) return;
   var institutionNo = section.getAttribute("data-institution-no");
-  if (institutionNo !== "12339695") return;
   var groups = [{"title":"수액치료","items":[["iv_cold","감기 수액"],["iv_enteritis","장염 수액"],["iv_flu","독감 수액"],["iv_fatigue","만성피로 수액"],["iv_hangover","숙취 수액"],["iv_white","백옥주사"],["iv_placenta","태반주사"],["iv_cinderella","신데렐라주사"],["iv_garlic","마늘주사"],["iv_vitamin","비타민주사"]]},{"title":"보톡스","items":[["botox_forehead","이마 보톡스"],["botox_glabella","미간 보톡스"],["botox_jaw","사각턱 보톡스"],["botox_trapezius","승모근 보톡스"],["botox_calf","종아리 보톡스"],["botox_armpit","겨드랑이 보톡스"],["botox_chin","자갈턱 보톡스"],["botox_mouth_corner","입꼬리 보톡스"]]},{"title":"예방접종","items":[["vaccine_flu","독감 예방접종"],["vaccine_shingles","대상포진 예방접종"],["vaccine_pneumococcus","폐렴구균 예방접종"],["vaccine_hepatitis_b","B형간염 예방접종"],["vaccine_hepatitis_a","A형간염 예방접종"],["vaccine_hpv","HPV 예방접종"],["vaccine_tdap","Tdap 예방접종"]]}];
   function formatPrice(value) {
     var n = Number(String(value || "").replace(/[^0-9]/g, ""));
@@ -469,9 +468,7 @@
         if (!price) return;
         rows += '<div class="cd-service-item"><span class="cd-service-name">' + escHtml(pair[1]) + '</span><span class="cd-service-price">' + escHtml(price) + '</span></div>';
       });
-      if (rows) {
-        html += '<div class="cd-live-service-group"><h4>' + escHtml(group.title) + '</h4><div class="cd-service-grid">' + rows + '</div></div>';
-      }
+      if (rows) html += '<div class="cd-live-service-group"><h4>' + escHtml(group.title) + '</h4><div class="cd-service-grid">' + rows + '</div></div>';
     });
     if (!html) return;
     var body = section.querySelector(".cd-live-service-body");
@@ -485,6 +482,6 @@
 <div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div><div class="cd-region-links"><a class="cd-chip cd-chip-primary" href="/mounjaro/seoul/mapo/">마포구 마운자로 가격</a>
 <a class="cd-chip cd-chip-primary" href="/wegovy/seoul/mapo/">마포구 위고비 가격</a></div>
 <div class="cd-section-head"><h2>확인 안내</h2></div>
-<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 GLP-1 가격정보 지도입니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p></main>
+<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 가격정보 지도입니다. GLP-1 가격은 지도에서 비교할 수 있으며, 보톡스·수액·주사 가격은 기관 상세페이지에 순차 반영합니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p></main>
 </body>
 </html>

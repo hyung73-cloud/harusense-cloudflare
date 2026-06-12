@@ -1,7 +1,7 @@
 {
-  "version": "2026-06-11-treatment-catalog-service-complete-v2",
+  "version": "2026-06-12-treatment-catalog-service-complete-korean-fix",
   "status": "stable-draft",
-  "note": "GLP-1 is active for map and regional SEO. Botox, IV/injection, and vaccine are ready for clinic detail pages only; regional SEO stays disabled until enough real prices exist.",
+  "note": "GLP-1은 지도와 지역 SEO에 사용합니다. 보톡스, 수액·주사, 예방접종은 기관 상세페이지 확장용이며 충분한 실제 가격 데이터가 쌓일 때까지 지역 SEO는 비활성화합니다.",
   "groups": [
     {
       "group_key": "glp1",
@@ -35,7 +35,7 @@
       "seo_enabled": false,
       "map_enabled": false,
       "expansion_status": "clinic-detail-ready",
-      "recommended_first_step": "기관 상세페이지에 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "recommended_first_step": "기관 상세페이지에서 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분히 쌓인 뒤 활성화합니다.",
       "products": [
         { "product_key": "forehead_botox", "ko": "이마보톡스", "root": "botox/forehead", "price_key_prefix": "botox_forehead", "unit_type": "service", "variants": ["1회"] },
         { "product_key": "glabella_botox", "ko": "미간보톡스", "root": "botox/glabella", "price_key_prefix": "botox_glabella", "unit_type": "service", "variants": ["1회"] },
@@ -53,7 +53,7 @@
       "seo_enabled": false,
       "map_enabled": false,
       "expansion_status": "clinic-detail-ready",
-      "recommended_first_step": "기관 상세페이지에 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "recommended_first_step": "기관 상세페이지에서 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분히 쌓인 뒤 활성화합니다.",
       "products": [
         { "product_key": "cold_iv", "ko": "감기 수액", "root": "iv/cold", "price_key_prefix": "iv_cold", "unit_type": "service", "variants": ["1회"] },
         { "product_key": "enteritis_iv", "ko": "장염 수액", "root": "iv/enteritis", "price_key_prefix": "iv_enteritis", "unit_type": "service", "variants": ["1회"] },
@@ -73,7 +73,7 @@
       "seo_enabled": false,
       "map_enabled": false,
       "expansion_status": "clinic-detail-ready",
-      "recommended_first_step": "기관 상세페이지에 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분해진 뒤 활성화합니다.",
+      "recommended_first_step": "기관 상세페이지에서 실제 입력 가격이 있는 항목만 표시합니다. 지역 SEO 페이지는 데이터가 충분히 쌓인 뒤 활성화합니다.",
       "products": [
         { "product_key": "flu_vaccine", "ko": "독감예방접종", "root": "vaccine/flu", "price_key_prefix": "vaccine_flu", "unit_type": "service", "variants": ["1회"] },
         { "product_key": "shingles_vaccine", "ko": "대상포진예방접종", "root": "vaccine/shingles", "price_key_prefix": "vaccine_shingles", "unit_type": "service", "variants": ["1회"] },
@@ -88,13 +88,13 @@
   "rules": {
     "add_product_flow": [
       "1. treatments.catalog.json에 product를 먼저 추가합니다.",
-      "2. 입력창 저장 key와 price_key_prefix가 같은지 확인합니다.",
+      "2. 입력창 대상 key와 price_key_prefix가 같은지 확인합니다.",
       "3. 실제 가격 데이터가 충분해지기 전에는 seo_enabled=false를 유지합니다.",
       "4. 기관 상세페이지에는 가격이 있는 항목만 표시합니다."
     ],
     "safety": [
       "지도 가격지도에는 map_enabled=true인 GLP-1만 사용합니다.",
-      "보톡스/수액/예방접종은 기관 상세페이지 확장용입니다.",
+      "보톡스·수액·예방접종은 기관 상세페이지 확장용입니다.",
       "빈 가격 항목은 화면에 노출하지 않습니다."
     ]
   }

@@ -1,4 +1,4 @@
-const fs = require("fs");
+﻿const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -6,6 +6,7 @@ const OUT_ROOT = process.env.HARUSENSE_SEO_OUTPUT_ROOT ? path.resolve(process.en
 const SITE = "https://harusense.com";
 const TODAY = new Date().toISOString().slice(0, 10);
 const PUBLIC_SERVICE_DETAIL_ENABLED = false;
+
 function readServiceProfileAllowlist() {
   try {
     const file = path.join(ROOT, "data", "service-profile-allowlist.json");
@@ -18,45 +19,46 @@ function readServiceProfileAllowlist() {
     return { all: false, nos: new Set(["12339695"]) };
   }
 }
+
 const PUBLIC_SERVICE_PROFILE_ALLOWLIST = readServiceProfileAllowlist();
+const LIVE_SERVICE_GROUPS = [
+  { title: "수액치료", items: [
+    ["iv_cold", "감기 수액"],
+    ["iv_enteritis", "장염 수액"],
+    ["iv_flu", "독감 수액"],
+    ["iv_fatigue", "만성피로 수액"],
+    ["iv_hangover", "숙취 수액"],
+    ["iv_white", "백옥주사"],
+    ["iv_placenta", "태반주사"],
+    ["iv_cinderella", "신데렐라주사"],
+    ["iv_garlic", "마늘주사"],
+    ["iv_vitamin", "비타민주사"]
+  ]},
+  { title: "보톡스", items: [
+    ["botox_forehead", "이마 보톡스"],
+    ["botox_glabella", "미간 보톡스"],
+    ["botox_jaw", "사각턱 보톡스"],
+    ["botox_trapezius", "승모근 보톡스"],
+    ["botox_calf", "종아리 보톡스"],
+    ["botox_armpit", "겨드랑이 보톡스"],
+    ["botox_chin", "자갈턱 보톡스"],
+    ["botox_mouth_corner", "입꼬리 보톡스"]
+  ]},
+  { title: "예방접종", items: [
+    ["vaccine_flu", "독감 예방접종"],
+    ["vaccine_shingles", "대상포진 예방접종"],
+    ["vaccine_pneumococcus", "폐렴구균 예방접종"],
+    ["vaccine_hepatitis_b", "B형간염 예방접종"],
+    ["vaccine_hepatitis_a", "A형간염 예방접종"],
+    ["vaccine_hpv", "HPV 예방접종"],
+    ["vaccine_tdap", "Tdap 예방접종"]
+  ]}
+];
 
 function isServiceProfilePublic(clinic) {
   const institutionNo = String(clinic.institution_no || clinic.id || "").trim();
   return Boolean(institutionNo && (PUBLIC_SERVICE_PROFILE_ALLOWLIST.all || PUBLIC_SERVICE_PROFILE_ALLOWLIST.nos.has(institutionNo)));
 }
-const LIVE_SERVICE_GROUPS = [
-  { title: "\uC218\uC561\uCE58\uB8CC", items: [
-    ["iv_cold", "\uAC10\uAE30 \uC218\uC561"],
-    ["iv_enteritis", "\uC7A5\uC5FC \uC218\uC561"],
-    ["iv_flu", "\uB3C5\uAC10 \uC218\uC561"],
-    ["iv_fatigue", "\uB9CC\uC131\uD53C\uB85C \uC218\uC561"],
-    ["iv_hangover", "\uC219\uCDE8 \uC218\uC561"],
-    ["iv_white", "\uBC31\uC625\uC8FC\uC0AC"],
-    ["iv_placenta", "\uD0DC\uBC18\uC8FC\uC0AC"],
-    ["iv_cinderella", "\uC2E0\uB370\uB810\uB77C\uC8FC\uC0AC"],
-    ["iv_garlic", "\uB9C8\uB298\uC8FC\uC0AC"],
-    ["iv_vitamin", "\uBE44\uD0C0\uBBFC\uC8FC\uC0AC"]
-  ]},
-  { title: "\uBCF4\uD1A1\uC2A4", items: [
-    ["botox_forehead", "\uC774\uB9C8 \uBCF4\uD1A1\uC2A4"],
-    ["botox_glabella", "\uBBF8\uAC04 \uBCF4\uD1A1\uC2A4"],
-    ["botox_jaw", "\uC0AC\uAC01\uD131 \uBCF4\uD1A1\uC2A4"],
-    ["botox_trapezius", "\uC2B9\uBAA8\uADFC \uBCF4\uD1A1\uC2A4"],
-    ["botox_calf", "\uC885\uC544\uB9AC \uBCF4\uD1A1\uC2A4"],
-    ["botox_armpit", "\uACA8\uB4DC\uB791\uC774 \uBCF4\uD1A1\uC2A4"],
-    ["botox_chin", "\uC790\uAC08\uD131 \uBCF4\uD1A1\uC2A4"],
-    ["botox_mouth_corner", "\uC785\uAF2C\uB9AC \uBCF4\uD1A1\uC2A4"]
-  ]},
-  { title: "\uC608\uBC29\uC811\uC885", items: [
-    ["vaccine_flu", "\uB3C5\uAC10 \uC608\uBC29\uC811\uC885"],
-    ["vaccine_shingles", "\uB300\uC0C1\uD3EC\uC9C4 \uC608\uBC29\uC811\uC885"],
-    ["vaccine_pneumococcus", "\uD3D0\uB834\uAD6C\uADE0 \uC608\uBC29\uC811\uC885"],
-    ["vaccine_hepatitis_b", "B\uD615\uAC04\uC5FC \uC608\uBC29\uC811\uC885"],
-    ["vaccine_hepatitis_a", "A\uD615\uAC04\uC5FC \uC608\uBC29\uC811\uC885"],
-    ["vaccine_hpv", "HPV \uC608\uBC29\uC811\uC885"],
-    ["vaccine_tdap", "Tdap \uC608\uBC29\uC811\uC885"]
-  ]}
-];
 
 const REGION_NAMES = {
   seoul: "서울특별시", gyeonggi: "경기도", incheon: "인천광역시", busan: "부산광역시",
@@ -212,10 +214,10 @@ function renderLiveServiceBlock(clinic) {
   return [
     '<section class="cd-group cd-live-service-section is-hidden" id="cd-live-service-section" data-institution-no="' + esc(institutionNo) + '">',
     '  <div class="cd-group-head">',
-    '    <h3>\uCD94\uAC00 \uC9C4\uB8CC \uD56D\uBAA9 <span class="cd-group-badge">\uAE30\uAD00 \uC9C1\uC811 \uC785\uB825</span></h3>',
+    '    <h3>추가 진료 항목 <span class="cd-group-badge">기관 직접 입력</span></h3>',
     '  </div>',
     '  <div class="cd-group-body">',
-    '    <p class="cd-small">\uAE30\uAD00\uC774 \uC9C1\uC811 \uC785\uB825\uD55C \uC218\uC561\u00B7\uBCF4\uD1A1\uC2A4\u00B7\uC608\uBC29\uC811\uC885 \uAC00\uACA9\uC785\uB2C8\uB2E4.</p>',
+    '    <p class="cd-small">기관이 직접 입력한 수액·보톡스·예방접종 가격입니다.</p>',
     '    <div class="cd-live-service-body"></div>',
     '  </div>',
     '</section>',
@@ -224,11 +226,10 @@ function renderLiveServiceBlock(clinic) {
     '  var section = document.getElementById("cd-live-service-section");',
     '  if (!section) return;',
     '  var institutionNo = section.getAttribute("data-institution-no");',
-    '  if (institutionNo !== "' + esc(institutionNo) + '") return;',
     '  var groups = ' + groupsJson + ';',
     '  function formatPrice(value) {',
     '    var n = Number(String(value || "").replace(/[^0-9]/g, ""));',
-    '    return n > 0 ? n.toLocaleString("ko-KR") + "\uC6D0" : "";',
+    '    return n > 0 ? n.toLocaleString("ko-KR") + "원" : "";',
     '  }',
     '  function getPrice(items, key) {',
     '    var row = items && items[key];',
@@ -260,9 +261,7 @@ function renderLiveServiceBlock(clinic) {
     '        if (!price) return;',
     '        rows += \'<div class="cd-service-item"><span class="cd-service-name">\' + escHtml(pair[1]) + \'</span><span class="cd-service-price">\' + escHtml(price) + \'</span></div>\';',
     '      });',
-    '      if (rows) {',
-    '        html += \'<div class="cd-live-service-group"><h4>\' + escHtml(group.title) + \'</h4><div class="cd-service-grid">\' + rows + \'</div></div>\';',
-    '      }',
+    '      if (rows) html += \'<div class="cd-live-service-group"><h4>\' + escHtml(group.title) + \'</h4><div class="cd-service-grid">\' + rows + \'</div></div>\';',
     '    });',
     '    if (!html) return;',
     '    var body = section.querySelector(".cd-live-service-body");',
@@ -325,7 +324,7 @@ ${renderLiveServiceBlock(clinic)}
 ${providerNote ? `<div class="cd-section-head"><h2>기관 안내</h2></div><div class="cd-note">${esc(providerNote)}</div>` : ""}
 ${regionLinks ? `<div class="cd-section-head"><h2>이 지역 가격 더 보기</h2></div><div class="cd-region-links">${regionLinks}</div>` : ""}
 <div class="cd-section-head"><h2>확인 안내</h2></div>
-<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 GLP-1 가격정보 지도입니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p>`;
+<p class="cd-disclaimer">하루센스는 병·의원 광고비와 중개수수료 없이 운영되는 가격정보 지도입니다. GLP-1 가격은 지도에서 비교할 수 있으며, 보톡스·수액·주사 가격은 기관 상세페이지에 순차 반영합니다. 표시 가격은 수집 시점 기준이며, 방문 전 기관에 최종 확인해주세요.</p>`;
 
   write(`clinic/${slug}/index.html`, pageShell({
     title: `${clinic.name} ${treatmentPart} 가격 | 하루센스`,
@@ -351,7 +350,7 @@ function renderClinicHub(clinics, catalog, regionalPaths) {
     return `<a class="card" href="/clinic/${slug}/"><strong>${esc(clinic.name)}</strong><div class="small">${esc(regionLabel(clinic))} · ${esc(typeLabel(clinic))}</div><div class="meta">${priceChips}</div></a>`;
   }).join("\n");
   const regionLinks = regionalPaths.map(p => `<a class="cd-chip cd-chip-primary" href="${p.url}">${esc(p.label)}</a>`).join("\n");
-  const body = `<section class="cd-hero"><h1>마운자로·위고비 가격 등록 기관</h1><p class="cd-lead">하루센스 가격지도에 표시되는 병·의원과 약국의 마운자로·위고비 가격정보입니다.</p><div class="cd-meta"><span class="cd-chip cd-chip-primary">기관 상세 ${clinics.length}곳</span><span class="cd-chip cd-chip-primary">지역 가격 ${regionalPaths.length}개</span><span class="cd-chip">광고비 0원</span></div></section><div class="cd-section-head"><h2>지역별 가격 바로가기</h2></div><div class="cd-region-links">${regionLinks}</div><div class="cd-section-head"><h2>기관 목록</h2></div><div class="grid">${items}</div>`;
+  const body = `<section class="cd-hero"><h1>마운자로·위고비 가격 등록 기관</h1><p class="cd-lead">하루센스 가격지도에 표시되는 병·의원과 약국의 상세 가격정보입니다. 향후 보톡스와 수액·주사 가격도 기관 상세페이지에 순차 반영됩니다.</p><div class="cd-meta"><span class="cd-chip cd-chip-primary">기관 상세 ${clinics.length}곳</span><span class="cd-chip cd-chip-primary">지역 가격 ${regionalPaths.length}개</span><span class="cd-chip">광고비 0원</span></div></section><div class="cd-section-head"><h2>지역별 가격 바로가기</h2></div><div class="cd-region-links">${regionLinks}</div><div class="cd-section-head"><h2>기관 목록</h2></div><div class="grid">${items}</div>`;
   write("clinic/index.html", pageShell({ title: "마운자로·위고비 가격 등록 기관 | 하루센스", description: "하루센스에 등록된 병·의원과 약국의 마운자로 가격, 위고비 가격, 재고 정보를 확인하세요.", canonicalPath: "/clinic/", body, jsonLd: [breadcrumbJson([{ name: "홈", url: "/" }, { name: "기관", url: "/clinic/" }])] }));
   return "/clinic/";
 }
@@ -470,6 +469,4 @@ function main() {
 }
 
 main();
-
-
 
