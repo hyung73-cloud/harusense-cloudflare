@@ -1,0 +1,76 @@
+{
+  "createdAt": "2026-06-12T07:30:05.212Z",
+  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-163004",
+  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-163004",
+  "purpose": "SEO/detail-page upload package only",
+  "excludedByDesign": [
+    "index.html",
+    "en/index.html",
+    "clinics.json",
+    "functions/api/",
+    "Apps Script"
+  ],
+  "topLevelItems": [
+    {
+      "name": "RELEASE_REPORT_check-result.txt",
+      "type": "file",
+      "bytes": 2203,
+      "sha256": "8882f5417a18099eddabd66053b1e338430dda86d5575e7f2807d6481dc07a3c"
+    },
+    {
+      "name": "UPLOAD_README.txt",
+      "type": "file",
+      "bytes": 635,
+      "sha256": "e7e306757feeeaf562d0e8def26f3fb9b926231469ddcf8fb2c3adb7aaa315f6"
+    },
+    {
+      "name": "clinic",
+      "type": "directory",
+      "fileCount": 31,
+      "totalBytes": 417755
+    },
+    {
+      "name": "data",
+      "type": "directory",
+      "fileCount": 1,
+      "totalBytes": 7523
+    },
+    {
+      "name": "mounjaro",
+      "type": "directory",
+      "fileCount": 17,
+      "totalBytes": 212185
+    },
+    {
+      "name": "seo-planning",
+      "type": "directory",
+      "fileCount": 1,
+      "totalBytes": 1589
+    },
+    {
+      "name": "sitemap.xml",
+      "type": "file",
+      "bytes": 5872,
+      "sha256": "3b60411e4233c73a6babae31aa144e61f1d44d962f8f3371157aec233ab2c7a8"
+    },
+    {
+      "name": "tools",
+      "type": "directory",
+      "fileCount": 4,
+      "totalBytes": 40608
+    },
+    {
+      "name": "wegovy",
+      "type": "directory",
+      "fileCount": 4,
+      "totalBytes": 48433
+    }
+  ],
+  "safety": {
+    "mainMapIncluded": false,
+    "loginIncluded": false,
+    "qrApiIncluded": false,
+    "appsScriptIncluded": false,
+    "additionalServicesScope": "Newsense only allowlist"
+  }
+}
