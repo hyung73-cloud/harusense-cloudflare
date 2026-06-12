@@ -1,7 +1,7 @@
 {
-  "createdAt": "2026-06-12T08:58:50.286Z",
-  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-175849",
-  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-175849",
+  "createdAt": "2026-06-12T10:32:26.989Z",
+  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-193226",
+  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-193226",
   "purpose": "SEO/detail-page upload package only",
   "excludedByDesign": [
     "index.html",
@@ -15,7 +15,7 @@
       "name": "POST_UPLOAD_CHECKLIST.txt",
       "type": "file",
       "bytes": 1294,
-      "sha256": "343a8b24a797cd54f8aa9444b0b919728c30c9195b1b29b712f0d11ba16163d1"
+      "sha256": "8b0062b09d7513e88dc028c66684b83208c4ed68caf2df01e1e013b9f1a182a6"
     },
     {
       "name": "RUN_SEO_UPLOAD_PACKAGE.bat",
@@ -87,7 +87,7 @@
       "name": "tools",
       "type": "directory",
       "fileCount": 6,
-      "totalBytes": 55771
+      "totalBytes": 55901
     },
     {
       "name": "wegovy",

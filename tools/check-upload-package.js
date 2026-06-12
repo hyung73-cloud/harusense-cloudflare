@@ -15,6 +15,8 @@ const requiredTopLevel = [
   "tools",
   "MANIFEST.json",
   "RELEASE_REPORT_check-result.txt",
+  "POST_UPLOAD_CHECKLIST.txt",
+  "SERVICE_EXPANSION_GUIDE.md",
   "VERIFY_LINKS.html",
   "UPLOAD_README.txt",
 ];
@@ -32,6 +34,8 @@ const requiredFiles = [
   "tools/check-seo-release-safety.js",
   "tools/check-service-catalog-sync.js",
   "tools/check-service-profile-output.js",
+  "tools/check-upload-package.js",
+  "SERVICE_EXPANSION_GUIDE.md",
   "clinic/12339695-newsense/index.html",
   "mounjaro/seoul/mapo/index.html",
   "wegovy/seoul/mapo/index.html",

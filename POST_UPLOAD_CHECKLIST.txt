@@ -2,7 +2,7 @@ Harusense post-upload checklist
 
 1. Upload this package to the GitHub repository root.
    Upload folder:
-   C:\Users\user\Documents\Codex\harusense_UPLOAD_ONLY_seo_release_20260612-175849
+   C:\Users\user\Documents\Codex\harusense_UPLOAD_ONLY_seo_release_20260612-193226
 
 2. Wait until Cloudflare Pages deployment shows success.
 
