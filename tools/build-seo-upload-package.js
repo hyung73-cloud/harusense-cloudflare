@@ -64,6 +64,7 @@ function main() {
   }
 
   writeUploadGuide();
+  writePostUploadChecklist();
   writeManifest();
   writeVerifyLinks();
   writeReleaseReport();
@@ -79,6 +80,7 @@ function main() {
       ...sourceItems,
       "MANIFEST.json",
       "RELEASE_REPORT_check-result.txt",
+      "POST_UPLOAD_CHECKLIST.txt",
       "VERIFY_LINKS.html",
       "UPLOAD_README.txt",
     ],
@@ -162,6 +164,47 @@ function writeUploadGuide() {
     "",
   ];
   fs.writeFileSync(guidePath, lines.join("\r\n"), "utf8");
+}
+
+function writePostUploadChecklist() {
+  const target = path.join(uploadDir, "POST_UPLOAD_CHECKLIST.txt");
+  const lines = [
+    "Harusense post-upload checklist",
+    "",
+    "1. Upload this package to the GitHub repository root.",
+    "   Upload folder:",
+    `   ${uploadDir}`,
+    "",
+    "2. Wait until Cloudflare Pages deployment shows success.",
+    "",
+    "3. Open these live URLs and check the pages:",
+    "   https://harusense.com/clinic/12339695-newsense/",
+    "   https://harusense.com/mounjaro/seoul/mapo/",
+    "   https://harusense.com/wegovy/seoul/mapo/",
+    "   https://harusense.com/mounjaro/seoul/gangseo/",
+    "   https://harusense.com/mounjaro/gyeonggi/goyang/",
+    "   https://harusense.com/sitemap.xml",
+    "",
+    "4. Search Console indexing request priority:",
+    "   https://harusense.com/sitemap.xml",
+    "   https://harusense.com/clinic/12339695-newsense/",
+    "   https://harusense.com/mounjaro/seoul/mapo/",
+    "   https://harusense.com/wegovy/seoul/mapo/",
+    "   https://harusense.com/mounjaro/seoul/gangseo/",
+    "   https://harusense.com/mounjaro/gyeonggi/goyang/",
+    "",
+    "5. Safety scope for this release:",
+    "   - Main map is not included.",
+    "   - Login and QR API are not included.",
+    "   - clinics.json is not included.",
+    "   - Apps Script is not included.",
+    "   - Additional service sections are visible only on Newsense clinic detail page.",
+    "",
+    "6. If something looks wrong:",
+    "   Do not edit the live main map. Stop and report the exact URL and screenshot.",
+    "",
+  ];
+  fs.writeFileSync(target, lines.join("\r\n"), "utf8");
 }
 
 function writeReleaseReport() {
