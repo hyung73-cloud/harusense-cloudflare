@@ -10,14 +10,20 @@ function readServiceProfileAllowlist() {
   try {
     const file = path.join(ROOT, "data", "service-profile-allowlist.json");
     const parsed = JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
+    const mode = String(parsed.mode || "allowlist").trim().toLowerCase();
     const list = parsed.enabled_institution_nos || parsed.enabled_institutions || [];
     const normalized = list.map(value => String(value || "").trim()).filter(Boolean);
-    return new Set(normalized.length ? normalized : ["12339695"]);
+    return { all: mode === "all", nos: new Set(normalized.length ? normalized : ["12339695"]) };
   } catch {
-    return new Set(["12339695"]);
+    return { all: false, nos: new Set(["12339695"]) };
   }
 }
-const PUBLIC_SERVICE_PROFILE_INSTITUTION_NOS = readServiceProfileAllowlist();
+const PUBLIC_SERVICE_PROFILE_ALLOWLIST = readServiceProfileAllowlist();
+
+function isServiceProfilePublic(clinic) {
+  const institutionNo = String(clinic.institution_no || clinic.id || "").trim();
+  return Boolean(institutionNo && (PUBLIC_SERVICE_PROFILE_ALLOWLIST.all || PUBLIC_SERVICE_PROFILE_ALLOWLIST.nos.has(institutionNo)));
+}
 const LIVE_SERVICE_GROUPS = [
   { title: "\uC218\uC561\uCE58\uB8CC", items: [
     ["iv_cold", "\uAC10\uAE30 \uC218\uC561"],
@@ -201,7 +207,7 @@ function renderAllTreatmentGroups(clinic, catalog) {
 
 function renderLiveServiceBlock(clinic) {
   const institutionNo = String(clinic.institution_no || "").trim();
-  if (!PUBLIC_SERVICE_PROFILE_INSTITUTION_NOS.has(institutionNo)) return "";
+  if (!isServiceProfilePublic(clinic)) return "";
   const groupsJson = JSON.stringify(LIVE_SERVICE_GROUPS);
   return [
     '<section class="cd-group cd-live-service-section is-hidden" id="cd-live-service-section" data-institution-no="' + esc(institutionNo) + '">',

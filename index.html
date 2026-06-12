@@ -5420,6 +5420,7 @@ const ACCOUNT_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoYPEt
 /** true = 운영자가 시트에서 위도/경도 입력 후 지도표시상태=반영 처리한 신청기관만 지도에 추가합니다. 자동좌표는 사용하지 않습니다. */
 const SUBMITTED_CLINICS_ON_MAP = true;
 const REP_SERVICE_PROFILE_INSTITUTION_NOS = new Set(["12339695"]);
+let REP_SERVICE_PROFILE_ALL_INSTITUTIONS = false;
 let REP_SERVICE_PROFILE_ALLOWLIST_READY = false;
 let REP_ACTIVE_INSTITUTION_NO = "";
 let REP_ACTIVE_PASSWORD = "";
@@ -5433,6 +5434,7 @@ async function loadRepServiceProfileAllowlist() {
     const response = await fetch("/data/service-profile-allowlist.json", { cache: "no-store" });
     if (!response.ok) throw new Error("allowlist unavailable");
     const data = await response.json();
+    REP_SERVICE_PROFILE_ALL_INSTITUTIONS = String(data.mode || "allowlist").trim().toLowerCase() === "all";
     const list = data.enabled_institution_nos || data.enabled_institutions || [];
     const normalized = list.map(value => String(value || "").trim()).filter(Boolean);
     if (normalized.length) {
@@ -5659,7 +5661,7 @@ function renderRepresentativeEditor() {
       </details>`;
   }
 
-  const showServiceBoards = REP_SERVICE_PROFILE_INSTITUTION_NOS.has(String(REP_ACTIVE_INSTITUTION_NO || ""));
+  const showServiceBoards = REP_SERVICE_PROFILE_ALL_INSTITUTIONS || REP_SERVICE_PROFILE_INSTITUTION_NOS.has(String(REP_ACTIVE_INSTITUTION_NO || ""));
   const serviceBoards = showServiceBoards
     ? `<div class="rep-service-board">${REP_SERVICE_GROUPS.map(buildRepServiceGroupHtml).join("")}</div>`
     : "";

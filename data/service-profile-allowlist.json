@@ -1,6 +1,7 @@
 {
+  "mode": "allowlist",
   "enabled_institution_nos": [
     "12339695"
   ],
-  "note": "Additional service sections are exposed only for institutions listed here. Keep Newsense only until the test is approved."
+  "note": "mode=allowlist shows additional service sections only for listed institutions. Change mode to all only after the Newsense pilot is approved."
 }
