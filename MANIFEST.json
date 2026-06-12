@@ -1,7 +1,7 @@
 {
-  "createdAt": "2026-06-12T08:16:04.870Z",
-  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-171604",
-  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-171604",
+  "createdAt": "2026-06-12T08:32:42.424Z",
+  "uploadDir": "C:\\Users\\user\\Documents\\Codex\\harusense_UPLOAD_ONLY_seo_release_20260612-173241",
+  "buildDir": "C:\\Users\\user\\Documents\\Codex\\harusense_SEO_BUILD_20260612-173241",
   "purpose": "SEO/detail-page upload package only",
   "excludedByDesign": [
     "index.html",
@@ -68,14 +68,14 @@
     {
       "name": "sitemap.xml",
       "type": "file",
-      "bytes": 5872,
-      "sha256": "3b60411e4233c73a6babae31aa144e61f1d44d962f8f3371157aec233ab2c7a8"
+      "bytes": 6514,
+      "sha256": "1107d0316f6519595211e5e2bd3eaf62c01ea262796c369a45894899aa1e5144"
     },
     {
       "name": "tools",
       "type": "directory",
       "fileCount": 6,
-      "totalBytes": 53828
+      "totalBytes": 54017
     },
     {
       "name": "wegovy",

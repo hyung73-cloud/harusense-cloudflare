@@ -110,6 +110,7 @@ function readOptionalText(file) { try { return readText(file); } catch { return 
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
 function write(file, html) { const target = path.join(OUT_ROOT, file); ensureDir(path.dirname(target)); fs.writeFileSync(target, html, "utf8"); }
 function esc(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function xmlEsc(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
 function money(value) { return Number.isFinite(Number(value)) ? Number(value).toLocaleString("ko-KR") + "원" : "정보 수집중"; }
 function canonical(pathname) { return `${SITE}${pathname}`; }
 function cleanRegionText(value) { const text = String(value || "").trim(); return text && !text.includes("?") ? text : ""; }
@@ -421,7 +422,7 @@ function updateSitemap(paths, catalog) {
   }
   paths.forEach(p => urls.add(p));
   const sorted = Array.from(urls).sort((a, b) => a.localeCompare(b));
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sorted.map(p => `  <url><loc>${SITE}${p}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sorted.map(p => `  <url><loc>${xmlEsc(encodeURI(SITE + p))}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}\n</urlset>\n`;
   ensureDir(path.dirname(outputSitemapPath));
   fs.writeFileSync(outputSitemapPath, xml, "utf8");
 }
