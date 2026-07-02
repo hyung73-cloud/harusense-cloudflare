@@ -15,7 +15,7 @@
           "root": "mounjaro",
           "price_key_prefix": "mounjaro",
           "unit_type": "dose",
-          "variants": ["2.5mg", "5mg", "7.5mg", "10mg"],
+          "variants": ["2.5mg", "5mg", "7.5mg", "10mg", "12.5mg", "15mg"],
           "keywords": ["마운자로 가격지도", "마운자로 가격", "마운자로 지도"]
         },
         {
