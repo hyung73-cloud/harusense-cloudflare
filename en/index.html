@@ -1201,6 +1201,8 @@ body {
   background: #e5e7eb;
   margin-top: 10px;
 }
+.rep-position-map > div { min-height: 220px; }
+.rep-position-fallback { display:flex; align-items:center; justify-content:center; height:100%; min-height:220px; padding:16px; color:#475569; font-size:13px; text-align:center; }
 .rep-position-map[hidden] { display: none; }
 .rep-position-actions {
   display: flex;
@@ -5173,31 +5175,47 @@ function initRepresentativePositionMap(clinic) {
   const mapEl = document.getElementById("repPositionMap");
   const saveBtn = document.getElementById("repPositionSaveBtn");
   if (!mapEl || !clinic) return;
-  if (!window.google || !google.maps) {
-    setRepMessage("repSubmitMessage", "Map is not ready yet. Please try again shortly.", "error");
-    return;
-  }
 
   const lat = Number(clinic.lat);
   const lng = Number(clinic.lng);
   if (!validRepresentativePosition(lat, lng)) {
-    setRepMessage("repSubmitMessage", "Map is not ready yet. Please try again shortly.", "error");
+    setRepMessage("repSubmitMessage", "지도를 열 수 있는 좌표가 없습니다.", "error");
     return;
   }
 
   REP_POSITION_VALUE = { lat, lng };
+  updateRepresentativePositionMeta();
   mapEl.hidden = false;
+  mapEl.style.display = "block";
+  mapEl.innerHTML = "";
   if (saveBtn) saveBtn.hidden = false;
 
   const center = { lat, lng };
-  if (!REP_POSITION_MAP) {
+  REP_POSITION_MAP = null;
+  REP_POSITION_MARKER = null;
+
+  if (!window.google || !google.maps || !google.maps.Map || !google.maps.Marker) {
+    mapEl.innerHTML = '<div class="rep-position-fallback">지도가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.</div>';
+    setRepMessage("repSubmitMessage", "지도가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.", "error");
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    setTimeout(() => mountRepresentativePositionMap(mapEl, center, clinic), 160);
+  });
+}
+
+function mountRepresentativePositionMap(mapEl, center, clinic) {
+  if (!mapEl || mapEl.hidden) return;
+  try {
     REP_POSITION_MAP = new google.maps.Map(mapEl, {
       center,
       zoom: 18,
       mapTypeControl: false,
       fullscreenControl: false,
       streetViewControl: false,
-      clickableIcons: false
+      clickableIcons: false,
+      gestureHandling: "greedy"
     });
     REP_POSITION_MARKER = new google.maps.Marker({
       map: REP_POSITION_MAP,
@@ -5210,22 +5228,20 @@ function initRepresentativePositionMap(clinic) {
       REP_POSITION_VALUE = { lat: pos.lat(), lng: pos.lng() };
       updateRepresentativePositionMeta();
     });
-  } else {
-    REP_POSITION_MAP.setCenter(center);
-    REP_POSITION_MAP.setZoom(18);
-    REP_POSITION_MARKER.setPosition(center);
-    REP_POSITION_MARKER.setMap(REP_POSITION_MAP);
+
+    [80, 250, 600, 1000].forEach(delay => {
+      setTimeout(() => {
+        if (!REP_POSITION_MAP || !REP_POSITION_VALUE) return;
+        google.maps.event.trigger(REP_POSITION_MAP, "resize");
+        REP_POSITION_MAP.setCenter(REP_POSITION_VALUE);
+      }, delay);
+    });
+    updateRepresentativePositionMeta();
+  } catch (err) {
+    mapEl.innerHTML = '<div class="rep-position-fallback">지도를 여는 중 문제가 생겼습니다. 창을 닫았다가 다시 열어주세요.</div>';
+    setRepMessage("repSubmitMessage", "지도를 여는 중 문제가 생겼습니다. 창을 닫았다가 다시 열어주세요.", "error");
   }
-
-  setTimeout(() => {
-    if (REP_POSITION_MAP) {
-      google.maps.event.trigger(REP_POSITION_MAP, "resize");
-      REP_POSITION_MAP.setCenter(REP_POSITION_VALUE);
-    }
-  }, 80);
-  updateRepresentativePositionMeta();
 }
-
 async function saveRepresentativePosition() {
   if (!canEditRepresentativePosition()) {
     setRepMessage("repSubmitMessage", "Position editing is currently available only for the Newsense clinic test account.", "error");
@@ -6089,5 +6105,7 @@ window.initMap = initMap;
 
 </body>
 </html>
+
+
 
 
