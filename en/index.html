@@ -4639,6 +4639,7 @@ function renderClinicList() {
 }
 
 function renderResults() {
+  applyRepresentativeStickyPosition();
   renderMarkers();
   renderClinicList();
 }
@@ -5139,6 +5140,7 @@ const REP_POSITION_TEST_INSTITUTION_NO = "12339695";
 let REP_POSITION_MAP = null;
 let REP_POSITION_MARKER = null;
 let REP_POSITION_VALUE = null;
+let REP_POSITION_STICKY_OVERRIDE = null;
 
 function canEditRepresentativePosition() {
   return String(REP_ACTIVE_INSTITUTION_NO || "").trim() === REP_POSITION_TEST_INSTITUTION_NO;
@@ -5158,35 +5160,54 @@ function updateRepresentativePositionMeta() {
   meta.textContent = "Current coordinates: " + REP_POSITION_VALUE.lat.toFixed(7) + ", " + REP_POSITION_VALUE.lng.toFixed(7);
 }
 
-function applyRepresentativePositionLocalUpdate(lat, lng, meta = {}) {
-  if (!validRepresentativePosition(lat, lng)) return;
+function representativePositionMatchesClinic(clinic) {
+  const institutionNo = String(REP_ACTIVE_INSTITUTION_NO || "").trim();
+  if (!clinic || !institutionNo) return false;
+  const clinicInstitutionNo = String(clinic.institution_no || "").trim();
+  const clinicId = String(clinic.id || "").trim();
+  return clinicInstitutionNo === institutionNo || clinicId === institutionNo || clinicId === "clinic_" + institutionNo;
+}
+
+function patchRepresentativeClinicPosition(clinic, lat, lng, meta = {}) {
+  if (!clinic || !validRepresentativePosition(lat, lng) || !representativePositionMatchesClinic(clinic)) return false;
   const institutionNo = String(REP_ACTIVE_INSTITUTION_NO || "").trim();
   const touchedAt = meta.position_verified_at || new Date().toISOString();
   const verifiedBy = meta.position_verified_by || institutionNo;
-  const patchClinic = clinic => {
-    if (!clinic) return;
-    const clinicInstitutionNo = String(clinic.institution_no || "").trim();
-    const clinicId = String(clinic.id || "").trim();
-    const matches = clinicInstitutionNo === institutionNo || clinicId === institutionNo || clinicId === `clinic_${institutionNo}`;
-    if (!matches) return;
-    clinic.lat = lat;
-    clinic.lng = lng;
-    clinic.position_verified_at = touchedAt;
-    clinic.position_verified_by = verifiedBy;
-    clinic.updated_at = touchedAt;
-    clinic.updated_by = institutionNo;
-  };
+  clinic.lat = lat;
+  clinic.lng = lng;
+  clinic.position_verified_at = touchedAt;
+  clinic.position_verified_by = verifiedBy;
+  clinic.updated_at = touchedAt;
+  clinic.updated_by = institutionNo;
+  return true;
+}
 
+function applyRepresentativeStickyPosition() {
+  if (!REP_POSITION_STICKY_OVERRIDE || !validRepresentativePosition(REP_POSITION_STICKY_OVERRIDE.lat, REP_POSITION_STICKY_OVERRIDE.lng)) return false;
+  let changed = false;
   if (CLINIC_DATA && Array.isArray(CLINIC_DATA.clinics)) {
-    CLINIC_DATA.clinics.forEach(patchClinic);
+    CLINIC_DATA.clinics.forEach(clinic => {
+      changed = patchRepresentativeClinicPosition(clinic, REP_POSITION_STICKY_OVERRIDE.lat, REP_POSITION_STICKY_OVERRIDE.lng, REP_POSITION_STICKY_OVERRIDE) || changed;
+    });
   }
-  patchClinic(REP_LOGIN_CLINIC);
-  REP_POSITION_VALUE = { lat, lng };
+  changed = patchRepresentativeClinicPosition(REP_LOGIN_CLINIC, REP_POSITION_STICKY_OVERRIDE.lat, REP_POSITION_STICKY_OVERRIDE.lng, REP_POSITION_STICKY_OVERRIDE) || changed;
+  REP_POSITION_VALUE = { lat: REP_POSITION_STICKY_OVERRIDE.lat, lng: REP_POSITION_STICKY_OVERRIDE.lng };
+  return changed;
+}
+
+function applyRepresentativePositionLocalUpdate(lat, lng, meta = {}) {
+  if (!validRepresentativePosition(lat, lng)) return;
+  REP_POSITION_STICKY_OVERRIDE = {
+    lat,
+    lng,
+    position_verified_at: meta.position_verified_at || new Date().toISOString(),
+    position_verified_by: meta.position_verified_by || String(REP_ACTIVE_INSTITUTION_NO || "").trim()
+  };
+  applyRepresentativeStickyPosition();
   updateRepresentativePositionMeta();
   if (typeof renderResults === "function") renderResults();
   else refreshClinicDisplay();
 }
-
 function syncRepresentativePositionToSheet(data) {
   const lat = Number(data && data.lat);
   const lng = Number(data && data.lng);
@@ -6153,6 +6174,8 @@ window.initMap = initMap;
 
 </body>
 </html>
+
+
 
 
 
