@@ -5541,16 +5541,53 @@ function updateRepresentativePositionMeta() {
 }
 
 function applyRepresentativePositionLocalUpdate(lat, lng, meta = {}) {
-  const clinic = representativeClinic();
-  if (!clinic || !validRepresentativePosition(lat, lng)) return;
+  if (!validRepresentativePosition(lat, lng)) return;
+  const institutionNo = String(REP_ACTIVE_INSTITUTION_NO || "").trim();
   const touchedAt = meta.position_verified_at || new Date().toISOString();
-  clinic.lat = lat;
-  clinic.lng = lng;
-  clinic.position_verified_at = touchedAt;
-  clinic.position_verified_by = meta.position_verified_by || REP_ACTIVE_INSTITUTION_NO;
-  clinic.updated_at = touchedAt;
-  clinic.updated_by = REP_ACTIVE_INSTITUTION_NO;
-  refreshClinicDisplay();
+  const verifiedBy = meta.position_verified_by || institutionNo;
+  const patchClinic = clinic => {
+    if (!clinic) return;
+    const clinicInstitutionNo = String(clinic.institution_no || "").trim();
+    const clinicId = String(clinic.id || "").trim();
+    const matches = clinicInstitutionNo === institutionNo || clinicId === institutionNo || clinicId === `clinic_${institutionNo}`;
+    if (!matches) return;
+    clinic.lat = lat;
+    clinic.lng = lng;
+    clinic.position_verified_at = touchedAt;
+    clinic.position_verified_by = verifiedBy;
+    clinic.updated_at = touchedAt;
+    clinic.updated_by = institutionNo;
+  };
+
+  if (CLINIC_DATA && Array.isArray(CLINIC_DATA.clinics)) {
+    CLINIC_DATA.clinics.forEach(patchClinic);
+  }
+  patchClinic(REP_LOGIN_CLINIC);
+  REP_POSITION_VALUE = { lat, lng };
+  updateRepresentativePositionMeta();
+  if (typeof renderResults === "function") renderResults();
+  else refreshClinicDisplay();
+}
+
+function syncRepresentativePositionToSheet(data) {
+  const lat = Number(data && data.lat);
+  const lng = Number(data && data.lng);
+  if (!data || !data.ok || !validRepresentativePosition(lat, lng)) {
+    return Promise.resolve({ ok: false, skipped: true });
+  }
+  const clinic = representativeClinic() || REP_LOGIN_CLINIC || {};
+  return appsScriptApi("syncProviderPosition", {
+    institution_no: String(data.institution_no || REP_ACTIVE_INSTITUTION_NO || ""),
+    name: clinic.name || clinic.organization_name || "",
+    kind: clinic.type === "pharmacy" ? "약국" : "의원",
+    address: clinic.address || "",
+    district: clinic.district || "",
+    phone: clinic.phone || "",
+    lat: String(lat),
+    lng: String(lng),
+    position_verified_at: data.position_verified_at || new Date().toISOString(),
+    position_verified_by: data.position_verified_by || REP_ACTIVE_INSTITUTION_NO || ""
+  }).catch(err => ({ ok: false, error: err && err.message ? err.message : "sheet sync failed" }));
 }
 
 function initRepresentativePositionMap(clinic) {
@@ -5642,9 +5679,20 @@ async function saveRepresentativePosition() {
       lng: String(REP_POSITION_VALUE.lng)
     });
     if (!data || !data.ok) throw new Error((data && data.error) || "save failed");
-    applyRepresentativePositionLocalUpdate(Number(data.lat), Number(data.lng), data);
-    setRepMessage("repSubmitMessage", "위치가 저장되었습니다. 지도에 즉시 반영했습니다.", "success");
-    loadData({ force: true }).catch(() => {});
+    const savedLat = Number(data.lat);
+    const savedLng = Number(data.lng);
+    applyRepresentativePositionLocalUpdate(savedLat, savedLng, data);
+    setRepMessage("repSubmitMessage", "위치가 저장되었습니다. 지도에 즉시 반영했고 시트 반영을 확인 중입니다.", "success");
+    syncRepresentativePositionToSheet(data).then(sheetResult => {
+      if (sheetResult && sheetResult.ok) {
+        setRepMessage("repSubmitMessage", "위치가 저장되었습니다. 지도와 Map_Submissions에 반영했습니다.", "success");
+      } else {
+        setRepMessage("repSubmitMessage", "위치는 지도에 저장되었습니다. Map_Submissions 반영은 Apps Script 배포 후 자동 처리됩니다.", "success");
+      }
+    });
+    loadData({ force: true })
+      .then(() => applyRepresentativePositionLocalUpdate(savedLat, savedLng, data))
+      .catch(() => {});
   } catch (err) {
     setRepMessage("repSubmitMessage", err.message || "저장하지 못했습니다.", "error");
   }
@@ -6490,6 +6538,7 @@ window.initMap = initMap;
 
 </body>
 </html>
+
 
 
 

@@ -1,15 +1,15 @@
-const json = (data, status = 200) => new Response(JSON.stringify(data), {
+﻿const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
   headers: { "Content-Type": "application/json; charset=utf-8" }
 });
 
-const ACTIVE_STATUS = new Set(["활성", "active", "ACTIVE", ""]);
+const ACTIVE_STATUS = new Set(["?쒖꽦", "active", "ACTIVE", ""]);
 
 export async function onRequest(context) {
   const { request, env } = context;
   const db = env.DB || env.HARUSENSE_DB || env.HARUSENSE_D1;
   if (!db) {
-    return json({ ok: false, error: "D1 DB 연결이 없습니다. Cloudflare Pages에서 D1 binding 이름을 DB로 설정해주세요." }, 500);
+    return json({ ok: false, error: "D1 DB ?곌껐???놁뒿?덈떎. Cloudflare Pages?먯꽌 D1 binding ?대쫫??DB濡??ㅼ젙?댁＜?몄슂." }, 500);
   }
 
   let payload = {};
@@ -17,7 +17,7 @@ export async function onRequest(context) {
     try {
       payload = await request.json();
     } catch (err) {
-      return json({ ok: false, error: "요청 형식이 올바르지 않습니다." }, 400);
+      return json({ ok: false, error: "?붿껌 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." }, 400);
     }
   } else {
     const url = new URL(request.url);
@@ -45,10 +45,10 @@ export async function onRequest(context) {
       case "getQrFeedbacks":
         return json(await getQrFeedbacks(db, payload));
       default:
-        return json({ ok: false, error: "알 수 없는 요청입니다." }, 400);
+        return json({ ok: false, error: "?????녿뒗 ?붿껌?낅땲??" }, 400);
     }
   } catch (err) {
-    return json({ ok: false, error: "처리 중 오류가 발생했습니다: " + err.message }, 500);
+    return json({ ok: false, error: "泥섎━ 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎: " + err.message }, 500);
   }
 }
 
@@ -56,15 +56,15 @@ async function login(db, payload) {
   const institutionNo = clean(payload.institution_no);
   const password = String(payload.password || "");
   if (!institutionNo || !password) {
-    return { ok: false, error: "요양기관번호와 비밀번호를 입력해주세요." };
+    return { ok: false, error: "?붿뼇湲곌?踰덊샇? 鍮꾨?踰덊샇瑜??낅젰?댁＜?몄슂." };
   }
 
   const account = await findAccount(db, institutionNo);
   if (!account || !ACTIVE_STATUS.has(String(account.status || ""))) {
-    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
+    return { ok: false, error: "?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
   }
   if (!(await verifyPassword(password, account.password_salt, account.password_hash))) {
-    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
+    return { ok: false, error: "?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
   }
 
   await db.prepare("UPDATE provider_accounts SET last_login_at = datetime('now') WHERE institution_no = ?")
@@ -80,7 +80,7 @@ async function login(db, payload) {
       id: institutionNo,
       institution_no: institutionNo,
       name: account.organization_name || "",
-      type: account.kind === "약국" ? "pharmacy" : "clinic",
+      type: account.kind === "?쎄뎅" ? "pharmacy" : "clinic",
       phone: account.phone || ""
     }
   };
@@ -91,19 +91,19 @@ async function changePassword(db, payload) {
   const currentPassword = String(payload.current_password || "");
   const newPassword = String(payload.new_password || "");
   if (!institutionNo || !currentPassword || !newPassword) {
-    return { ok: false, error: "필수 정보가 누락되었습니다." };
+    return { ok: false, error: "?꾩닔 ?뺣낫媛 ?꾨씫?섏뿀?듬땲??" };
   }
   if (newPassword.length < 8) {
-    return { ok: false, error: "새 비밀번호는 8자 이상이어야 합니다." };
+    return { ok: false, error: "??鍮꾨?踰덊샇??8???댁긽?댁뼱???⑸땲??" };
   }
   if (currentPassword === newPassword) {
-    return { ok: false, error: "새 비밀번호는 임시 비밀번호와 달라야 합니다." };
+    return { ok: false, error: "??鍮꾨?踰덊샇???꾩떆 鍮꾨?踰덊샇? ?щ씪???⑸땲??" };
   }
 
   const account = await findAccount(db, institutionNo);
-  if (!account) return { ok: false, error: "계정을 찾을 수 없습니다." };
+  if (!account) return { ok: false, error: "怨꾩젙??李얠쓣 ???놁뒿?덈떎." };
   if (!(await verifyPassword(currentPassword, account.password_salt, account.password_hash))) {
-    return { ok: false, error: "현재 비밀번호가 맞지 않습니다." };
+    return { ok: false, error: "?꾩옱 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
   }
 
   const salt = crypto.randomUUID();
@@ -113,7 +113,7 @@ async function changePassword(db, payload) {
     SET password_salt = ?, password_hash = ?, temp_password = '', first_password_changed = 1,
         updated_at = datetime('now'), note = ?
     WHERE institution_no = ?
-  `).bind(salt, hash, "비밀번호 변경 완료: " + new Date().toISOString(), institutionNo).run();
+  `).bind(salt, hash, "鍮꾨?踰덊샇 蹂寃??꾨즺: " + new Date().toISOString(), institutionNo).run();
 
   return { ok: true };
 }
@@ -134,33 +134,33 @@ const institutionNo = clean(payload.institution_no);
   const password = String(payload.password || "");
   const itemsJson = String(payload.items_json || "");
   if (!institutionNo || !password || !itemsJson) {
-    return { ok: false, error: "저장할 정보가 부족합니다." };
+    return { ok: false, error: "??ν븷 ?뺣낫媛 遺議깊빀?덈떎." };
   }
 
   const account = await findAccount(db, institutionNo);
   if (!account || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
-    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
+    return { ok: false, error: "?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
   }
 
   let items;
   try {
     items = JSON.parse(itemsJson);
   } catch (err) {
-    return { ok: false, error: "가격 정보 형식이 올바르지 않습니다." };
+    return { ok: false, error: "媛寃??뺣낫 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." };
   }
 
-  const parking = String(payload.parking_available || "") === "true" ? "예" : "";
+  const parking = String(payload.parking_available || "") === "true" ? "?? : "";
   const parkingUpdatedAt = parking ? new Date().toISOString() : "";
   const providerNote = clean(payload.provider_note).slice(0, 80);
 
   await db.prepare(`
     INSERT INTO provider_updates (institution_no, items_json, updated_at, updated_by, status, parking_available, parking_updated_at, provider_note)
-    VALUES (?, ?, datetime('now'), ?, '반영', ?, ?, ?)
+    VALUES (?, ?, datetime('now'), ?, '諛섏쁺', ?, ?, ?)
     ON CONFLICT(institution_no) DO UPDATE SET
       items_json = excluded.items_json,
       updated_at = excluded.updated_at,
       updated_by = excluded.updated_by,
-      status = '반영',
+      status = '諛섏쁺',
       parking_available = excluded.parking_available,
       parking_updated_at = excluded.parking_updated_at,
       provider_note = excluded.provider_note
@@ -193,6 +193,20 @@ async function getClinicOverrides(db) {
   `).all();
 
   const updates = [];
+  const positionOnlyRows = await db.prepare(`
+    SELECT
+      p.institution_no,
+      p.lat AS position_lat,
+      p.lng AS position_lng,
+      p.position_verified_at,
+      p.position_verified_by
+    FROM provider_positions p
+    LEFT JOIN provider_updates u
+      ON u.institution_no = p.institution_no
+     AND (u.status IS NULL OR u.status NOT IN ('inactive', 'stopped'))
+    WHERE (p.status IS NULL OR p.status != 'inactive')
+      AND u.institution_no IS NULL
+  `).all();
   for (const row of rows.results || []) {
     if (!row.institution_no) continue;
     let items = {};
@@ -203,13 +217,13 @@ async function getClinicOverrides(db) {
     }
 
     const parking = String(row.parking_available || '').trim();
-    const parkingAvailable = parking === '예' || parking === 'true' || parking.includes('가능');
+    const parkingAvailable = parking === '?? || parking === 'true' || parking.includes('媛??);
     updates.push({
       institution_no: String(row.institution_no),
       items,
       updated_at: row.updated_at || '',
-      parking_available: parkingAvailable ? '주차 가능' : '',
-      provider_parking: parkingAvailable ? '주차 가능' : '',
+      parking_available: parkingAvailable ? '二쇱감 媛?? : '',
+      provider_parking: parkingAvailable ? '二쇱감 媛?? : '',
       parking_updated_at: row.parking_updated_at || '',
       provider_note: String(row.provider_note || '').trim(),
       position_lat: row.position_lat,
@@ -219,6 +233,22 @@ async function getClinicOverrides(db) {
     });
   }
 
+  for (const row of positionOnlyRows.results || []) {
+    if (!row.institution_no) continue;
+    updates.push({
+      institution_no: String(row.institution_no),
+      items: {},
+      updated_at: row.position_verified_at || '',
+      parking_available: '',
+      provider_parking: '',
+      parking_updated_at: '',
+      provider_note: '',
+      position_lat: row.position_lat,
+      position_lng: row.position_lng,
+      position_verified_at: row.position_verified_at || '',
+      position_verified_by: row.position_verified_by || ''
+    });
+  }
   return { ok: true, updates };
 }
 
@@ -245,18 +275,18 @@ async function updatePosition(db, payload) {
   const lng = Number(payload.lng);
 
   if (!institutionNo || !password) {
-    return { ok: false, error: '요양기관번호와 비밀번호가 필요합니다.' };
+    return { ok: false, error: '?붿뼇湲곌?踰덊샇? 鍮꾨?踰덊샇媛 ?꾩슂?⑸땲??' };
   }
   if (institutionNo !== '12339695') {
-    return { ok: false, error: '현재 위치 미세조정은 뉴센스의원 테스트 계정에서만 사용할 수 있습니다.' };
+    return { ok: false, error: '?꾩옱 ?꾩튂 誘몄꽭議곗젙? ?댁꽱?ㅼ쓽???뚯뒪??怨꾩젙?먯꽌留??ъ슜?????덉뒿?덈떎.' };
   }
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < 33 || lat > 39 || lng < 124 || lng > 132) {
-    return { ok: false, error: '저장할 위치 좌표가 올바르지 않습니다.' };
+    return { ok: false, error: '??ν븷 ?꾩튂 醫뚰몴媛 ?щ컮瑜댁? ?딆뒿?덈떎.' };
   }
 
   const account = await findAccount(db, institutionNo);
   if (!account || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
-    return { ok: false, error: '요양기관번호 또는 비밀번호가 맞지 않습니다.' };
+    return { ok: false, error: '?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎.' };
   }
 
   await ensureProviderPositionsTable(db);
@@ -297,14 +327,14 @@ async function updatePosition(db, payload) {
 async function syncAccount(db, env, payload) {
   const expectedToken = String(env.ADMIN_SYNC_TOKEN || "");
   if (!expectedToken || String(payload.token || "") !== expectedToken) {
-    return { ok: false, error: "운영자 동기화 권한이 없습니다." };
+    return { ok: false, error: "?댁쁺???숆린??沅뚰븳???놁뒿?덈떎." };
   }
 
   const institutionNo = clean(payload.institution_no);
   const organizationName = clean(payload.organization_name);
   const tempPassword = String(payload.temp_password || "");
   if (!institutionNo || !organizationName || !tempPassword) {
-    return { ok: false, error: "계정 동기화 정보가 부족합니다." };
+    return { ok: false, error: "怨꾩젙 ?숆린???뺣낫媛 遺議깊빀?덈떎." };
   }
 
   const salt = crypto.randomUUID();
@@ -316,7 +346,7 @@ async function syncAccount(db, env, payload) {
       status, password_salt, password_hash, temp_password,
       first_password_changed, issued_at, sent_at, updated_at, note
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, '활성', ?, ?, ?, 0, datetime('now'), datetime('now'), datetime('now'), ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, '?쒖꽦', ?, ?, ?, 0, datetime('now'), datetime('now'), datetime('now'), ?)
     ON CONFLICT(institution_no) DO UPDATE SET
       organization_name = excluded.organization_name,
       kind = excluded.kind,
@@ -325,7 +355,7 @@ async function syncAccount(db, env, payload) {
       manager_role = excluded.manager_role,
       manager_mobile = excluded.manager_mobile,
       manager_email = excluded.manager_email,
-      status = '활성',
+      status = '?쒖꽦',
       password_salt = excluded.password_salt,
       password_hash = excluded.password_hash,
       temp_password = excluded.temp_password,
@@ -345,7 +375,7 @@ async function syncAccount(db, env, payload) {
     salt,
     hash,
     tempPassword,
-    "Apps Script 계정 동기화: " + new Date().toISOString()
+    "Apps Script 怨꾩젙 ?숆린?? " + new Date().toISOString()
   ).run();
 
   return { ok: true, institution_no: institutionNo };
@@ -354,7 +384,7 @@ async function syncAccount(db, env, payload) {
 async function syncAccountHash(db, env, payload) {
   const expectedToken = String(env.ADMIN_SYNC_TOKEN || "");
   if (!expectedToken || String(payload.token || "") !== expectedToken) {
-    return { ok: false, error: "운영자 동기화 권한이 없습니다." };
+    return { ok: false, error: "?댁쁺???숆린??沅뚰븳???놁뒿?덈떎." };
   }
 
   const institutionNo = clean(payload.institution_no);
@@ -362,10 +392,10 @@ async function syncAccountHash(db, env, payload) {
   const salt = String(payload.password_salt || "");
   const hash = String(payload.password_hash || "");
   if (!institutionNo || !organizationName || !salt || !hash) {
-    return { ok: false, error: "계정 Hash 동기화 정보가 부족합니다." };
+    return { ok: false, error: "怨꾩젙 Hash ?숆린???뺣낫媛 遺議깊빀?덈떎." };
   }
 
-  const firstChanged = String(payload.first_password_changed || "") === "예" || String(payload.first_password_changed || "") === "1" ? 1 : 0;
+  const firstChanged = String(payload.first_password_changed || "") === "?? || String(payload.first_password_changed || "") === "1" ? 1 : 0;
   await db.prepare(`
     INSERT INTO provider_accounts (
       institution_no, organization_name, kind, phone,
@@ -398,12 +428,12 @@ async function syncAccountHash(db, env, payload) {
     clean(payload.manager_role),
     clean(payload.manager_mobile),
     clean(payload.manager_email),
-    clean(payload.status) || "활성",
+    clean(payload.status) || "?쒖꽦",
     salt,
     hash,
     String(payload.temp_password || ""),
     firstChanged,
-    "Apps Script Hash 계정 동기화: " + new Date().toISOString()
+    "Apps Script Hash 怨꾩젙 ?숆린?? " + new Date().toISOString()
   ).run();
 
   return { ok: true, institution_no: institutionNo };
@@ -516,3 +546,4 @@ function timingSafeEqual(a, b) {
 function clean(value) {
   return String(value || "").trim();
 }
+

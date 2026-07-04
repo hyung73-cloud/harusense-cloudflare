@@ -1,12 +1,23 @@
-﻿업로드 파일:
-- index.html -> GitHub 루트 index.html
-- en/index.html -> GitHub en/index.html
-- functions/api/account.js -> GitHub functions/api/account.js
+﻿업로드 폴더: harusense_UPLOAD_ONLY_position_newsense_instant_sheet_20260704-142000
 
-D1 SQL은 이미 실행했다면 다시 실행하지 않아도 됩니다:
-- d1-provider-position-schema.sql
+이번 수정 목적:
+1. 관리자 위치 미세조정 저장 직후, 현재 지도 핀이 즉시 새 좌표로 이동합니다.
+2. D1 좌표 저장 후 다시 데이터를 불러와도 새 좌표가 화면에서 유지됩니다.
+3. Apps Script에 syncProviderPosition_을 추가하면 Map_Submissions 시트에도 위도/경도/좌표링크/지도상태=반영이 기록됩니다.
 
-이번 수정:
-- 뉴센스의원 위치 미세조정 지도 회색 박스 문제 보정
-- 팝업 안에서 지도를 늦게 생성하고 여러 번 resize/center 처리
-- 기존 지도핀/가격/로그인/QR 로직은 변경하지 않음
+GitHub에 올릴 파일:
+- index.html
+- en/index.html
+- functions/api/account.js
+
+Apps Script 추가 작업:
+- APPS_SCRIPT_POSITION_SYNC_APPEND.txt 내용을 Code.gs에 반영한 뒤 저장 + 새 배포
+- 이 작업을 해야 Map_Submissions 시트 자동기록까지 완성됩니다.
+
+확인 순서:
+1. 위 3개 파일 GitHub 업로드 후 Cloudflare 배포 완료 확인
+2. Apps Script Code.gs에 시트 동기화 조각 추가 후 새 배포
+3. 뉴센스의원으로 로그인
+4. 위치 미세조정에서 핀 이동 → 이 위치 저장
+5. 현재 지도에서 핀이 바로 이동하는지 확인
+6. Google Sheet Map_Submissions에서 12339695 행의 위도/경도/좌표링크/수정일이 갱신되는지 확인

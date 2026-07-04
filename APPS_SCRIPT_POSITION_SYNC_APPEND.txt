@@ -1,0 +1,91 @@
+﻿[Apps Script Code.gs에 추가할 내용]
+
+1) doGet(e) 안의 action 분기 목록에 아래 한 줄을 추가하세요.
+   보통 getSubmittedClinicDebug 또는 getSubmittedClinics 분기 근처에 넣으면 됩니다.
+
+} else if (params.action === "syncProviderPosition") {
+  result = syncProviderPosition_(params);
+
+2) Code.gs 맨 아래에 아래 함수 전체를 붙여넣으세요.
+
+function syncProviderPosition_(params) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetName = "Map_Submissions";
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) sheet = ss.insertSheet(sheetName);
+
+  const requiredHeaders = [
+    "요양기관번호", "요양기관명", "요양기관구분", "주소", "지역", "대표번호",
+    "위도", "경도", "좌표링크", "지도상태", "좌표확인상태",
+    "등록일", "수정일", "비고"
+  ];
+  ensurePositionSyncHeaders_(sheet, requiredHeaders);
+
+  const institutionNo = String(params.institution_no || "").trim();
+  const lat = Number(params.lat);
+  const lng = Number(params.lng);
+  if (!institutionNo) return { ok: false, error: "요양기관번호가 없습니다." };
+  if (!isFinite(lat) || !isFinite(lng)) return { ok: false, error: "좌표가 올바르지 않습니다." };
+
+  const row = findPositionSyncRow_(sheet, "요양기관번호", institutionNo) || sheet.getLastRow() + 1;
+  const now = new Date();
+
+  setPositionSyncCell_(sheet, row, "요양기관번호", institutionNo);
+  setPositionSyncCellIfEmpty_(sheet, row, "요양기관명", params.name || "");
+  setPositionSyncCellIfEmpty_(sheet, row, "요양기관구분", params.kind || "");
+  setPositionSyncCellIfEmpty_(sheet, row, "주소", params.address || "");
+  setPositionSyncCellIfEmpty_(sheet, row, "지역", params.district || "");
+  setPositionSyncCellIfEmpty_(sheet, row, "대표번호", params.phone || "");
+  setPositionSyncCell_(sheet, row, "위도", lat);
+  setPositionSyncCell_(sheet, row, "경도", lng);
+  setPositionSyncCell_(sheet, row, "좌표링크", "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng);
+  setPositionSyncCell_(sheet, row, "지도상태", "반영");
+  setPositionSyncCell_(sheet, row, "좌표확인상태", "기관 직접 조정");
+  setPositionSyncCellIfEmpty_(sheet, row, "등록일", now);
+  setPositionSyncCell_(sheet, row, "수정일", now);
+  setPositionSyncCell_(sheet, row, "비고", "기관 관계자 위치 미세조정: " + now);
+
+  return { ok: true, row: row, institution_no: institutionNo, lat: lat, lng: lng };
+}
+
+function ensurePositionSyncHeaders_(sheet, requiredHeaders) {
+  const lastCol = Math.max(sheet.getLastColumn(), 1);
+  const existing = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+  const headers = existing.filter(Boolean);
+  requiredHeaders.forEach(header => {
+    if (!headers.includes(header)) {
+      sheet.getRange(1, headers.length + 1).setValue(header);
+      headers.push(header);
+    }
+  });
+}
+
+function positionSyncColumn_(sheet, headerName) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+  return headers.indexOf(headerName) + 1;
+}
+
+function setPositionSyncCell_(sheet, row, headerName, value) {
+  const col = positionSyncColumn_(sheet, headerName);
+  if (col > 0) sheet.getRange(row, col).setValue(value);
+}
+
+function setPositionSyncCellIfEmpty_(sheet, row, headerName, value) {
+  const col = positionSyncColumn_(sheet, headerName);
+  if (col <= 0) return;
+  const current = sheet.getRange(row, col).getValue();
+  if ((current === "" || current === null || current === undefined) && value !== "") {
+    sheet.getRange(row, col).setValue(value);
+  }
+}
+
+function findPositionSyncRow_(sheet, headerName, value) {
+  const col = positionSyncColumn_(sheet, headerName);
+  if (col <= 0 || sheet.getLastRow() < 2) return null;
+  const target = String(value || "").trim();
+  const values = sheet.getRange(2, col, sheet.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < values.length; i++) {
+    if (String(values[i][0] || "").trim() === target) return i + 2;
+  }
+  return null;
+}
