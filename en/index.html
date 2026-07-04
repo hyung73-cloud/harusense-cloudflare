@@ -3765,6 +3765,7 @@ function clinicMatchesPositionInstitution(clinic, institutionNo) {
 function buildPositionOverrideEntry(lat, lng, meta = {}) {
   const institutionNo = String(meta.institution_no || meta.position_verified_by || "").trim();
   return {
+    institution_no: institutionNo,
     lat: Number(lat),
     lng: Number(lng),
     position_verified_at: meta.position_verified_at || new Date().toISOString(),
@@ -4557,18 +4558,20 @@ async function revalidateClinicData(options = {}) {
 }
 
 async function refreshClinicOverridesAfterPositionSave(savedLat, savedLng, data) {
+  const institutionNo = representativePositionInstitutionNo(data);
+  const positionMeta = { ...(data || {}), institution_no: institutionNo };
   try {
     const overrides = await fetchClinicOverridesFromNetwork(true);
     writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
     hydratePositionOverrideCacheFromOverrides(overrides);
     const next = cloneClinicData(CLINIC_DATA);
     applyClinicOverrides(next, overrides);
-    rememberPositionOverride(REP_ACTIVE_INSTITUTION_NO, savedLat, savedLng, data);
+    rememberPositionOverride(institutionNo, savedLat, savedLng, positionMeta);
     commitClinicData(next, { force: true });
   } catch (err) {
-    rememberPositionOverride(REP_ACTIVE_INSTITUTION_NO, savedLat, savedLng, data);
+    rememberPositionOverride(institutionNo, savedLat, savedLng, positionMeta);
   }
-  applyRepresentativePositionLocalUpdate(savedLat, savedLng, data);
+  applyRepresentativePositionLocalUpdate(savedLat, savedLng, positionMeta);
 }
 
 function revalidateClinicDataInBackground() {
@@ -5399,21 +5402,27 @@ function updateRepresentativePositionMeta() {
   meta.textContent = "Current coordinates: " + REP_POSITION_VALUE.lat.toFixed(7) + ", " + REP_POSITION_VALUE.lng.toFixed(7);
 }
 
-function representativePositionMatchesClinic(clinic) {
-  const institutionNo = String(REP_ACTIVE_INSTITUTION_NO || "").trim();
-  if (!clinic || !institutionNo) return false;
+function representativePositionInstitutionNo(meta = {}) {
+  const stickyInstitutionNo = REP_POSITION_STICKY_OVERRIDE && REP_POSITION_STICKY_OVERRIDE.institution_no;
+  return String(meta.institution_no || meta.position_verified_by || stickyInstitutionNo || REP_ACTIVE_INSTITUTION_NO || "").trim();
+}
+
+function representativePositionMatchesClinic(clinic, institutionNo = REP_ACTIVE_INSTITUTION_NO) {
+  const inst = String(institutionNo || "").trim();
+  if (!clinic || !inst) return false;
   const clinicInstitutionNo = String(clinic.institution_no || "").trim();
   const clinicId = String(clinic.id || "").trim();
-  return clinicInstitutionNo === institutionNo || clinicId === institutionNo || clinicId === "clinic_" + institutionNo;
+  return clinicInstitutionNo === inst || clinicId === inst || clinicId === "clinic_" + inst;
 }
 
 function patchRepresentativeClinicPosition(clinic, lat, lng, meta = {}) {
-  if (!clinic || !validRepresentativePosition(lat, lng) || !representativePositionMatchesClinic(clinic)) return false;
-  const institutionNo = String(REP_ACTIVE_INSTITUTION_NO || "").trim();
+  const institutionNo = representativePositionInstitutionNo(meta);
+  if (!clinic || !validRepresentativePosition(lat, lng) || !representativePositionMatchesClinic(clinic, institutionNo)) return false;
   const touchedAt = meta.position_verified_at || new Date().toISOString();
   const verifiedBy = meta.position_verified_by || institutionNo;
   clinic.lat = lat;
   clinic.lng = lng;
+  if (!clinic.institution_no && institutionNo) clinic.institution_no = institutionNo;
   clinic.position_verified_at = touchedAt;
   clinic.position_verified_by = verifiedBy;
   clinic.updated_at = touchedAt;
@@ -5422,27 +5431,44 @@ function patchRepresentativeClinicPosition(clinic, lat, lng, meta = {}) {
 }
 
 function applyRepresentativeStickyPosition() {
-  if (!REP_POSITION_STICKY_OVERRIDE || !validRepresentativePosition(REP_POSITION_STICKY_OVERRIDE.lat, REP_POSITION_STICKY_OVERRIDE.lng)) return false;
+  let sticky = REP_POSITION_STICKY_OVERRIDE;
+  if (!sticky || !validRepresentativePosition(Number(sticky.lat), Number(sticky.lng))) {
+    const institutionNo = representativePositionInstitutionNo({});
+    const cached = institutionNo ? lookupPositionOverrideEntry(institutionNo) : null;
+    if (cached && validRepresentativePosition(Number(cached.lat), Number(cached.lng))) {
+      sticky = {
+        ...cached,
+        institution_no: cached.institution_no || cached.position_verified_by || institutionNo,
+        lat: Number(cached.lat),
+        lng: Number(cached.lng)
+      };
+      REP_POSITION_STICKY_OVERRIDE = sticky;
+    }
+  }
+  if (!sticky || !validRepresentativePosition(Number(sticky.lat), Number(sticky.lng))) return false;
   let changed = false;
   if (CLINIC_DATA && Array.isArray(CLINIC_DATA.clinics)) {
     CLINIC_DATA.clinics.forEach(clinic => {
-      changed = patchRepresentativeClinicPosition(clinic, REP_POSITION_STICKY_OVERRIDE.lat, REP_POSITION_STICKY_OVERRIDE.lng, REP_POSITION_STICKY_OVERRIDE) || changed;
+      changed = patchRepresentativeClinicPosition(clinic, sticky.lat, sticky.lng, sticky) || changed;
     });
   }
-  changed = patchRepresentativeClinicPosition(REP_LOGIN_CLINIC, REP_POSITION_STICKY_OVERRIDE.lat, REP_POSITION_STICKY_OVERRIDE.lng, REP_POSITION_STICKY_OVERRIDE) || changed;
-  REP_POSITION_VALUE = { lat: REP_POSITION_STICKY_OVERRIDE.lat, lng: REP_POSITION_STICKY_OVERRIDE.lng };
+  changed = patchRepresentativeClinicPosition(REP_LOGIN_CLINIC, sticky.lat, sticky.lng, sticky) || changed;
+  REP_POSITION_VALUE = { lat: sticky.lat, lng: sticky.lng };
   return changed;
 }
 
 function applyRepresentativePositionLocalUpdate(lat, lng, meta = {}) {
   if (!validRepresentativePosition(lat, lng)) return;
-  const institutionNo = String(meta.institution_no || REP_ACTIVE_INSTITUTION_NO || "").trim();
-  rememberPositionOverride(institutionNo, lat, lng, meta);
+  const institutionNo = representativePositionInstitutionNo(meta);
+  if (!institutionNo) return;
+  const nextMeta = { ...meta, institution_no: institutionNo };
+  rememberPositionOverride(institutionNo, lat, lng, nextMeta);
   REP_POSITION_STICKY_OVERRIDE = {
+    institution_no: institutionNo,
     lat,
     lng,
-    position_verified_at: meta.position_verified_at || new Date().toISOString(),
-    position_verified_by: meta.position_verified_by || institutionNo
+    position_verified_at: nextMeta.position_verified_at || new Date().toISOString(),
+    position_verified_by: nextMeta.position_verified_by || institutionNo
   };
   applyRepresentativeStickyPosition();
   updateRepresentativePositionMeta();
@@ -6413,10 +6439,6 @@ window.initMap = initMap;
 
 </body>
 </html>
-
-
-
-
 
 
 
