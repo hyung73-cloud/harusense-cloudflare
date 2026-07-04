@@ -1,12 +1,79 @@
-﻿하루센스 업로드 폴더
-생성: 2026-07-04 16:14:42
+﻿하루센스 위치 미세조정(sticky) 수정 — 업로드 안내
+생성/갱신: 2026-07-04
 
-업로드할 파일 3개:
-1. index.html -> GitHub 루트 index.html
-2. en/index.html -> GitHub en/index.html
-3. functions/api/account.js -> GitHub functions/api/account.js
+================================================================================
+GitHub 업로드 파일 (2개)
+================================================================================
+1. index.html          → 저장소 루트 index.html
+2. en/index.html       → 저장소 en/index.html
 
-이번 수정:
-- 관리자 위치 저장 직후, 화면의 지도핀이 다시 예전 좌표로 되돌아가는 현상을 방지했습니다.
-- 저장한 좌표를 현재 화면 데이터에 우선 적용하도록 고정 처리했습니다.
-- 앱스크립트 수정은 포함하지 않았습니다. 구글시트 자동 기록은 나중에 별도 반영하면 됩니다.
+※ functions/api/account.js 는 이번 수정에서 변경 없음 (이미 provider_positions / getClinicOverrides 지원)
+  배포 시 account.js 재업로드 불필요
+
+================================================================================
+수정한 파일 목록 (로컬)
+================================================================================
+- index.html
+- en/index.html
+
+================================================================================
+원인 (핀 원상복귀)
+================================================================================
+1. saveRepresentativePosition() 저장 성공 후 loadData({ force: true }) 호출
+2. revalidateClinicData → buildMergedClinicData → commitClinicData 재실행
+3. 기존 mergeOneClinicRecord()가 clinics.json/stable cache 좌표(hasValidCoords)를
+   provider position(position_lat/lng, position_verified_at)보다 항상 우선
+4. REP_POSITION_STICKY_OVERRIDE는 메모리만 유지 → revalidate 후 clinics.json 좌표에 덮임
+5. stable cache(harusense_cache_stable_pins_v1)에 예전 좌표가 저장되어
+   renderResults / loadData 반복 시에도 복귀
+
+================================================================================
+좌표 우선순위 (수정 후)
+================================================================================
+1순위: 관리자 위치 미세조정 저장 좌표
+       - D1 provider_positions (updatePosition API)
+       - localStorage harusense_position_overrides_v1 (브라우저 sticky cache)
+       - position_verified_at / position_verified_by 메타 포함 시 verified로 취급
+
+2순위: Map_Submissions / getClinicOverrides/Android overrides의 position_lat/lng
+       - applyClinicOverrides + hydratePositionOverrideCacheFromOverrides
+
+3순위: 검수된 clinics.json 좌표 (verified static, provider position 없을 때만)
+
+4순위: API/D1 기본 lat/lng (verified provider position 없을 때만)
+
+5순위: 주소 기반 geocoding — 사용하지 않음 (기존과 동일, 추가하지 않음)
+
+================================================================================
+핵심 수정 내용
+================================================================================
+- readPositionOverrideCache / rememberPositionOverride / applyAllPositionOverrides 추가
+- resolveClinicCoordinates: verified provider position > static clinics.json
+- mergeOneClinicRecord: resolveClinicCoordinates 결과로 lat/lng 결정
+- commitClinicData: stable cache 쓰기 전 applyAllPositionOverrides
+- buildMergedClinicData: hydrate + applyAllPositionOverrides
+- applyClinicOverrides: position 저장 시 localStorage + position_verified_at 보강
+- renderResults: 매 렌더 전 applyAllPositionOverrides + sticky 적용
+- saveRepresentativePosition: loadData 후 rememberPositionOverride 재적용
+
+================================================================================
+배포 후 테스트 (뉴센스의원 12339695)
+================================================================================
+1. 관리자 로그인
+2. 위치 미세조정 → 핀 드래그 → 저장
+3. 저장 직후 지도 핀 즉시 이동 유지
+4. 상세 닫았다 다시 열기 → 좌표 유지
+5. 일반 새로고침 / 강제 새로고침(Ctrl+Shift+R)
+6. 지역 필터 마포 → 전국 → 마포 변경 후에도 유지
+7. 가격·재고·다른 핀 정상
+
+※ 예전 stable cache에 옛 좌표가 남아 있으면 첫 로드 직후 잠깐 튈 수 있음.
+  position override cache가 commitClinicData에서 재적용되어 곧바로 복구됨.
+
+캐시 초기화(필요 시만, position cache는 유지):
+  localStorage.removeItem("harusense_cache_base_v1");
+  localStorage.removeItem("harusense_cache_overrides_v1");
+  localStorage.removeItem("harusense_cache_stable_pins_v1");
+
+position override cache 유지:
+  harusense_position_overrides_v1

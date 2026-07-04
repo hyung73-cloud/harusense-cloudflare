@@ -3902,10 +3902,11 @@ function commitClinicData(candidate, options) {
     return false;
   }
 
+  applyAllPositionOverrides(next);
   CLINIC_DATA = next;
   if (window.__hsRegionPickerShell && typeof window.__hsRegionPickerShell.refreshOptions === "function") window.__hsRegionPickerShell.refreshOptions();
   if (nextStats.pinned > 0) {
-    LAST_STABLE_MAP_DATA = cloneClinicData(next);
+    LAST_STABLE_MAP_DATA = cloneClinicData(CLINIC_DATA);
     try {
       writeDataCache(HARUSENSE_CACHE.keys.stable, stripVolatilePriceData(LAST_STABLE_MAP_DATA));
     } catch (e) { /* 캐시 실패해도 지도는 표시 */ }
@@ -3926,12 +3927,12 @@ function mergeOneClinicRecord(staticClinic, apiClinic) {
     price_updated_at: { ...(s.price_updated_at || {}), ...(a.price_updated_at || {}) },
   };
 
-  if (hasValidCoords(s)) {
-    out.lat = Number(s.lat);
-    out.lng = Number(s.lng);
-  } else if (hasValidCoords(a)) {
-    out.lat = Number(a.lat);
-    out.lng = Number(a.lng);
+  const coords = resolveClinicCoordinates(a, s);
+  if (validOverrideCoordinate(coords.lat, coords.lng)) {
+    out.lat = coords.lat;
+    out.lng = coords.lng;
+    if (coords.position_verified_at) out.position_verified_at = coords.position_verified_at;
+    if (coords.position_verified_by) out.position_verified_by = coords.position_verified_by;
   }
   if (
     s.type === "pharmacy" || String(s.id || "").startsWith("pharmacy_") ||
@@ -4022,6 +4023,112 @@ function validOverrideCoordinate(lat, lng) {
   return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) > 1 && Math.abs(lng) > 1;
 }
 
+/** 관리자·D1 provider_positions 좌표 — stable/clinics.json 병합보다 우선 */
+const HARUSENSE_POSITION_CACHE = {
+  version: 4,
+  key: "harusense_position_overrides_v1"
+};
+
+function readPositionOverrideCache() {
+  try {
+    const raw = localStorage.getItem(HARUSENSE_POSITION_CACHE.key);
+    if (!raw) return {};
+    const packet = JSON.parse(raw);
+    if (!packet || packet.version !== HARUSENSE_POSITION_CACHE.version) return {};
+    return packet.entries && typeof packet.entries === "object" ? packet.entries : {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function writePositionOverrideCache(entries) {
+  try {
+    localStorage.setItem(HARUSENSE_POSITION_CACHE.key, JSON.stringify({
+      version: HARUSENSE_POSITION_CACHE.version,
+      savedAt: Date.now(),
+      entries
+    }));
+  } catch (err) {
+    console.info("위치 override 캐시 저장을 건너뜁니다.");
+  }
+}
+
+function rememberPositionOverride(institutionNo, lat, lng, meta = {}) {
+  const inst = String(institutionNo || "").trim();
+  if (!inst || !validOverrideCoordinate(Number(lat), Number(lng))) return;
+  const entries = readPositionOverrideCache();
+  entries[inst] = {
+    lat: Number(lat),
+    lng: Number(lng),
+    position_verified_at: meta.position_verified_at || new Date().toISOString(),
+    position_verified_by: meta.position_verified_by || inst
+  };
+  writePositionOverrideCache(entries);
+}
+
+function hydratePositionOverrideCacheFromOverrides(overrides) {
+  if (!Array.isArray(overrides)) return;
+  overrides.forEach(update => {
+    if (!update || !update.institution_no) return;
+    const lat = Number(update.position_lat);
+    const lng = Number(update.position_lng);
+    if (!validOverrideCoordinate(lat, lng)) return;
+    rememberPositionOverride(update.institution_no, lat, lng, {
+      position_verified_at: update.position_verified_at,
+      position_verified_by: update.position_verified_by
+    });
+  });
+}
+
+function hasVerifiedProviderPosition(clinic) {
+  if (!clinic) return false;
+  return validOverrideCoordinate(Number(clinic.lat), Number(clinic.lng))
+    && Boolean(clinic.position_verified_at || clinic.position_verified_by);
+}
+
+function resolveClinicCoordinates(liveClinic, staticClinic) {
+  const live = liveClinic || {};
+  const stat = staticClinic || {};
+  if (hasVerifiedProviderPosition(live)) {
+    if (!hasVerifiedProviderPosition(stat)) {
+      return { lat: Number(live.lat), lng: Number(live.lng), position_verified_at: live.position_verified_at, position_verified_by: live.position_verified_by };
+    }
+    const liveTime = Date.parse(live.position_verified_at || "") || 0;
+    const statTime = Date.parse(stat.position_verified_at || "") || 0;
+    if (liveTime >= statTime) {
+      return { lat: Number(live.lat), lng: Number(live.lng), position_verified_at: live.position_verified_at, position_verified_by: live.position_verified_by };
+    }
+    return { lat: Number(stat.lat), lng: Number(stat.lng), position_verified_at: stat.position_verified_at, position_verified_by: stat.position_verified_by };
+  }
+  if (hasVerifiedProviderPosition(stat)) {
+    return { lat: Number(stat.lat), lng: Number(stat.lng), position_verified_at: stat.position_verified_at, position_verified_by: stat.position_verified_by };
+  }
+  if (hasValidCoords(stat)) return { lat: Number(stat.lat), lng: Number(stat.lng) };
+  if (hasValidCoords(live)) return { lat: Number(live.lat), lng: Number(live.lng) };
+  return { lat: live.lat, lng: live.lng };
+}
+
+function applyPositionOverrideEntry(clinic, entry) {
+  if (!clinic || !entry || !validOverrideCoordinate(Number(entry.lat), Number(entry.lng))) return false;
+  clinic.lat = Number(entry.lat);
+  clinic.lng = Number(entry.lng);
+  if (entry.position_verified_at) clinic.position_verified_at = entry.position_verified_at;
+  if (entry.position_verified_by) clinic.position_verified_by = entry.position_verified_by;
+  return true;
+}
+
+function applyAllPositionOverrides(data) {
+  if (!data || !Array.isArray(data.clinics)) return false;
+  const entries = readPositionOverrideCache();
+  let changed = false;
+  data.clinics.forEach(clinic => {
+    const inst = String(clinic.institution_no || "").trim();
+    if (!inst || !entries[inst]) return;
+    changed = applyPositionOverrideEntry(clinic, entries[inst]) || changed;
+  });
+  return changed;
+}
+
 function applyClinicOverrides(data, overrides) {
   if (!data || !Array.isArray(data.clinics) || !Array.isArray(overrides)) return data;
   const byInstitution = new Map();
@@ -4060,6 +4167,13 @@ function applyClinicOverrides(data, overrides) {
       }
     });
 
+    if (hasPositionOverride) {
+      rememberPositionOverride(institutionNo, positionLat, positionLng, {
+        position_verified_at: update.position_verified_at,
+        position_verified_by: update.position_verified_by
+      });
+    }
+
     return {
       ...clinic,
       prices,
@@ -4067,8 +4181,12 @@ function applyClinicOverrides(data, overrides) {
       price_updated_at,
       lat: hasPositionOverride ? positionLat : clinic.lat,
       lng: hasPositionOverride ? positionLng : clinic.lng,
-      position_verified_at: firstValue(update.position_verified_at, clinic.position_verified_at),
-      position_verified_by: firstValue(update.position_verified_by, clinic.position_verified_by),
+      position_verified_at: hasPositionOverride
+        ? (update.position_verified_at || touchedAt)
+        : firstValue(update.position_verified_at, clinic.position_verified_at),
+      position_verified_by: hasPositionOverride
+        ? firstValue(update.position_verified_by, institutionNo)
+        : firstValue(update.position_verified_by, clinic.position_verified_by),
       updated_at: update.updated_at || clinic.updated_at,
       updated_by: update.institution_no || clinic.updated_by,
       provider_parking: firstValue(update.parking_available, update.provider_parking, clinic.provider_parking),
@@ -4078,6 +4196,7 @@ function applyClinicOverrides(data, overrides) {
     };
   });
 
+  applyAllPositionOverrides(data);
   return data;
 }
 
@@ -4523,6 +4642,8 @@ async function buildMergedClinicData(apiData, staticData, overrides) {
     applySubmittedClinics(data, submittedClinics);
   }
   applyClinicOverrides(data, overrides || []);
+  hydratePositionOverrideCacheFromOverrides(overrides || []);
+  applyAllPositionOverrides(data);
   return data;
 }
 
@@ -4993,6 +5114,7 @@ function renderClinicList() {
 }
 
 function renderResults() {
+  applyAllPositionOverrides(CLINIC_DATA);
   applyRepresentativeStickyPosition();
   renderMarkers();
   renderClinicList();
@@ -5579,11 +5701,13 @@ function applyRepresentativeStickyPosition() {
 
 function applyRepresentativePositionLocalUpdate(lat, lng, meta = {}) {
   if (!validRepresentativePosition(lat, lng)) return;
+  const institutionNo = String(meta.institution_no || REP_ACTIVE_INSTITUTION_NO || "").trim();
+  rememberPositionOverride(institutionNo, lat, lng, meta);
   REP_POSITION_STICKY_OVERRIDE = {
     lat,
     lng,
     position_verified_at: meta.position_verified_at || new Date().toISOString(),
-    position_verified_by: meta.position_verified_by || String(REP_ACTIVE_INSTITUTION_NO || "").trim()
+    position_verified_by: meta.position_verified_by || institutionNo
   };
   applyRepresentativeStickyPosition();
   updateRepresentativePositionMeta();
@@ -5712,7 +5836,10 @@ async function saveRepresentativePosition() {
       }
     });
     loadData({ force: true })
-      .then(() => applyRepresentativePositionLocalUpdate(savedLat, savedLng, data))
+      .then(() => {
+        rememberPositionOverride(REP_ACTIVE_INSTITUTION_NO, savedLat, savedLng, data);
+        applyRepresentativePositionLocalUpdate(savedLat, savedLng, data);
+      })
       .catch(() => {});
   } catch (err) {
     setRepMessage("repSubmitMessage", err.message || "저장하지 못했습니다.", "error");
