@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -5902,6 +5902,14 @@ function renderRepresentativeEditor() {
   });
   const parkingBtn = document.getElementById("repParkingToggle");
   if (parkingBtn) parkingBtn.addEventListener("click", () => setParkingButton(parkingBtn, parkingBtn.dataset.parking !== "true"));
+  const positionOpenBtn = document.getElementById("repPositionOpenBtn");
+  if (positionOpenBtn) {
+    positionOpenBtn.addEventListener("click", () => {
+      initRepresentativePositionMap(clinic);
+    });
+  }
+  const positionSaveBtn = document.getElementById("repPositionSaveBtn");
+  if (positionSaveBtn) positionSaveBtn.addEventListener("click", saveRepresentativePosition);
 }
 // 모달 열기/닫기
 function openRepModal() {
@@ -6466,3 +6474,4 @@ window.initMap = initMap;
 
 </body>
 </html>
+
