@@ -32,6 +32,8 @@ export async function onRequest(context) {
         return json(await changePassword(db, payload));
       case "updatePrices":
         return json(await updatePrices(db, payload));
+      case "updatePosition":
+        return json(await updatePosition(db, payload));
       case "getClinicOverrides":
         return json(await getClinicOverrides(db));
       case "syncAccount":
@@ -168,31 +170,128 @@ const institutionNo = clean(payload.institution_no);
 }
 
 async function getClinicOverrides(db) {
-    await ensureProviderUpdatesNoteColumn(db);
-const rows = await db.prepare(`
-    SELECT institution_no, items_json, updated_at, parking_available, parking_updated_at, provider_note
-    FROM provider_updates
-    WHERE status IS NULL OR status != '중지'
-  `).all();
-  const updates = [];
+  await ensureProviderUpdatesNoteColumn(db);
+  await ensureProviderPositionsTable(db);
 
+  const rows = await db.prepare(`
+    SELECT
+      u.institution_no,
+      u.items_json,
+      u.updated_at,
+      u.parking_available,
+      u.parking_updated_at,
+      u.provider_note,
+      p.lat AS position_lat,
+      p.lng AS position_lng,
+      p.position_verified_at,
+      p.position_verified_by
+    FROM provider_updates u
+    LEFT JOIN provider_positions p
+      ON p.institution_no = u.institution_no
+     AND (p.status IS NULL OR p.status != 'inactive')
+    WHERE u.status IS NULL OR u.status NOT IN ('inactive', 'stopped')
+  `).all();
+
+  const updates = [];
   for (const row of rows.results || []) {
-    if (!row.institution_no || !row.items_json) continue;
+    if (!row.institution_no) continue;
+    let items = {};
     try {
-      const parking = String(row.parking_available || "").trim();
-      updates.push({
-        institution_no: String(row.institution_no),
-        items: JSON.parse(row.items_json),
-        updated_at: row.updated_at || "",
-        parking_available: parking === "예" ? "주차 가능" : "",
-        provider_parking: parking === "예" ? "주차 가능" : "",
-        parking_updated_at: row.parking_updated_at || "",
-        provider_note: String(row.provider_note || "").trim()
-      });
-    } catch (err) {}
+      items = row.items_json ? JSON.parse(row.items_json) : {};
+    } catch (err) {
+      items = {};
+    }
+
+    const parking = String(row.parking_available || '').trim();
+    const parkingAvailable = parking === '예' || parking === 'true' || parking.includes('가능');
+    updates.push({
+      institution_no: String(row.institution_no),
+      items,
+      updated_at: row.updated_at || '',
+      parking_available: parkingAvailable ? '주차 가능' : '',
+      provider_parking: parkingAvailable ? '주차 가능' : '',
+      parking_updated_at: row.parking_updated_at || '',
+      provider_note: String(row.provider_note || '').trim(),
+      position_lat: row.position_lat,
+      position_lng: row.position_lng,
+      position_verified_at: row.position_verified_at || '',
+      position_verified_by: row.position_verified_by || ''
+    });
   }
 
   return { ok: true, updates };
+}
+
+async function ensureProviderPositionsTable(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS provider_positions (
+      institution_no TEXT PRIMARY KEY,
+      lat REAL NOT NULL,
+      lng REAL NOT NULL,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_by TEXT NOT NULL DEFAULT '',
+      position_verified_at TEXT NOT NULL DEFAULT (datetime('now')),
+      position_verified_by TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'active',
+      note TEXT NOT NULL DEFAULT ''
+    )
+  `).run();
+}
+
+async function updatePosition(db, payload) {
+  const institutionNo = clean(payload.institution_no);
+  const password = String(payload.password || '');
+  const lat = Number(payload.lat);
+  const lng = Number(payload.lng);
+
+  if (!institutionNo || !password) {
+    return { ok: false, error: '요양기관번호와 비밀번호가 필요합니다.' };
+  }
+  if (institutionNo !== '12339695') {
+    return { ok: false, error: '현재 위치 미세조정은 뉴센스의원 테스트 계정에서만 사용할 수 있습니다.' };
+  }
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < 33 || lat > 39 || lng < 124 || lng > 132) {
+    return { ok: false, error: '저장할 위치 좌표가 올바르지 않습니다.' };
+  }
+
+  const account = await findAccount(db, institutionNo);
+  if (!account || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
+    return { ok: false, error: '요양기관번호 또는 비밀번호가 맞지 않습니다.' };
+  }
+
+  await ensureProviderPositionsTable(db);
+  await db.prepare(`
+    INSERT INTO provider_positions (
+      institution_no, lat, lng, updated_at, updated_by,
+      position_verified_at, position_verified_by, status, note
+    )
+    VALUES (?, ?, ?, datetime('now'), ?, datetime('now'), ?, 'active', ?)
+    ON CONFLICT(institution_no) DO UPDATE SET
+      lat = excluded.lat,
+      lng = excluded.lng,
+      updated_at = excluded.updated_at,
+      updated_by = excluded.updated_by,
+      position_verified_at = excluded.position_verified_at,
+      position_verified_by = excluded.position_verified_by,
+      status = 'active',
+      note = excluded.note
+  `).bind(
+    institutionNo,
+    lat,
+    lng,
+    institutionNo,
+    institutionNo,
+    'provider drag position'
+  ).run();
+
+  return {
+    ok: true,
+    institution_no: institutionNo,
+    lat,
+    lng,
+    position_verified_at: new Date().toISOString(),
+    position_verified_by: institutionNo
+  };
 }
 
 async function syncAccount(db, env, payload) {

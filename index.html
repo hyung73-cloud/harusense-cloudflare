@@ -1308,7 +1308,81 @@ body {
   font-size: 12px;
   line-height: 1.35;
   color: #6b7280;
-}.rep-price-board {
+}
+.rep-position-field {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #eff6ff;
+}
+.rep-position-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 6px;
+}
+.rep-position-title span {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 800;
+}
+.rep-position-help {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #475569;
+}
+.rep-position-map {
+  width: 100%;
+  height: 220px;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e5e7eb;
+  margin-top: 10px;
+}
+.rep-position-map[hidden] { display: none; }
+.rep-position-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.rep-position-button {
+  flex: 1;
+  min-height: 42px;
+  border-radius: 11px;
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.rep-position-button.secondary {
+  background: #fff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+.rep-position-button[hidden] { display: none; }
+.rep-position-meta {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #64748b;
+  word-break: break-all;
+}
+.rep-price-board {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -3942,6 +4016,10 @@ function normalizePriceItems(items) {
   return normalized;
 }
 
+function validOverrideCoordinate(lat, lng) {
+  return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) > 1 && Math.abs(lng) > 1;
+}
+
 function applyClinicOverrides(data, overrides) {
   if (!data || !Array.isArray(data.clinics) || !Array.isArray(overrides)) return data;
   const byInstitution = new Map();
@@ -3961,6 +4039,9 @@ function applyClinicOverrides(data, overrides) {
     const stock = { ...(clinic.stock || {}) };
     const price_updated_at = { ...(clinic.price_updated_at || {}) };
     const touchedAt = update.updated_at || new Date().toISOString();
+    const positionLat = Number(update.position_lat);
+    const positionLng = Number(update.position_lng);
+    const hasPositionOverride = validOverrideCoordinate(positionLat, positionLng);
     Object.entries(items).forEach(([key, item]) => {
       const prevPrice = clinic.prices && clinic.prices[key] != null ? Number(clinic.prices[key]) : null;
       const prevStock = clinic.stock && clinic.stock[key] === false;
@@ -3982,6 +4063,10 @@ function applyClinicOverrides(data, overrides) {
       prices,
       stock,
       price_updated_at,
+      lat: hasPositionOverride ? positionLat : clinic.lat,
+      lng: hasPositionOverride ? positionLng : clinic.lng,
+      position_verified_at: firstValue(update.position_verified_at, clinic.position_verified_at),
+      position_verified_by: firstValue(update.position_verified_by, clinic.position_verified_by),
       updated_at: update.updated_at || clinic.updated_at,
       updated_by: update.institution_no || clinic.updated_by,
       provider_parking: firstValue(update.parking_available, update.provider_parking, clinic.provider_parking),
@@ -5430,6 +5515,126 @@ let REP_ACTIVE_CLINIC_ID = null;
 let REP_LOGIN_CLINIC = null;
 let REP_CLOSE_TIMER = null;
 
+const REP_POSITION_TEST_INSTITUTION_NO = "12339695";
+let REP_POSITION_MAP = null;
+let REP_POSITION_MARKER = null;
+let REP_POSITION_VALUE = null;
+
+function canEditRepresentativePosition() {
+  return String(REP_ACTIVE_INSTITUTION_NO || "").trim() === REP_POSITION_TEST_INSTITUTION_NO;
+}
+
+function validRepresentativePosition(lat, lng) {
+  return Number.isFinite(lat) && Number.isFinite(lng) && lat >= 33 && lat <= 39 && lng >= 124 && lng <= 132;
+}
+
+function updateRepresentativePositionMeta() {
+  const meta = document.getElementById("repPositionMeta");
+  if (!meta) return;
+  if (!REP_POSITION_VALUE || !validRepresentativePosition(REP_POSITION_VALUE.lat, REP_POSITION_VALUE.lng)) {
+    meta.textContent = "핀을 움직인 뒤 저장해주세요.";
+    return;
+  }
+  meta.textContent = "현재 좌표: " + REP_POSITION_VALUE.lat.toFixed(7) + ", " + REP_POSITION_VALUE.lng.toFixed(7);
+}
+
+function applyRepresentativePositionLocalUpdate(lat, lng, meta = {}) {
+  const clinic = representativeClinic();
+  if (!clinic || !validRepresentativePosition(lat, lng)) return;
+  const touchedAt = meta.position_verified_at || new Date().toISOString();
+  clinic.lat = lat;
+  clinic.lng = lng;
+  clinic.position_verified_at = touchedAt;
+  clinic.position_verified_by = meta.position_verified_by || REP_ACTIVE_INSTITUTION_NO;
+  clinic.updated_at = touchedAt;
+  clinic.updated_by = REP_ACTIVE_INSTITUTION_NO;
+  refreshClinicDisplay();
+}
+
+function initRepresentativePositionMap(clinic) {
+  const mapEl = document.getElementById("repPositionMap");
+  const saveBtn = document.getElementById("repPositionSaveBtn");
+  if (!mapEl || !clinic) return;
+  if (!window.google || !google.maps) {
+    setRepMessage("repSubmitMessage", "지도가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.", "error");
+    return;
+  }
+
+  const lat = Number(clinic.lat);
+  const lng = Number(clinic.lng);
+  if (!validRepresentativePosition(lat, lng)) {
+    setRepMessage("repSubmitMessage", "지도가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.", "error");
+    return;
+  }
+
+  REP_POSITION_VALUE = { lat, lng };
+  mapEl.hidden = false;
+  if (saveBtn) saveBtn.hidden = false;
+
+  const center = { lat, lng };
+  if (!REP_POSITION_MAP) {
+    REP_POSITION_MAP = new google.maps.Map(mapEl, {
+      center,
+      zoom: 18,
+      mapTypeControl: false,
+      fullscreenControl: false,
+      streetViewControl: false,
+      clickableIcons: false
+    });
+    REP_POSITION_MARKER = new google.maps.Marker({
+      map: REP_POSITION_MAP,
+      position: center,
+      draggable: true,
+      title: clinic.name || "clinic"
+    });
+    REP_POSITION_MARKER.addListener("dragend", () => {
+      const pos = REP_POSITION_MARKER.getPosition();
+      REP_POSITION_VALUE = { lat: pos.lat(), lng: pos.lng() };
+      updateRepresentativePositionMeta();
+    });
+  } else {
+    REP_POSITION_MAP.setCenter(center);
+    REP_POSITION_MAP.setZoom(18);
+    REP_POSITION_MARKER.setPosition(center);
+    REP_POSITION_MARKER.setMap(REP_POSITION_MAP);
+  }
+
+  setTimeout(() => {
+    if (REP_POSITION_MAP) {
+      google.maps.event.trigger(REP_POSITION_MAP, "resize");
+      REP_POSITION_MAP.setCenter(REP_POSITION_VALUE);
+    }
+  }, 80);
+  updateRepresentativePositionMeta();
+}
+
+async function saveRepresentativePosition() {
+  if (!canEditRepresentativePosition()) {
+    setRepMessage("repSubmitMessage", "위치 미세조정은 현재 뉴센스의원 테스트 계정에서만 사용할 수 있습니다.", "error");
+    return;
+  }
+  if (!REP_POSITION_VALUE || !validRepresentativePosition(REP_POSITION_VALUE.lat, REP_POSITION_VALUE.lng)) {
+    setRepMessage("repSubmitMessage", "먼저 핀 위치를 조정해주세요.", "error");
+    return;
+  }
+  setRepMessage("repSubmitMessage", "위치를 저장하는 중입니다...", "");
+  try {
+    const data = await accountApi("updatePosition", {
+      institution_no: REP_ACTIVE_INSTITUTION_NO,
+      password: REP_ACTIVE_PASSWORD,
+      lat: String(REP_POSITION_VALUE.lat),
+      lng: String(REP_POSITION_VALUE.lng)
+    });
+    if (!data || !data.ok) throw new Error((data && data.error) || "save failed");
+    applyRepresentativePositionLocalUpdate(Number(data.lat), Number(data.lng), data);
+    setRepMessage("repSubmitMessage", "위치가 저장되었습니다. 지도에 즉시 반영했습니다.", "success");
+    loadData({ force: true }).catch(() => {});
+  } catch (err) {
+    setRepMessage("repSubmitMessage", err.message || "저장하지 못했습니다.", "error");
+  }
+}
+
+
 async function loadRepServiceProfileAllowlist() {
   if (REP_SERVICE_PROFILE_ALLOWLIST_READY) return;
   try {
@@ -5610,6 +5815,8 @@ function renderRepresentativeEditor() {
         <span class="rep-switch-knob"></span>
       </button>
     </div>`;
+
+  const positionControl = canEditRepresentativePosition() ?     `<div class="rep-position-field">      <div class="rep-position-title">위치 미세조정<span>뉴센스 테스트</span></div>      <p class="rep-position-help">핀을 실제 출입구 또는 정확한 기관 위치로 드래그한 뒤 저장하세요. 저장 즉시 지도에 반영됩니다.</p>      <div class="rep-position-actions">        <button class="rep-position-button secondary" type="button" id="repPositionOpenBtn">지도에서 위치 조정</button>        <button class="rep-position-button" type="button" id="repPositionSaveBtn" hidden>이 위치 저장</button>      </div>      <div id="repPositionMap" class="rep-position-map" hidden></div>      <div id="repPositionMeta" class="rep-position-meta">핀을 움직인 뒤 저장해주세요.</div>    </div>` : "";
   const pendingMapNotice = clinic.pending_map_connection ? `
     <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
   const providerNoteValue = String(firstValue(clinic.provider_note, clinic.notes, "")).slice(0, 80);
@@ -5688,7 +5895,7 @@ function renderRepresentativeEditor() {
       <div class="rep-pair-rows">${pairRows}</div>
     </div>`;
 
-  box.innerHTML = `${pendingMapNotice}${priceBoard}${serviceBoards}${parkingControl}${providerNoteControl}`;
+  box.innerHTML = `${pendingMapNotice}${priceBoard}${serviceBoards}${positionControl}${parkingControl}${providerNoteControl}`;
   box.querySelectorAll(".stock-toggle").forEach(btn => {
     if (btn.id === "repParkingToggle") return;
     btn.addEventListener("click", () => setStockButton(btn, btn.dataset.stock !== "true"));
