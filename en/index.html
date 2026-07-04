@@ -3572,13 +3572,27 @@ let LAST_STABLE_MAP_DATA = null;
 function commitClinicData(candidate, options) {
   const force = options && options.force === true;
   if (!candidate || !Array.isArray(candidate.clinics)) return false;
-  const prev = (LAST_STABLE_MAP_DATA && LAST_STABLE_MAP_DATA.clinics.length)
+  const prevSource = (LAST_STABLE_MAP_DATA && LAST_STABLE_MAP_DATA.clinics.length)
     ? LAST_STABLE_MAP_DATA
     : CLINIC_DATA;
-  const next = unionPreserveClinics(
-    stripDemoClinics(prev),
-    stripDemoClinics(cloneClinicData(candidate))
-  );
+  const prev = stripDemoClinics(cloneClinicData(prevSource));
+  const candidateClean = stripDemoClinics(cloneClinicData(candidate));
+  applyAllPositionOverrides(prev);
+  applyAllPositionOverrides(candidateClean);
+  if (CLINIC_DATA && Array.isArray(CLINIC_DATA.clinics)) {
+    CLINIC_DATA.clinics.forEach(liveClinic => {
+      if (!hasVerifiedProviderPosition(liveClinic)) return;
+      prev.clinics.forEach(storedClinic => {
+        if (String(storedClinic.id || "") !== String(liveClinic.id || "")
+          && String(storedClinic.institution_no || "") !== String(liveClinic.institution_no || "")) return;
+        storedClinic.lat = Number(liveClinic.lat);
+        storedClinic.lng = Number(liveClinic.lng);
+        storedClinic.position_verified_at = liveClinic.position_verified_at;
+        storedClinic.position_verified_by = liveClinic.position_verified_by;
+      });
+    });
+  }
+  const next = unionPreserveClinics(prev, candidateClean);
   if (!next) return false;
   if (!force && isUnsafeDataRegression(prev, next)) {
     console.warn("[Harusense] Pin data shrink blocked — keeping map");
@@ -3679,6 +3693,7 @@ const HARUSENSE_POSITION_CACHE = {
   version: 4,
   key: "harusense_position_overrides_v1"
 };
+const POSITION_OVERRIDE_LEGACY_IDS = { newsense: "12339695" };
 
 function readPositionOverrideCache() {
   try {
@@ -3704,17 +3719,93 @@ function writePositionOverrideCache(entries) {
   }
 }
 
-function rememberPositionOverride(institutionNo, lat, lng, meta = {}) {
-  const inst = String(institutionNo || "").trim();
-  if (!inst || !validOverrideCoordinate(Number(lat), Number(lng))) return;
+function positionOverrideKeysForClinic(clinic) {
+  if (!clinic) return [];
+  const keys = new Set();
+  const inst = String(clinic.institution_no || "").trim();
+  const id = String(clinic.id || "").trim();
+  if (inst) {
+    keys.add(inst);
+    keys.add("clinic_" + inst);
+  }
+  if (id) {
+    keys.add(id);
+    const legacyInst = POSITION_OVERRIDE_LEGACY_IDS[id];
+    if (legacyInst) keys.add(legacyInst);
+  }
+  return Array.from(keys);
+}
+
+function lookupPositionOverrideEntry(clinicOrKey) {
   const entries = readPositionOverrideCache();
-  entries[inst] = {
+  if (!entries || typeof entries !== "object") return null;
+  if (typeof clinicOrKey === "string") {
+    const key = String(clinicOrKey || "").trim();
+    if (!key) return null;
+    return entries[key]
+      || entries[POSITION_OVERRIDE_LEGACY_IDS[key]]
+      || entries["clinic_" + key]
+      || null;
+  }
+  for (const key of positionOverrideKeysForClinic(clinicOrKey)) {
+    if (entries[key]) return entries[key];
+  }
+  return null;
+}
+
+function clinicMatchesPositionInstitution(clinic, institutionNo) {
+  const inst = String(institutionNo || "").trim();
+  if (!clinic || !inst) return false;
+  return positionOverrideKeysForClinic(clinic).includes(inst)
+    || String(clinic.institution_no || "").trim() === inst
+    || String(clinic.id || "").trim() === inst
+    || String(clinic.id || "").trim() === "clinic_" + inst;
+}
+
+function buildPositionOverrideEntry(lat, lng, meta = {}) {
+  const institutionNo = String(meta.institution_no || meta.position_verified_by || "").trim();
+  return {
     lat: Number(lat),
     lng: Number(lng),
     position_verified_at: meta.position_verified_at || new Date().toISOString(),
-    position_verified_by: meta.position_verified_by || inst
+    position_verified_by: meta.position_verified_by || institutionNo
   };
+}
+
+function syncPositionOverrideToWorkingData(institutionNo, lat, lng, meta = {}) {
+  const inst = String(institutionNo || "").trim();
+  if (!inst || !validOverrideCoordinate(Number(lat), Number(lng))) return false;
+  const entry = buildPositionOverrideEntry(lat, lng, { ...meta, institution_no: inst });
+  let changed = false;
+  const patchData = data => {
+    if (!data || !Array.isArray(data.clinics)) return;
+    data.clinics.forEach(clinic => {
+      if (!clinicMatchesPositionInstitution(clinic, inst)) return;
+      changed = applyPositionOverrideEntry(clinic, entry) || changed;
+    });
+  };
+  patchData(CLINIC_DATA);
+  if (LAST_STABLE_MAP_DATA) patchData(LAST_STABLE_MAP_DATA);
+  if (changed && LAST_STABLE_MAP_DATA && clinicMapStats(LAST_STABLE_MAP_DATA).pinned > 0) {
+    try {
+      writeDataCache(HARUSENSE_CACHE.keys.stable, stripVolatilePriceData(LAST_STABLE_MAP_DATA));
+    } catch (err) { /* keep on-screen position even if stable cache fails */ }
+  }
+  return changed;
+}
+
+function rememberPositionOverride(institutionNo, lat, lng, meta = {}) {
+  const inst = String(institutionNo || "").trim();
+  if (!inst || !validOverrideCoordinate(Number(lat), Number(lng))) return;
+  const entry = buildPositionOverrideEntry(lat, lng, { ...meta, institution_no: inst });
+  const entries = readPositionOverrideCache();
+  entries[inst] = entry;
+  entries["clinic_" + inst] = entry;
+  Object.entries(POSITION_OVERRIDE_LEGACY_IDS).forEach(([legacyId, legacyInst]) => {
+    if (legacyInst === inst) entries[legacyId] = entry;
+  });
   writePositionOverrideCache(entries);
+  syncPositionOverrideToWorkingData(inst, lat, lng, meta);
 }
 
 function hydratePositionOverrideCacheFromOverrides(overrides) {
@@ -3740,6 +3831,15 @@ function hasVerifiedProviderPosition(clinic) {
 function resolveClinicCoordinates(liveClinic, staticClinic) {
   const live = liveClinic || {};
   const stat = staticClinic || {};
+  const cached = lookupPositionOverrideEntry(live) || lookupPositionOverrideEntry(stat);
+  if (cached && validOverrideCoordinate(Number(cached.lat), Number(cached.lng))) {
+    return {
+      lat: Number(cached.lat),
+      lng: Number(cached.lng),
+      position_verified_at: cached.position_verified_at,
+      position_verified_by: cached.position_verified_by
+    };
+  }
   if (hasVerifiedProviderPosition(live)) {
     if (!hasVerifiedProviderPosition(stat)) {
       return { lat: Number(live.lat), lng: Number(live.lng), position_verified_at: live.position_verified_at, position_verified_by: live.position_verified_by };
@@ -3770,12 +3870,11 @@ function applyPositionOverrideEntry(clinic, entry) {
 
 function applyAllPositionOverrides(data) {
   if (!data || !Array.isArray(data.clinics)) return false;
-  const entries = readPositionOverrideCache();
   let changed = false;
   data.clinics.forEach(clinic => {
-    const inst = String(clinic.institution_no || "").trim();
-    if (!inst || !entries[inst]) return;
-    changed = applyPositionOverrideEntry(clinic, entries[inst]) || changed;
+    const entry = lookupPositionOverrideEntry(clinic);
+    if (!entry) return;
+    changed = applyPositionOverrideEntry(clinic, entry) || changed;
   });
   return changed;
 }
@@ -4313,6 +4412,8 @@ function clinicDataSignature(data) {
 }
 
 function refreshClinicDisplay() {
+  applyAllPositionOverrides(CLINIC_DATA);
+  applyRepresentativeStickyPosition();
   updateHeaderNotice();
   renderResults();
 }
@@ -4449,8 +4550,25 @@ async function revalidateClinicData(options = {}) {
 
   const committed = commitClinicData(merged, { force });
   if (!committed) return false;
+  applyAllPositionOverrides(CLINIC_DATA);
+  applyRepresentativeStickyPosition();
   const changed = prevSig !== clinicDataSignature(CLINIC_DATA);
   return changed || force;
+}
+
+async function refreshClinicOverridesAfterPositionSave(savedLat, savedLng, data) {
+  try {
+    const overrides = await fetchClinicOverridesFromNetwork(true);
+    writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
+    hydratePositionOverrideCacheFromOverrides(overrides);
+    const next = cloneClinicData(CLINIC_DATA);
+    applyClinicOverrides(next, overrides);
+    rememberPositionOverride(REP_ACTIVE_INSTITUTION_NO, savedLat, savedLng, data);
+    commitClinicData(next, { force: true });
+  } catch (err) {
+    rememberPositionOverride(REP_ACTIVE_INSTITUTION_NO, savedLat, savedLng, data);
+  }
+  applyRepresentativePositionLocalUpdate(savedLat, savedLng, data);
 }
 
 function revalidateClinicDataInBackground() {
@@ -5452,12 +5570,7 @@ async function saveRepresentativePosition() {
         setRepMessage("repSubmitMessage", "Location saved on the map. Map_Submissions sync will work after Apps Script deployment.", "success");
       }
     });
-    loadData({ force: true })
-      .then(() => {
-        rememberPositionOverride(REP_ACTIVE_INSTITUTION_NO, savedLat, savedLng, data);
-        applyRepresentativePositionLocalUpdate(savedLat, savedLng, data);
-      })
-      .catch(() => {});
+    refreshClinicOverridesAfterPositionSave(savedLat, savedLng, data);
   } catch (err) {
     setRepMessage("repSubmitMessage", err.message || "Could not save location.", "error");
   }
