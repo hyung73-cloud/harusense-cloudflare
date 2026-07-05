@@ -314,14 +314,71 @@ async function updatePosition(db, payload) {
     'provider drag position'
   ).run();
 
+  const baseClinicSync = await syncPositionToBaseClinicRows(db, institutionNo, lat, lng)
+    .catch(err => ({ ok: false, error: err && err.message ? err.message : String(err) }));
+
   return {
     ok: true,
     institution_no: institutionNo,
     lat,
     lng,
     position_verified_at: new Date().toISOString(),
-    position_verified_by: institutionNo
+    position_verified_by: institutionNo,
+    base_clinic_sync: baseClinicSync
   };
+}
+
+async function syncPositionToBaseClinicRows(db, institutionNo, lat, lng) {
+  const tableNames = ["clinics", "clinic"];
+  const idAliases = [institutionNo, "clinic_" + institutionNo];
+  if (institutionNo === "12339695") idAliases.push("newsense");
+  const result = { ok: true, tables_checked: [], rows_changed: 0 };
+
+  for (const tableName of tableNames) {
+    const columns = await getTableColumns(db, tableName);
+    if (!columns.length) continue;
+    result.tables_checked.push(tableName);
+
+    const latColumn = columns.includes("lat") ? "lat" : (columns.includes("latitude") ? "latitude" : "");
+    const lngColumn = columns.includes("lng") ? "lng" : (columns.includes("longitude") ? "longitude" : "");
+    if (!latColumn || !lngColumn) continue;
+
+    const whereParts = [];
+    const binds = [lat, lng];
+    if (columns.includes("institution_no")) {
+      whereParts.push("institution_no = ?");
+      binds.push(institutionNo);
+    }
+    if (columns.includes("id")) {
+      whereParts.push("id IN (" + idAliases.map(() => "?").join(",") + ")");
+      idAliases.forEach(id => binds.push(id));
+    }
+    if (!whereParts.length) continue;
+
+    const setParts = [`${latColumn} = ?`, `${lngColumn} = ?`];
+    if (columns.includes("position_verified_at")) setParts.push("position_verified_at = datetime('now')");
+    if (columns.includes("position_verified_by")) {
+      setParts.push("position_verified_by = ?");
+      binds.splice(2, 0, institutionNo);
+    }
+    if (columns.includes("updated_at")) setParts.push("updated_at = datetime('now')");
+
+    const sql = `UPDATE ${tableName} SET ${setParts.join(", ")} WHERE ${whereParts.join(" OR ")}`;
+    const update = await db.prepare(sql).bind(...binds).run();
+    const changed = Number(update && update.meta && update.meta.changes || 0);
+    result.rows_changed += changed;
+  }
+
+  return result;
+}
+
+async function getTableColumns(db, tableName) {
+  try {
+    const rows = await db.prepare(`PRAGMA table_info(${tableName})`).all();
+    return (rows.results || []).map(row => String(row.name || "")).filter(Boolean);
+  } catch (err) {
+    return [];
+  }
 }
 
 async function syncAccount(db, env, payload) {

@@ -4084,19 +4084,56 @@ function clearClinicCoordinateSourceCaches() {
   } catch (err) {}
 }
 
+function positionOverrideKeyVariants(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return [];
+  const keys = new Set();
+  const add = key => {
+    const normalized = String(key || "").trim();
+    if (!normalized) return;
+    keys.add(normalized);
+    if (normalized.startsWith("clinic_")) {
+      const stripped = normalized.slice(7);
+      if (stripped) {
+        keys.add(stripped);
+        keys.add("clinic_" + stripped);
+      }
+    } else {
+      keys.add("clinic_" + normalized);
+    }
+    const legacyInst = POSITION_OVERRIDE_LEGACY_IDS[normalized];
+    if (legacyInst) {
+      keys.add(legacyInst);
+      keys.add("clinic_" + legacyInst);
+    }
+  };
+  add(raw);
+  Object.entries(POSITION_OVERRIDE_LEGACY_IDS).forEach(([legacyId, legacyInst]) => {
+    if (raw === legacyId || raw === legacyInst || raw === "clinic_" + legacyInst) {
+      keys.add(legacyId);
+      keys.add(legacyInst);
+      keys.add("clinic_" + legacyInst);
+    }
+  });
+  return Array.from(keys);
+}
+
 function positionOverrideKeysForClinic(clinic) {
   if (!clinic) return [];
   const keys = new Set();
-  const inst = String(clinic.institution_no || "").trim();
-  const id = String(clinic.id || "").trim();
-  if (inst) {
-    keys.add(inst);
-    keys.add("clinic_" + inst);
-  }
-  if (id) {
-    keys.add(id);
-    const legacyInst = POSITION_OVERRIDE_LEGACY_IDS[id];
-    if (legacyInst) keys.add(legacyInst);
+  const sources = [
+    clinic.institution_no,
+    clinic.id,
+    clinic.account_institution_no,
+    clinic.position_verified_by
+  ];
+  sources.forEach(source => {
+    positionOverrideKeyVariants(source).forEach(key => keys.add(key));
+  });
+  if (String(clinic.name || "").includes("뉴센스")) {
+    keys.add("12339695");
+    keys.add("clinic_12339695");
+    keys.add("newsense");
   }
   return Array.from(keys);
 }
@@ -4107,10 +4144,10 @@ function lookupPositionOverrideEntry(clinicOrKey) {
   if (typeof clinicOrKey === "string") {
     const key = String(clinicOrKey || "").trim();
     if (!key) return null;
-    return entries[key]
-      || entries[POSITION_OVERRIDE_LEGACY_IDS[key]]
-      || entries["clinic_" + key]
-      || null;
+    for (const variant of positionOverrideKeyVariants(key)) {
+      if (entries[variant]) return entries[variant];
+    }
+    return null;
   }
   for (const key of positionOverrideKeysForClinic(clinicOrKey)) {
     if (entries[key]) return entries[key];
@@ -4165,8 +4202,9 @@ function rememberPositionOverride(institutionNo, lat, lng, meta = {}) {
   if (!inst || !validOverrideCoordinate(Number(lat), Number(lng))) return;
   const entry = buildPositionOverrideEntry(lat, lng, { ...meta, institution_no: inst });
   const entries = readPositionOverrideCache();
-  entries[inst] = entry;
-  entries["clinic_" + inst] = entry;
+  positionOverrideKeyVariants(inst).forEach(key => {
+    entries[key] = entry;
+  });
   Object.entries(POSITION_OVERRIDE_LEGACY_IDS).forEach(([legacyId, legacyInst]) => {
     if (legacyInst === inst) entries[legacyId] = entry;
   });
@@ -5436,6 +5474,8 @@ function paintInlineClinicListEarly() {
     if (!inlineSnap || !Array.isArray(inlineSnap.clinics) || !inlineSnap.clinics.length) return;
     const cleanSnap = stripDemoClinics(inlineSnap);
     CLINIC_DATA = cloneClinicData(cleanSnap);
+    applyAllPositionOverrides(CLINIC_DATA);
+    applyRepresentativeStickyPosition();
     renderClinicList();
     const loading = document.getElementById("loading");
     if (loading) loading.style.display = "none";
