@@ -4038,25 +4038,28 @@ function validOverrideCoordinate(lat, lng) {
 
 /** 관리자·D1 provider_positions 좌표 — stable/clinics.json 병합보다 우선 */
 const HARUSENSE_POSITION_CACHE = {
-  version: 4,
+  version: 5,
   key: "harusense_position_overrides_v1"
 };
 const POSITION_OVERRIDE_LEGACY_IDS = { newsense: "12339695" };
+const POSITION_OVERRIDE_MEMORY = {};
 
 function readPositionOverrideCache() {
   try {
     const raw = localStorage.getItem(HARUSENSE_POSITION_CACHE.key);
-    if (!raw) return {};
+    if (!raw) return { ...POSITION_OVERRIDE_MEMORY };
     const packet = JSON.parse(raw);
-    if (!packet || packet.version !== HARUSENSE_POSITION_CACHE.version) return {};
-    return packet.entries && typeof packet.entries === "object" ? packet.entries : {};
+    if (!packet || packet.version !== HARUSENSE_POSITION_CACHE.version) return { ...POSITION_OVERRIDE_MEMORY };
+    const stored = packet.entries && typeof packet.entries === "object" ? packet.entries : {};
+    return { ...stored, ...POSITION_OVERRIDE_MEMORY };
   } catch (err) {
-    return {};
+    return { ...POSITION_OVERRIDE_MEMORY };
   }
 }
 
 function writePositionOverrideCache(entries) {
   try {
+    Object.assign(POSITION_OVERRIDE_MEMORY, entries);
     localStorage.setItem(HARUSENSE_POSITION_CACHE.key, JSON.stringify({
       version: HARUSENSE_POSITION_CACHE.version,
       savedAt: Date.now(),
@@ -4065,6 +4068,20 @@ function writePositionOverrideCache(entries) {
   } catch (err) {
     console.info("위치 override 캐시 저장을 건너뜁니다.");
   }
+}
+
+function clearClinicCoordinateSourceCaches() {
+  try {
+    if (typeof bustClinicCaches === "function") bustClinicCaches("all");
+  } catch (err) {}
+  try {
+    localStorage.removeItem("harusense_cache_base_v1");
+    localStorage.removeItem("harusense_cache_overrides_v1");
+    localStorage.removeItem("harusense_cache_stable_pins_v1");
+  } catch (err) {}
+  try {
+    LAST_STABLE_MAP_DATA = null;
+  } catch (err) {}
 }
 
 function positionOverrideKeysForClinic(clinic) {
@@ -4154,6 +4171,7 @@ function rememberPositionOverride(institutionNo, lat, lng, meta = {}) {
     if (legacyInst === inst) entries[legacyId] = entry;
   });
   writePositionOverrideCache(entries);
+  if (meta && meta.forceCoordinatePriority) clearClinicCoordinateSourceCaches();
   syncPositionOverrideToWorkingData(inst, lat, lng, meta);
 }
 
@@ -4912,8 +4930,9 @@ async function revalidateClinicData(options = {}) {
 
 async function refreshClinicOverridesAfterPositionSave(savedLat, savedLng, data) {
   const institutionNo = representativePositionInstitutionNo(data);
-  const positionMeta = { ...(data || {}), institution_no: institutionNo };
+  const positionMeta = { ...(data || {}), institution_no: institutionNo, forceCoordinatePriority: true };
   try {
+    clearClinicCoordinateSourceCaches();
     const overrides = await fetchClinicOverridesFromNetwork(true);
     writeDataCache(HARUSENSE_CACHE.keys.overrides, overrides);
     hydratePositionOverrideCacheFromOverrides(overrides);
@@ -5113,6 +5132,8 @@ function renderMarkers() {
   markers.forEach(m => { m.map = null; });
   markers = [];
   if (!map) return;
+  applyAllPositionOverrides(CLINIC_DATA);
+  applyRepresentativeStickyPosition();
 
   const key = priceKey(state.drugKey, state.dose);
   let visibleCount = 0;
@@ -5794,7 +5815,12 @@ function representativePositionMatchesClinic(clinic, institutionNo = REP_ACTIVE_
   if (!clinic || !inst) return false;
   const clinicInstitutionNo = String(clinic.institution_no || "").trim();
   const clinicId = String(clinic.id || "").trim();
-  return clinicInstitutionNo === inst || clinicId === inst || clinicId === "clinic_" + inst;
+  const legacyInst = POSITION_OVERRIDE_LEGACY_IDS[clinicId] || "";
+  return clinicInstitutionNo === inst
+    || clinicId === inst
+    || clinicId === "clinic_" + inst
+    || legacyInst === inst
+    || clinicMatchesPositionInstitution(clinic, inst);
 }
 
 function patchRepresentativeClinicPosition(clinic, lat, lng, meta = {}) {
@@ -5969,16 +5995,18 @@ async function saveRepresentativePosition() {
     if (!data || !data.ok) throw new Error((data && data.error) || "save failed");
     const savedLat = Number(data.lat);
     const savedLng = Number(data.lng);
-    applyRepresentativePositionLocalUpdate(savedLat, savedLng, data);
+    const positionData = { ...data, forceCoordinatePriority: true };
+    clearClinicCoordinateSourceCaches();
+    applyRepresentativePositionLocalUpdate(savedLat, savedLng, positionData);
     setRepMessage("repSubmitMessage", "위치가 저장되었습니다. 지도에 즉시 반영했고 시트 반영을 확인 중입니다.", "success");
-    syncRepresentativePositionToSheet(data).then(sheetResult => {
+    syncRepresentativePositionToSheet(positionData).then(sheetResult => {
       if (sheetResult && sheetResult.ok) {
         setRepMessage("repSubmitMessage", "위치가 저장되었습니다. 지도와 Map_Submissions에 반영했습니다.", "success");
       } else {
         setRepMessage("repSubmitMessage", "위치는 지도에 저장되었습니다. Map_Submissions 반영은 Apps Script 배포 후 자동 처리됩니다.", "success");
       }
     });
-    refreshClinicOverridesAfterPositionSave(savedLat, savedLng, data);
+    refreshClinicOverridesAfterPositionSave(savedLat, savedLng, positionData);
   } catch (err) {
     setRepMessage("repSubmitMessage", err.message || "저장하지 못했습니다.", "error");
   }
@@ -6824,5 +6852,3 @@ window.initMap = initMap;
 
 </body>
 </html>
-
-
