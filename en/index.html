@@ -5563,6 +5563,7 @@ function syncRepresentativePositionToSheet(data) {
 }
 
 function initRepresentativePositionMap(clinic) {
+  return;
   const mapEl = document.getElementById("repPositionMap");
   const saveBtn = document.getElementById("repPositionSaveBtn");
   if (!mapEl || !clinic) return;
@@ -5851,7 +5852,8 @@ function renderRepresentativeEditor() {
       </button>
     </div>`;
 
-  const positionControl = canEditRepresentativePosition() ?     `<div class="rep-position-field">      <div class="rep-position-title">Position fine tuning<span>Newsense test</span></div>      <p class="rep-position-help">Drag the pin to the exact entrance/location, then save. It is reflected on the map immediately.</p>      <div class="rep-position-actions">        <button class="rep-position-button secondary" type="button" id="repPositionOpenBtn">Adjust on map</button>        <button class="rep-position-button" type="button" id="repPositionSaveBtn" hidden>Save this location</button>      </div>      <div id="repPositionMap" class="rep-position-map" hidden></div>      <div id="repPositionMeta" class="rep-position-meta">Move the pin and save when ready.</div>    </div>` : "";
+  // Hide position fine-tuning from the provider editor until the feature is fully stabilized.
+  const positionControl = "";
   const pendingMapNotice = clinic.pending_map_connection ? `
     <p class="rep-edit-hint">지도핀이 열리면 입력한 가격/재고가 표시됩니다.</p>` : "";
   const providerNoteValue = String(firstValue(clinic.provider_note, clinic.notes, "")).slice(0, 80);
