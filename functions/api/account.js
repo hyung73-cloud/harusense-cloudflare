@@ -145,6 +145,7 @@ const institutionNo = clean(payload.institution_no);
   let items;
   try {
     items = JSON.parse(itemsJson);
+    items = normalizeProviderPriceItems(items);
   } catch (err) {
     return { ok: false, error: "媛寃??뺣낫 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." };
   }
@@ -212,6 +213,7 @@ async function getClinicOverrides(db) {
     let items = {};
     try {
       items = row.items_json ? JSON.parse(row.items_json) : {};
+      items = normalizeProviderPriceItems(items);
     } catch (err) {
       items = {};
     }
@@ -598,6 +600,40 @@ function timingSafeEqual(a, b) {
   let out = 0;
   for (let i = 0; i < a.length; i++) out |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return out === 0;
+}
+
+function isExplicitlyOutOfStockValue(value) {
+  if (value === false || value === 0) return true;
+  const text = String(value ?? "").trim().toLowerCase();
+  return text === "false"
+    || text === "0"
+    || text === "no"
+    || text === "none"
+    || text === "out"
+    || text === "out_of_stock"
+    || text === "재고없음"
+    || text === "재고 없음"
+    || text === "없음";
+}
+
+function normalizeProviderPriceItems(items) {
+  if (!items || typeof items !== "object" || Array.isArray(items)) return {};
+  const normalized = {};
+  for (const [key, value] of Object.entries(items)) {
+    if (!key) continue;
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      normalized[key] = {
+        ...value,
+        in_stock: !isExplicitlyOutOfStockValue(value.in_stock)
+      };
+    } else {
+      normalized[key] = {
+        price: value,
+        in_stock: true
+      };
+    }
+  }
+  return normalized;
 }
 
 function clean(value) {

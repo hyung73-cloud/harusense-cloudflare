@@ -1,0 +1,31 @@
+Harusense stock false reflection fix
+Date: 2026-07-27
+
+Upload these 3 files to GitHub:
+
+1. index.html
+2. en/index.html
+3. functions/api/account.js
+
+What changed:
+
+- Provider edits now treat false-like stock values as real out-of-stock values.
+- Supported out-of-stock inputs:
+  false, 0, "false", "0", "no", "none", "out", "out_of_stock", "재고없음", "재고 없음", "없음"
+- Existing bad provider update rows are normalized again when the API returns them.
+- Map pin, coordinate, login, QR, SEO page, and clinic merge logic were not intentionally changed.
+
+After upload:
+
+1. Wait for Cloudflare Pages deployment to complete.
+2. Open harusense.com.
+3. Log in as the provider.
+4. Change one stock item from 재고 있음 to 재고 없음 and submit.
+5. Hard refresh the map page.
+6. Confirm the same item shows as 재고 없음 / not available.
+
+Optional D1 check:
+
+SELECT institution_no, items_json, updated_at, status
+FROM provider_updates
+WHERE institution_no = '12339695';
