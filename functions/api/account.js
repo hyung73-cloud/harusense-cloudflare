@@ -150,18 +150,18 @@ const institutionNo = clean(payload.institution_no);
     return { ok: false, error: "媛寃??뺣낫 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." };
   }
 
-  const parking = String(payload.parking_available || "") === "true" ? "?? : "";
+  const parking = String(payload.parking_available || "") === "true" ? "가능" : "";
   const parkingUpdatedAt = parking ? new Date().toISOString() : "";
   const providerNote = clean(payload.provider_note).slice(0, 80);
 
   await db.prepare(`
     INSERT INTO provider_updates (institution_no, items_json, updated_at, updated_by, status, parking_available, parking_updated_at, provider_note)
-    VALUES (?, ?, datetime('now'), ?, '諛섏쁺', ?, ?, ?)
+    VALUES (?, ?, datetime('now'), ?, '반영', ?, ?, ?)
     ON CONFLICT(institution_no) DO UPDATE SET
       items_json = excluded.items_json,
       updated_at = excluded.updated_at,
       updated_by = excluded.updated_by,
-      status = '諛섏쁺',
+      status = '반영',
       parking_available = excluded.parking_available,
       parking_updated_at = excluded.parking_updated_at,
       provider_note = excluded.provider_note
@@ -219,13 +219,13 @@ async function getClinicOverrides(db) {
     }
 
     const parking = String(row.parking_available || '').trim();
-    const parkingAvailable = parking === '?? || parking === 'true' || parking.includes('媛??);
+    const parkingAvailable = parking === '가능' || parking === 'true' || parking.includes('가능') || parking.includes('주차 가능');
     updates.push({
       institution_no: String(row.institution_no),
       items,
       updated_at: row.updated_at || '',
-      parking_available: parkingAvailable ? '二쇱감 媛?? : '',
-      provider_parking: parkingAvailable ? '二쇱감 媛?? : '',
+      parking_available: parkingAvailable ? '주차 가능' : '',
+      provider_parking: parkingAvailable ? '주차 가능' : '',
       parking_updated_at: row.parking_updated_at || '',
       provider_note: String(row.provider_note || '').trim(),
       position_lat: row.position_lat,
@@ -454,7 +454,7 @@ async function syncAccountHash(db, env, payload) {
     return { ok: false, error: "怨꾩젙 Hash ?숆린???뺣낫媛 遺議깊빀?덈떎." };
   }
 
-  const firstChanged = String(payload.first_password_changed || "") === "?? || String(payload.first_password_changed || "") === "1" ? 1 : 0;
+  const firstChanged = String(payload.first_password_changed || "") === "true" || String(payload.first_password_changed || "") === "1" ? 1 : 0;
   await db.prepare(`
     INSERT INTO provider_accounts (
       institution_no, organization_name, kind, phone,
