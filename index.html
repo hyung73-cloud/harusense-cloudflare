@@ -6900,7 +6900,7 @@ function initRepresentativeForm() {
       map,
       position,
       content: buildSearchPreviewMarker(clinic),
-      zIndex: 99999,
+      zIndex: 999999,
     });
     searchPreviewMarker.addListener("gmp-click", () => openSheet(clinic));
     map.panTo(position);
@@ -6908,12 +6908,19 @@ function initRepresentativeForm() {
   }
 
   function focusSearchClinic(clinic) {
-    clearSearchPreviewMarker();
     if (map && clinic && hasValidCoords(clinic)) {
-      map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
-      if (typeof map.getZoom === "function" && map.getZoom() < 15) map.setZoom(15);
+      showSearchPreviewMarker(clinic);
+    } else {
+      clearSearchPreviewMarker();
     }
-    if (typeof openSheet === "function") setTimeout(() => openSheet(clinic), 320);
+    if (typeof openSheet === "function") {
+      setTimeout(() => {
+        openSheet(clinic);
+        if (map && clinic && hasValidCoords(clinic)) {
+          setTimeout(() => showSearchPreviewMarker(clinic), 120);
+        }
+      }, 320);
+    }
   }
 
   function render(list) {
@@ -6962,8 +6969,9 @@ function initRepresentativeForm() {
     doSearch("");
     setTimeout(() => input.focus(), 250);
   };
-  function closeSearch() {
-    clearSearchPreviewMarker();
+  function closeSearch(options) {
+    const keepPreview = options && options.keepPreview === true;
+    if (!keepPreview) clearSearchPreviewMarker();
     backdrop.classList.remove("open");
     modal.classList.remove("open");
   }
@@ -6977,7 +6985,7 @@ function initRepresentativeForm() {
     if (!item) return;
     const clinic = (CLINIC_DATA.clinics || [])[Number(item.dataset.idx)];
     if (!clinic) return;
-    closeSearch();
+    closeSearch({ keepPreview: true });
     focusSearchClinic(clinic);
   });
 })();
