@@ -3,7 +3,19 @@
   headers: { "Content-Type": "application/json; charset=utf-8" }
 });
 
-const ACTIVE_STATUS = new Set(["?쒖꽦", "active", "ACTIVE", ""]);
+// 활성 판정: 명시적 비활성만 거부. '활성'/active/빈값/레거시 mojibake 모두 허용
+function isAccountActive(status) {
+  const raw = String(status == null ? "" : status).trim();
+  const lower = raw.toLowerCase();
+  if (lower === "inactive" || lower === "stopped" || lower === "disabled") return false;
+  if (raw === "중지" || raw === "비활성" || raw === "정지" || raw === "탈퇴") return false;
+  return true;
+}
+
+function isPharmacyKind(kind) {
+  const k = String(kind || "").trim();
+  return k === "약국" || k.toLowerCase() === "pharmacy" || k === "?쎄뎅";
+}
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -56,15 +68,15 @@ async function login(db, payload) {
   const institutionNo = clean(payload.institution_no);
   const password = String(payload.password || "");
   if (!institutionNo || !password) {
-    return { ok: false, error: "?붿뼇湲곌?踰덊샇? 鍮꾨?踰덊샇瑜??낅젰?댁＜?몄슂." };
+    return { ok: false, error: "요양기관번호와 비밀번호를 입력해주세요." };
   }
 
   const account = await findAccount(db, institutionNo);
-  if (!account || !ACTIVE_STATUS.has(String(account.status || ""))) {
-    return { ok: false, error: "?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
+  if (!account || !isAccountActive(account.status)) {
+    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
   }
   if (!(await verifyPassword(password, account.password_salt, account.password_hash))) {
-    return { ok: false, error: "?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
+    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
   }
 
   await db.prepare("UPDATE provider_accounts SET last_login_at = datetime('now') WHERE institution_no = ?")
@@ -77,10 +89,9 @@ async function login(db, payload) {
     organization_name: account.organization_name || "",
     must_change_password: Number(account.first_password_changed || 0) !== 1,
     clinic: {
-      id: institutionNo,
-      institution_no: institutionNo,
+      id: institutionNo,      institution_no: institutionNo,
       name: account.organization_name || "",
-      type: account.kind === "?쎄뎅" ? "pharmacy" : "clinic",
+      type: isPharmacyKind(account.kind) ? "pharmacy" : "clinic",
       phone: account.phone || ""
     }
   };
@@ -405,7 +416,7 @@ async function syncAccount(db, env, payload) {
       status, password_salt, password_hash, temp_password,
       first_password_changed, issued_at, sent_at, updated_at, note
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, '?쒖꽦', ?, ?, ?, 0, datetime('now'), datetime('now'), datetime('now'), ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, '활성', ?, ?, ?, 0, datetime('now'), datetime('now'), datetime('now'), ?)
     ON CONFLICT(institution_no) DO UPDATE SET
       organization_name = excluded.organization_name,
       kind = excluded.kind,
@@ -414,7 +425,7 @@ async function syncAccount(db, env, payload) {
       manager_role = excluded.manager_role,
       manager_mobile = excluded.manager_mobile,
       manager_email = excluded.manager_email,
-      status = '?쒖꽦',
+      status = '활성',
       password_salt = excluded.password_salt,
       password_hash = excluded.password_hash,
       temp_password = excluded.temp_password,
@@ -487,7 +498,7 @@ async function syncAccountHash(db, env, payload) {
     clean(payload.manager_role),
     clean(payload.manager_mobile),
     clean(payload.manager_email),
-    clean(payload.status) || "?쒖꽦",
+    clean(payload.status) || "활성",
     salt,
     hash,
     String(payload.temp_password || ""),
