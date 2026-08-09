@@ -5817,9 +5817,9 @@ function looksLikeMojibakeText(text) {
   const s = String(text || "");
   if (!s) return false;
   if (s.indexOf("\uFFFD") !== -1) return true;
+  // 예: ?붿엽瑗먟엽?붿땳... (?가 섞인 깨진 인코딩)
+  if (s.indexOf("?") !== -1) return true;
   const hangulCount = (s.match(/[가-힣]/g) || []).length;
-  // account.js 등에서 깨진 한글/인코딩이 그대로 내려오는 경우
-  if (/\?{2,}/.test(s) && hangulCount < 2) return true;
   if (hangulCount === 0 && /[^\x00-\x7F]/.test(s)) return true;
   return false;
 }
@@ -5828,7 +5828,7 @@ function setRepMessage(id, text, type = "") {
   const el = document.getElementById(id);
   if (!el) return;
   let out = text == null ? "" : String(text);
-  // 관계자 로그인 하단 빨간 오류: 깨진 서버 문구 대신 정상 한국어/빈 영역
+  // 관계자 로그인 하단 빨간 오류: 깨진 서버 문구 대신 정상 한국어
   if (type === "error" && id === "repLoginMessage" && looksLikeMojibakeText(out)) {
     out = "요양기관번호 또는 비밀번호가 맞지 않습니다.";
   }
@@ -6278,9 +6278,8 @@ async function handleRepLogin() {
           .catch(() => {});
       }
     } else {
-      const fallback = "요양기관번호 또는 비밀번호가 맞지 않습니다.";
-      const raw = String((data && data.error) || "").trim();
-      setRepMessage("repLoginMessage", raw && !looksLikeMojibakeText(raw) ? raw : fallback, "error");
+      // API data.error 가 account.js 인코딩 깨짐으로 내려와도 로그인 창에는 정상 한국어만 표시
+      setRepMessage("repLoginMessage", "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
     }
   } catch (apiErr) {
     setRepMessage("repLoginMessage", "네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.", "error");
