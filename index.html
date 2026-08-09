@@ -3326,6 +3326,7 @@ let LAST_STABLE_MAP_DATA = null;
 let map = null;
 let markers = [];
 let searchPreviewMarker = null;
+let searchPreviewClinic = null;
 let LAST_OPENED_QR_TARGET = "";
 
 function normalizeClinicLookup(value) {
@@ -5321,6 +5322,8 @@ function renderResults() {
   applyRepresentativeStickyPosition();
   renderMarkers();
   renderClinicList();
+  // 검색 임시 핀은 renderMarkers 대상이 아니므로, 용량/데이터 갱신 후에도 유지·재표시
+  if (typeof window.reshowSearchPreviewMarker === "function") window.reshowSearchPreviewMarker();
 }
 
 function fitInitialDefaultMapView() {
@@ -5562,6 +5565,7 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   document.querySelectorAll(".chip[data-district]").forEach(c => c.classList.remove("active"));
   btn.classList.add("active");
   state.districtFilter = btn.dataset.district;
+  if (typeof window.clearSearchPreviewMarker === "function") window.clearSearchPreviewMarker();
   renderResults();
   focusMapByDistrict(state.districtFilter);
 });
@@ -5716,6 +5720,7 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
       sigunguSlug: shellState.sigunguSlug || "",
       legacyDistrict: shellState.legacyDistrict || ""
     };
+    if (typeof window.clearSearchPreviewMarker === "function") window.clearSearchPreviewMarker();
     const targetDistrict = shellState.legacyDistrict || "all";
     const legacyChip = Array.from(document.querySelectorAll("#districtBar .chip[data-district]")).find(chip => chip.dataset.district === targetDistrict);
     if (legacyChip) {
@@ -6863,6 +6868,7 @@ function initRepresentativeForm() {
       searchPreviewMarker.map = null;
       searchPreviewMarker = null;
     }
+    searchPreviewClinic = null;
   }
 
   function buildSearchPreviewMarker(clinic) {
@@ -6892,9 +6898,17 @@ function initRepresentativeForm() {
   }
 
   function showSearchPreviewMarker(clinic) {
-    clearSearchPreviewMarker();
-    if (!clinic || !map || !window.google || !google.maps || !google.maps.marker || !hasValidCoords(clinic)) return;
+    if (searchPreviewMarker) {
+      searchPreviewMarker.map = null;
+      searchPreviewMarker = null;
+    }
+    if (!clinic || !map || !window.google || !google.maps || !google.maps.marker || !hasValidCoords(clinic)) {
+      searchPreviewClinic = null;
+      return;
+    }
 
+    // 지역 필터 밖 기관도 검색 선택 시 예외적으로 임시 핀 표시 (renderMarkers 필터와 무관)
+    searchPreviewClinic = clinic;
     const position = { lat: Number(clinic.lat), lng: Number(clinic.lng) };
     searchPreviewMarker = new google.maps.marker.AdvancedMarkerElement({
       map,
@@ -6907,7 +6921,12 @@ function initRepresentativeForm() {
     if (typeof map.getZoom === "function" && map.getZoom() < 15) map.setZoom(15);
   }
 
+  function reshowSearchPreviewMarker() {
+    if (searchPreviewClinic) showSearchPreviewMarker(searchPreviewClinic);
+  }
+
   function focusSearchClinic(clinic) {
+    // 현재 지역 필터와 무관하게 검색 선택 기관 임시 핀을 반드시 표시
     if (map && clinic && hasValidCoords(clinic)) {
       showSearchPreviewMarker(clinic);
     } else {
@@ -6916,14 +6935,16 @@ function initRepresentativeForm() {
     if (typeof openSheet === "function") {
       setTimeout(() => {
         openSheet(clinic);
+        // 시트/오버레이 오픈 이후에도 팝업 뒤에 임시 핀이 남도록 재표시
         if (map && clinic && hasValidCoords(clinic)) {
           setTimeout(() => showSearchPreviewMarker(clinic), 120);
+          setTimeout(() => showSearchPreviewMarker(clinic), 400);
         }
       }, 320);
     }
   }
 
-  function render(list) {
+  function render(list, query) {
     if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || CLINIC_DATA.clinics.length === 0) {
       clearSearchPreviewMarker();
       results.innerHTML = '<div class="search-empty">' + t("searchLoading") + '</div>';
@@ -6934,7 +6955,8 @@ function initRepresentativeForm() {
       results.innerHTML = '<div class="search-empty">' + t("searchEmpty") + '</div>';
       return;
     }
-    showSearchPreviewMarker(list[0]);
+    // 검색어가 있을 때만 첫 결과 미리보기 핀 표시 (빈 검색 열기 시 불필요한 이동 방지)
+    if (query) showSearchPreviewMarker(list[0]);
     results.innerHTML = list.slice(0, 60).map(c => {
       const ph = isPh(c);
       const typeCls = ph ? "pharmacy" : "clinic";
@@ -6959,10 +6981,11 @@ function initRepresentativeForm() {
     const list = !query ? clinics.slice() : clinics.filter(c =>
       ((c.name || "") + " " + (c.address || "") + " " + (c.district || "")).toLowerCase().indexOf(query) !== -1
     );
-    render(list);
+    render(list, query);
   }
 
   window.openClinicSearch = function () {
+    clearSearchPreviewMarker();
     backdrop.classList.add("open");
     modal.classList.add("open");
     input.value = "";
@@ -6970,19 +6993,25 @@ function initRepresentativeForm() {
     setTimeout(() => input.focus(), 250);
   };
   function closeSearch(options) {
-    const keepPreview = options && options.keepPreview === true;
+    // 검색 결과 클릭 시에만 keepPreview: true — 취소/백드롭 닫기는 임시 핀 제거
+    const keepPreview = !!(options && options.keepPreview === true && !(options instanceof Event));
     if (!keepPreview) clearSearchPreviewMarker();
     backdrop.classList.remove("open");
     modal.classList.remove("open");
   }
 
+  window.clearSearchPreviewMarker = clearSearchPreviewMarker;
+  window.reshowSearchPreviewMarker = reshowSearchPreviewMarker;
+
   input.addEventListener("input", () => doSearch(input.value));
-  if (cancelBtn) cancelBtn.addEventListener("click", closeSearch);
-  backdrop.addEventListener("click", closeSearch);
+  if (cancelBtn) cancelBtn.addEventListener("click", () => closeSearch());
+  backdrop.addEventListener("click", () => closeSearch());
 
   results.addEventListener("click", (e) => {
     const item = e.target.closest(".search-item");
     if (!item) return;
+    e.preventDefault();
+    e.stopPropagation();
     const clinic = (CLINIC_DATA.clinics || [])[Number(item.dataset.idx)];
     if (!clinic) return;
     closeSearch({ keepPreview: true });
