@@ -1971,6 +1971,11 @@ body {
   height: 0;
   cursor: pointer;
 }
+.marker-wrap.search-preview-marker {
+  transform: translateY(-2px) scale(1.04);
+  filter: drop-shadow(0 12px 20px rgba(37,99,235,0.28));
+  z-index: 50;
+}
 .marker-dot {
   position: absolute;
   left: -7px;
@@ -3210,6 +3215,7 @@ let CLINIC_DATA = { clinics: [] };
 let REGION_DATA = null;
 let map = null;
 let markers = [];
+let searchPreviewMarker = null;
 let LAST_OPENED_QR_TARGET = "";
 
 function normalizeClinicLookup(value) {
@@ -5978,7 +5984,8 @@ function renderRepresentativeEditor() {
       </details>`;
   }
 
-  const showServiceBoards = REP_SERVICE_PROFILE_ALL_INSTITUTIONS || REP_SERVICE_PROFILE_INSTITUTION_NOS.has(String(REP_ACTIVE_INSTITUTION_NO || ""));
+  // Keep beta treatment inputs visible only for the NewSense test account.
+  const showServiceBoards = canEditRepresentativePosition();
   const serviceBoards = showServiceBoards
     ? `<div class="rep-service-board">${REP_SERVICE_GROUPS.map(buildRepServiceGroupHtml).join("")}</div>`
     : "";
@@ -6468,15 +6475,76 @@ function initRepresentativeForm() {
     return (typeof isPharmacy === "function") ? isPharmacy(c) : (c.type === "pharmacy");
   }
 
+  function clearSearchPreviewMarker() {
+    if (searchPreviewMarker) {
+      searchPreviewMarker.map = null;
+      searchPreviewMarker = null;
+    }
+  }
+
+  function buildSearchPreviewMarker(clinic) {
+    const key = priceKey(state.drugKey, state.dose);
+    const hasPrice = clinicHasSelectedPrice(clinic);
+    const pharmacyCls = isPh(clinic) ? " pharmacy" : "";
+    const el = document.createElement("div");
+
+    if (hasPrice) {
+      const price = Number(clinic.prices[key]);
+      el.className = "marker-wrap search-preview-marker" + pharmacyCls;
+      el.innerHTML = `
+        <div class="marker-dot"></div>
+        <div class="price-marker">${buildPriceMarkerHtml(clinic, price, key)}</div>
+      `;
+    } else {
+      const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
+      el.className = "marker-wrap no-price search-preview-marker" + pharmacyCls;
+      el.innerHTML = `
+        <div class="marker-dot"></div>
+        <div class="info-marker">${label}</div>
+      `;
+    }
+
+    el.addEventListener("click", () => openSheet(clinic));
+    return el;
+  }
+
+  function showSearchPreviewMarker(clinic) {
+    clearSearchPreviewMarker();
+    if (!clinic || !map || !window.google || !google.maps || !google.maps.marker || !hasValidCoords(clinic)) return;
+
+    const position = { lat: Number(clinic.lat), lng: Number(clinic.lng) };
+    searchPreviewMarker = new google.maps.marker.AdvancedMarkerElement({
+      map,
+      position,
+      content: buildSearchPreviewMarker(clinic),
+      zIndex: 99999,
+    });
+    searchPreviewMarker.addListener("gmp-click", () => openSheet(clinic));
+    map.panTo(position);
+    if (typeof map.getZoom === "function" && map.getZoom() < 15) map.setZoom(15);
+  }
+
+  function focusSearchClinic(clinic) {
+    clearSearchPreviewMarker();
+    if (map && clinic && hasValidCoords(clinic)) {
+      map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
+      if (typeof map.getZoom === "function" && map.getZoom() < 15) map.setZoom(15);
+    }
+    if (typeof openSheet === "function") setTimeout(() => openSheet(clinic), 320);
+  }
+
   function render(list) {
     if (!CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics) || CLINIC_DATA.clinics.length === 0) {
+      clearSearchPreviewMarker();
       results.innerHTML = '<div class="search-empty">' + t("searchLoading") + '</div>';
       return;
     }
     if (!list.length) {
+      clearSearchPreviewMarker();
       results.innerHTML = '<div class="search-empty">' + t("searchEmpty") + '</div>';
       return;
     }
+    showSearchPreviewMarker(list[0]);
     results.innerHTML = list.slice(0, 60).map(c => {
       const ph = isPh(c);
       const typeCls = ph ? "pharmacy" : "clinic";
@@ -6512,6 +6580,7 @@ function initRepresentativeForm() {
     setTimeout(() => input.focus(), 250);
   };
   function closeSearch() {
+    clearSearchPreviewMarker();
     backdrop.classList.remove("open");
     modal.classList.remove("open");
   }
@@ -6526,11 +6595,7 @@ function initRepresentativeForm() {
     const clinic = (CLINIC_DATA.clinics || [])[Number(item.dataset.idx)];
     if (!clinic) return;
     closeSearch();
-    if (map && clinic.lat && clinic.lng) {
-      map.panTo({ lat: Number(clinic.lat), lng: Number(clinic.lng) });
-      if (map.getZoom() < 15) map.setZoom(15);
-    }
-    if (typeof openSheet === "function") setTimeout(() => openSheet(clinic), 320);
+    focusSearchClinic(clinic);
   });
 })();
 
