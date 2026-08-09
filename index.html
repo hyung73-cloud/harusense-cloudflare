@@ -6195,10 +6195,26 @@ function buildRepresentativeFallbackClinic(loginClinic, institutionNo) {
   };
 }
 
+function looksLikeMojibakeText(text) {
+  const s = String(text || "");
+  if (!s) return false;
+  if (s.indexOf("\uFFFD") !== -1) return true;
+  const hangulCount = (s.match(/[가-힣]/g) || []).length;
+  // account.js 등에서 깨진 한글/인코딩이 그대로 내려오는 경우
+  if (/\?{2,}/.test(s) && hangulCount < 2) return true;
+  if (hangulCount === 0 && /[^\x00-\x7F]/.test(s)) return true;
+  return false;
+}
+
 function setRepMessage(id, text, type = "") {
   const el = document.getElementById(id);
   if (!el) return;
-  el.textContent = text;
+  let out = text == null ? "" : String(text);
+  // 관계자 로그인 하단 빨간 오류: 깨진 서버 문구 대신 정상 한국어/빈 영역
+  if (type === "error" && id === "repLoginMessage" && looksLikeMojibakeText(out)) {
+    out = "요양기관번호 또는 비밀번호가 맞지 않습니다.";
+  }
+  el.textContent = out;
   el.className = `rep-message ${type}`.trim();
 }
 function setStockButton(button, inStock) {
@@ -6645,7 +6661,9 @@ async function handleRepLogin() {
           .catch(() => {});
       }
     } else {
-      setRepMessage("repLoginMessage", data.error || "요양기관번호 또는 비밀번호가 맞지 않습니다.", "error");
+      const fallback = "요양기관번호 또는 비밀번호가 맞지 않습니다.";
+      const raw = String((data && data.error) || "").trim();
+      setRepMessage("repLoginMessage", raw && !looksLikeMojibakeText(raw) ? raw : fallback, "error");
     }
   } catch (apiErr) {
     setRepMessage("repLoginMessage", "네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.", "error");
