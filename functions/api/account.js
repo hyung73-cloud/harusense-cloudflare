@@ -1,4 +1,4 @@
-﻿const json = (data, status = 200) => new Response(JSON.stringify(data), {
+const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
   headers: { "Content-Type": "application/json; charset=utf-8" }
 });
@@ -39,7 +39,7 @@ export async function onRequest(context) {
   try {
     switch (payload.action) {
       case "login":
-        return json(await login(db, payload));
+        return json(await login(db, payload, env, context));
       case "changePassword":
         return json(await changePassword(db, payload));
       case "updatePrices":
@@ -64,7 +64,10 @@ export async function onRequest(context) {
   }
 }
 
-async function login(db, payload) {
+const TEMP_PASSWORD_RESEND_COOLDOWN_MS = 30 * 1000; // 연타 방지용 최소 간격(첫 발송은 즉시)
+const DEFAULT_APPS_SCRIPT_EXEC_URL = "https://script.google.com/macros/s/AKfycbzoYPEtOKWH4-4hn8YjrwwHEdIQnSHbh9bAUxX_2chhcHFtBJnZbi71Oupyj784Jb5Whw/exec";
+
+async function login(db, payload, env, context) {
   const institutionNo = clean(payload.institution_no);
   const password = String(payload.password || "");
   if (!institutionNo || !password) {
@@ -76,6 +79,8 @@ async function login(db, payload) {
     return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
   }
   if (!(await verifyPassword(password, account.password_salt, account.password_hash))) {
+    // 임시비밀번호 미변경 계정이 로그인 실패하면 등록 이메일로 기존 임시비번 재안내 (10분 쿨다운)
+    queueTempPasswordResend(context, env, db, account);
     return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
   }
 
@@ -89,12 +94,85 @@ async function login(db, payload) {
     organization_name: account.organization_name || "",
     must_change_password: Number(account.first_password_changed || 0) !== 1,
     clinic: {
-      id: institutionNo,      institution_no: institutionNo,
+      id: institutionNo,
+      institution_no: institutionNo,
       name: account.organization_name || "",
       type: isPharmacyKind(account.kind) ? "pharmacy" : "clinic",
       phone: account.phone || ""
     }
   };
+}
+
+function queueTempPasswordResend(context, env, db, account) {
+  const task = resendExistingTempPassword_(env, db, account);
+  if (context && typeof context.waitUntil === "function") {
+    context.waitUntil(task.catch(() => {}));
+  } else {
+    task.catch(() => {});
+  }
+}
+
+async function ensureTempPasswordSentAtColumn(db) {
+  try {
+    await db.prepare("SELECT temp_password_sent_at FROM provider_accounts LIMIT 1").first();
+  } catch (err) {
+    try {
+      await db.prepare("ALTER TABLE provider_accounts ADD COLUMN temp_password_sent_at TEXT").run();
+    } catch (alterErr) {}
+  }
+}
+
+function isWithinTempPasswordResendCooldown(sentAt) {
+  if (!sentAt) return false;
+  const ts = Date.parse(String(sentAt));
+  if (!Number.isFinite(ts)) return false;
+  return (Date.now() - ts) < TEMP_PASSWORD_RESEND_COOLDOWN_MS;
+}
+
+async function resendExistingTempPassword_(env, db, account) {
+  if (!account) return;
+  if (Number(account.first_password_changed || 0) === 1) return;
+
+  const tempPassword = String(account.temp_password || "").trim();
+  const managerEmail = String(account.manager_email || "").trim();
+  const institutionNo = String(account.institution_no || "").trim();
+  if (!tempPassword || !managerEmail || !institutionNo) return;
+
+  await ensureTempPasswordSentAtColumn(db);
+  const fresh = await findAccount(db, institutionNo);
+  if (!fresh) return;
+  if (Number(fresh.first_password_changed || 0) === 1) return;
+  if (isWithinTempPasswordResendCooldown(fresh.temp_password_sent_at)) return;
+
+  const token = String(env.ADMIN_SYNC_TOKEN || "");
+  const scriptUrl = String(env.APPS_SCRIPT_EXEC_URL || DEFAULT_APPS_SCRIPT_EXEC_URL || "").trim();
+  if (!token || !scriptUrl) return;
+
+  const response = await fetch(scriptUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "resendTempPassword",
+      token: token,
+      institution_no: institutionNo,
+      organization_name: String(fresh.organization_name || account.organization_name || "").trim(),
+      manager_email: managerEmail,
+      temp_password: tempPassword
+    })
+  });
+
+  const text = await response.text().catch(() => "");
+  let parsed = null;
+  try {
+    parsed = JSON.parse(text);
+  } catch (err) {
+    return;
+  }
+  if (!parsed || !parsed.ok) return;
+
+  await db.prepare(
+    "UPDATE provider_accounts SET temp_password_sent_at = ?, updated_at = datetime('now') WHERE institution_no = ?"
+  ).bind(new Date().toISOString(), institutionNo).run();
 }
 
 async function changePassword(db, payload) {
