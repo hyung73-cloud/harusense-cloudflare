@@ -2699,7 +2699,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 <header class="header">
   <div class="header-top">
     <div class="brand">
-      <span class="brand-name" data-i18n="brandTitle">하루센스 마운자로·위고비 가격지도</span>
+      <span class="brand-name" data-i18n="brandTitle">하루센스 마운자로·위고비·에페 가격지도</span>
       <span class="brand-sub" data-i18n="brandSub">GLP-1 비만주사 실시간 가격정보</span>
       <span class="brand-line-break" aria-hidden="true"></span>
       <span class="trust-badge">
@@ -3003,7 +3003,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 
 <!-- SEO content -->
 <div class="seo-content" aria-hidden="true">
-  <h1>하루센스 마운자로·위고비 가격지도</h1>
+  <h1>하루센스 마운자로·위고비·에페 가격지도</h1>
   <h2>서울 GLP-1 가격을 지도에서 비교</h2>
   <p>하루센스는 마운자로와 위고비 등 GLP-1 계열 인크레틴 치료제 가격을 지역별로 비교할 수 있는 가격지도입니다. 마포, 신촌, 영등포, 강서, 용산 등 서울 주요 지역의 의원·약국 가격 정보를 한눈에 확인할 수 있습니다.</p>
 
@@ -3040,7 +3040,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 // ─────────── i18n + FX ───────────
 const I18N = {
   ko: {
-    brandTitle: "하루센스 마운자로·위고비 가격지도",
+    brandTitle: "하루센스 마운자로·위고비·에페 가격지도",
     brandSub: "GLP-1 비만주사 실시간 가격정보",
     trustBadgeFull: "광고비 0원 · 중개수수료 0원 · 실시간 수정",
     trustBadgeShort: "광고비 0원 · 수수료 0원 · 실시간 수정",
@@ -3193,9 +3193,9 @@ function applyI18n() {
   document.getElementById("langKo")?.classList.toggle("active", appLang === "ko");
   document.getElementById("langEn")?.classList.toggle("active", appLang === "en");
   if (appLang === "en") {
-    document.title = "Harusense GLP-1 Price Map | Mounjaro & Wegovy in Seoul";
+    document.title = "Harusense GLP-1 Price Map | Mounjaro, Wegovy & Eppe in Seoul";
   } else {
-    document.title = "마운자로 가격지도 | 위고비 가격지도 | 하루센스";
+    document.title = "마운자로·위고비·에페 가격지도 | 하루센스";
   }
   updateFxBanner();
 }
