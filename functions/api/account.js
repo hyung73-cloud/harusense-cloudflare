@@ -17,11 +17,36 @@ function isPharmacyKind(kind) {
   return k === "약국" || k.toLowerCase() === "pharmacy" || k === "?쎄뎅";
 }
 
+const WRITE_ACTIONS = new Set([
+  "login",
+  "changePassword",
+  "updatePrices",
+  "updatePosition",
+  "syncAccount",
+  "syncAccountHash",
+  "addQrFeedback"
+]);
+
+const ALLOWED_PRICE_KEYS = new Set([
+  "mounjaro_2.5mg",
+  "mounjaro_5mg",
+  "mounjaro_7.5mg",
+  "mounjaro_10mg",
+  "wegovy_0.25mg",
+  "wegovy_0.5mg",
+  "wegovy_1.0mg",
+  "wegovy_1.7mg",
+  "wegovy_2.4mg"
+]);
+
+const MAX_PRICE_KRW = 10000000;
+const MAX_ITEM_KEYS = 20;
+
 export async function onRequest(context) {
   const { request, env } = context;
   const db = env.DB || env.HARUSENSE_DB || env.HARUSENSE_D1;
   if (!db) {
-    return json({ ok: false, error: "D1 DB ?곌껐???놁뒿?덈떎. Cloudflare Pages?먯꽌 D1 binding ?대쫫??DB濡??ㅼ젙?댁＜?몄슂." }, 500);
+    return json({ ok: false, error: "D1 DB 연결이 없습니다. Cloudflare Pages에서 D1 binding 이름을 DB로 설정해주세요." }, 500);
   }
 
   let payload = {};
@@ -29,15 +54,22 @@ export async function onRequest(context) {
     try {
       payload = await request.json();
     } catch (err) {
-      return json({ ok: false, error: "?붿껌 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." }, 400);
+      return json({ ok: false, error: "요청 형식이 올바르지 않습니다." }, 400);
     }
-  } else {
+  } else if (request.method === "GET") {
     const url = new URL(request.url);
     payload = Object.fromEntries(url.searchParams.entries());
+  } else {
+    return json({ ok: false, error: "허용되지 않은 요청 방식입니다." }, 405);
+  }
+
+  const action = String(payload.action || "");
+  if (WRITE_ACTIONS.has(action) && request.method !== "POST") {
+    return json({ ok: false, error: "이 작업은 POST로만 요청할 수 있습니다." }, 405);
   }
 
   try {
-    switch (payload.action) {
+    switch (action) {
       case "login":
         return json(await login(db, payload, env, context));
       case "changePassword":
@@ -57,10 +89,10 @@ export async function onRequest(context) {
       case "getQrFeedbacks":
         return json(await getQrFeedbacks(db, payload));
       default:
-        return json({ ok: false, error: "?????녿뒗 ?붿껌?낅땲??" }, 400);
+        return json({ ok: false, error: "알 수 없는 요청입니다." }, 400);
     }
   } catch (err) {
-    return json({ ok: false, error: "泥섎━ 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎: " + err.message }, 500);
+    return json({ ok: false, error: "처리 중 오류가 발생했습니다: " + err.message }, 500);
   }
 }
 
@@ -190,9 +222,11 @@ async function changePassword(db, payload) {
   }
 
   const account = await findAccount(db, institutionNo);
-  if (!account) return { ok: false, error: "怨꾩젙??李얠쓣 ???놁뒿?덈떎." };
+  if (!account || !isAccountActive(account.status)) {
+    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
+  }
   if (!(await verifyPassword(currentPassword, account.password_salt, account.password_hash))) {
-    return { ok: false, error: "?꾩옱 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
+    return { ok: false, error: "현재 비밀번호가 맞지 않습니다." };
   }
 
   const salt = crypto.randomUUID();
@@ -218,17 +252,17 @@ async function ensureProviderUpdatesNoteColumn(db) {
   }
 }
 async function updatePrices(db, payload) {
-    await ensureProviderUpdatesNoteColumn(db);
-const institutionNo = clean(payload.institution_no);
+  await ensureProviderUpdatesNoteColumn(db);
+  const institutionNo = clean(payload.institution_no);
   const password = String(payload.password || "");
   const itemsJson = String(payload.items_json || "");
   if (!institutionNo || !password || !itemsJson) {
-    return { ok: false, error: "??ν븷 ?뺣낫媛 遺議깊빀?덈떎." };
+    return { ok: false, error: "저장할 정보가 부족합니다." };
   }
 
   const account = await findAccount(db, institutionNo);
-  if (!account || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
-    return { ok: false, error: "?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎." };
+  if (!account || !isAccountActive(account.status) || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
+    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
   }
 
   let items;
@@ -236,7 +270,10 @@ const institutionNo = clean(payload.institution_no);
     items = JSON.parse(itemsJson);
     items = normalizeProviderPriceItems(items);
   } catch (err) {
-    return { ok: false, error: "媛寃??뺣낫 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎." };
+    return { ok: false, error: "가격 정보 형식이 올바르지 않습니다." };
+  }
+  if (!items || typeof items !== "object") {
+    return { ok: false, error: "가격 정보 형식이 올바르지 않습니다." };
   }
 
   const parking = String(payload.parking_available || "") === "true" ? "가능" : "";
@@ -376,8 +413,8 @@ async function updatePosition(db, payload) {
   }
 
   const account = await findAccount(db, institutionNo);
-  if (!account || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
-    return { ok: false, error: '?붿뼇湲곌?踰덊샇 ?먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆뒿?덈떎.' };
+  if (!account || !isAccountActive(account.status) || !(await verifyPassword(password, account.password_salt, account.password_hash))) {
+    return { ok: false, error: "요양기관번호 또는 비밀번호가 맞지 않습니다." };
   }
 
   await ensureProviderPositionsTable(db);
@@ -707,17 +744,37 @@ function isExplicitlyOutOfStockValue(value) {
 
 function normalizeProviderPriceItems(items) {
   if (!items || typeof items !== "object" || Array.isArray(items)) return {};
+  const entries = Object.entries(items);
+  if (entries.length > MAX_ITEM_KEYS) {
+    throw new Error("too many price keys");
+  }
   const normalized = {};
-  for (const [key, value] of Object.entries(items)) {
-    if (!key) continue;
+  for (const [key, value] of entries) {
+    if (!ALLOWED_PRICE_KEYS.has(String(key))) continue;
     if (value && typeof value === "object" && !Array.isArray(value)) {
+      let price = value.price;
+      if (price !== "" && price != null) {
+        const num = Number(price);
+        if (!Number.isFinite(num) || num < 0 || num > MAX_PRICE_KRW) {
+          throw new Error("invalid price range");
+        }
+        price = Math.round(num);
+      } else {
+        price = "";
+      }
       normalized[key] = {
-        ...value,
+        price,
         in_stock: !isExplicitlyOutOfStockValue(value.in_stock)
       };
+    } else if (value === "" || value == null) {
+      normalized[key] = { price: "", in_stock: true };
     } else {
+      const num = Number(value);
+      if (!Number.isFinite(num) || num < 0 || num > MAX_PRICE_KRW) {
+        throw new Error("invalid price range");
+      }
       normalized[key] = {
-        price: value,
+        price: Math.round(num),
         in_stock: true
       };
     }
