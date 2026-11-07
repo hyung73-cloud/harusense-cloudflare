@@ -129,7 +129,7 @@
           "name": "가격지도에 표시된 정보는 정확한가요?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "공개된 정보를 기반으로 큐레이션한 정보이며, 의료기관 원장이 직접 검증한 의원은 체크 마크(✓)로 표시됩니다. 실제 가격과 진료 가능 여부는 각 의원에 직접 전화로 확인하시는 것이 가장 정확합니다. 대부분의 의원은 예약 없이 방문 가능합니다."
+            "text": "공개·확인된 정보를 주 1회 기준으로 반영합니다. 실제 가격과 진료 가능 여부는 각 의원에 직접 확인하시는 것이 가장 정확합니다. 대부분의 의원은 예약 없이 방문 가능합니다."
           }
         }
       ]
@@ -1269,6 +1269,7 @@ body {
 }
 .rep-pair-cell.mounjaro .rep-cell-tag { color: var(--blue-deep); }
 .rep-pair-cell.wegovy .rep-cell-tag { color: #047857; }
+.rep-pair-cell.eppe .rep-cell-tag { color: #9a3412; }
 .rep-item {
   display: grid;
   grid-template-columns: 50px minmax(0, 1fr) 72px;
@@ -1472,11 +1473,11 @@ body {
     padding-bottom: 0;
   }
 }
-/* 태블릿·PC: 2열 헤더 + 행 높이 맞춤 */
+/* 태블릿·PC: 3열 헤더 + 행 높이 맞춤 */
 @media (min-width: 540px) {
   .rep-board-head {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
     margin-bottom: 6px;
   }
@@ -1497,9 +1498,13 @@ body {
     color: #047857;
     background: #ecfdf5;
   }
+  .rep-board-head-cell.eppe {
+    color: #9a3412;
+    background: #fff7ed;
+  }
   .rep-pair-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
     align-items: stretch;
     padding: 0 0 6px;
@@ -2622,7 +2627,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   <!-- Drug + Dose toggle -->
   <div class="drug-toggle-bar" id="drugToggleBar">
     <div class="drug-group active" data-drug="mounjaro">
-      <div class="drug-label" data-i18n="drugMounjaroShort">마000</div>
+      <div class="drug-label" data-i18n="drugMounjaroShort">마운자로</div>
       <div class="dose-buttons">
         <button class="dose-btn selected" data-drug="mounjaro" data-dose="2.5mg">2.5mg</button>
         <button class="dose-btn" data-drug="mounjaro" data-dose="5mg">5mg</button>
@@ -2633,13 +2638,23 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
       </div>
     </div>
     <div class="drug-group" data-drug="wegovy">
-      <div class="drug-label" data-i18n="drugWegovyShort">위00</div>
+      <div class="drug-label" data-i18n="drugWegovyShort">위고비</div>
       <div class="dose-buttons">
         <button class="dose-btn" data-drug="wegovy" data-dose="0.25mg">0.25mg</button>
         <button class="dose-btn" data-drug="wegovy" data-dose="0.5mg">0.5mg</button>
         <button class="dose-btn" data-drug="wegovy" data-dose="1.0mg">1.0mg</button>
         <button class="dose-btn" data-drug="wegovy" data-dose="1.7mg">1.7mg</button>
         <button class="dose-btn" data-drug="wegovy" data-dose="2.4mg">2.4mg</button>
+      </div>
+    </div>
+    <div class="drug-group" data-drug="eppe">
+      <div class="drug-label" data-i18n="drugEppeShort">에페</div>
+      <div class="dose-buttons">
+        <button class="dose-btn" data-drug="eppe" data-dose="2mg">2mg</button>
+        <button class="dose-btn" data-drug="eppe" data-dose="4mg">4mg</button>
+        <button class="dose-btn" data-drug="eppe" data-dose="6mg">6mg</button>
+        <button class="dose-btn" data-drug="eppe" data-dose="8mg">8mg</button>
+        <button class="dose-btn" data-drug="eppe" data-dose="10mg">10mg</button>
       </div>
     </div>
   </div>
@@ -2720,8 +2735,8 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
     <button class="chip" data-district="고양시" data-i18n="districtGoyang">고양</button>
   </div>
   <div class="header-notice" id="headerNotice">
-    <span class="notice-verified">✓ 원장 자문</span>
-    <span class="notice-meta">업데이트 확인 중 · 방문 전 전화 확인 권장</span>
+    <span class="notice-verified">주 1회, 확인된 내용을 반영합니다</span>
+    <span class="notice-meta">업데이트 확인 중</span>
   </div>
 </header>
 
@@ -2737,6 +2752,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 <nav class="site-footer-nav" aria-label="Site pages">
   <a href="/en/mounjaro-map/" class="footer-chip" data-i18n="footerMounjaro">Mounjaro</a>
   <a href="/en/wegovy-map/" class="footer-chip" data-i18n="footerWegovy">Wegovy</a>
+  <a href="/en/?drug=eppe" class="footer-chip" data-i18n="footerEppe">Eppe</a>
   <a href="/en/guide/" class="footer-chip" data-i18n="footerGuide">Guide</a>
   <a href="/" class="footer-chip">한국어</a>
   <button class="footer-chip" id="repOpenBtn" type="button" data-i18n="footerAdmin">Clinic login</button>
@@ -2931,6 +2947,7 @@ const I18N = {
     clinicListTitle: "가격 낮은 순",
     footerMounjaro: "마운자로",
     footerWegovy: "위고비",
+    footerEppe: "에페",
     footerGuide: "하루센스 이용안내",
     footerAdmin: "관계자 로그인",
     searchPlaceholder: "병의원·약국 이름·지역 검색",
@@ -2947,9 +2964,9 @@ const I18N = {
     districtGangseo: "강서", districtYongsan: "용산", districtGwanak: "관악",
     districtDongjak: "동작", districtJongno: "종로", districtYangcheon: "양천",
     districtNowon: "노원", districtGoyang: "고양",
-    drugMounjaroShort: "마000", drugWegovyShort: "위00",
-    noticeVerified: "✓ 원장 자문",
-    noticeCallBefore: "방문 전 전화 확인 권장",
+    drugMounjaroShort: "마운자로", drugWegovyShort: "위고비", drugEppeShort: "에페",
+    noticeVerified: "주 1회, 확인된 내용을 반영합니다",
+    noticeCallBefore: "확인된 정보 기준",
     updateChecking: "업데이트 확인 중",
     updateJustNow: "방금 업데이트",
     updateMinAgo: "분 전 업데이트",
@@ -2958,7 +2975,7 @@ const I18N = {
     updateSuffix: " 업데이트",
     markerNoStock: "재고 없음",
     markerCollecting: "정보 수집중",
-    verifiedBadge: "원장 직접 검증",
+    verifiedBadge: "확인된 정보",
     stockOn: "재고 있음", stockOff: "재고 없음",
     callLabel: "바로 전화하기",
     phoneMissing: "전화번호 미등록",
@@ -2991,6 +3008,7 @@ const I18N = {
     clinicListTitle: "Lowest price",
     footerMounjaro: "Mounjaro",
     footerWegovy: "Wegovy",
+    footerEppe: "Eppe",
     footerGuide: "Guide",
     footerAdmin: "Provider login",
     searchPlaceholder: "Search clinic, pharmacy, or area",
@@ -3007,9 +3025,9 @@ const I18N = {
     districtGangseo: "Gangseo", districtYongsan: "Yongsan", districtGwanak: "Gwanak",
     districtDongjak: "Dongjak", districtJongno: "Jongno", districtYangcheon: "Yangcheon",
     districtNowon: "Nowon", districtGoyang: "Goyang",
-    drugMounjaroShort: "Mounjaro", drugWegovyShort: "Wegovy",
-    noticeVerified: "✓ Physician verified",
-    noticeCallBefore: "Call ahead before visiting",
+    drugMounjaroShort: "Mounjaro", drugWegovyShort: "Wegovy", drugEppeShort: "Eppe",
+    noticeVerified: "Updated weekly with verified listings",
+    noticeCallBefore: "Based on confirmed info",
     updateChecking: "Checking updates",
     updateJustNow: "Updated just now",
     updateMinAgo: " min ago",
@@ -3018,7 +3036,7 @@ const I18N = {
     updateSuffix: " ago",
     markerNoStock: "Out of stock",
     markerCollecting: "Collecting info",
-    verifiedBadge: "Physician verified",
+    verifiedBadge: "Verified listing",
     stockOn: "In stock", stockOff: "Out of stock",
     callLabel: "Call now",
     phoneMissing: "No phone listed",
@@ -3160,7 +3178,7 @@ function setLang(lang) {
     writeLanguageHandoff();
     const dest = new URL("/", location.origin);
     const drug = state.drugKey;
-    if (drug === "mounjaro" || drug === "wegovy") dest.searchParams.set("drug", drug);
+    if (drug === "mounjaro" || drug === "wegovy" || drug === "eppe") dest.searchParams.set("drug", drug);
     location.replace(dest.pathname + dest.search);
     return;
   }
@@ -3183,18 +3201,25 @@ function krwToUsd(krw) {
 // ─────────── Drug labels (internal mapping) ───────────
 const DRUG_INFO = {
   mounjaro: {
-    displayName: "마000",
+    displayName: "마운자로",
     displayNameEn: "Mounjaro",
     fullName: "마운자로",
     doses: ["2.5mg", "5mg", "7.5mg", "10mg", "12.5mg", "15mg"],
     keyPrefix: "mounjaro"
   },
   wegovy: {
-    displayName: "위00",
+    displayName: "위고비",
     displayNameEn: "Wegovy",
     fullName: "위고비",
     doses: ["0.25mg", "0.5mg", "1.0mg", "1.7mg", "2.4mg"],
     keyPrefix: "wegovy"
+  },
+  eppe: {
+    displayName: "에페",
+    displayNameEn: "Eppe",
+    fullName: "에페",
+    doses: ["2mg", "4mg", "6mg", "8mg", "10mg"],
+    keyPrefix: "eppe"
   }
 };
 
@@ -4295,7 +4320,7 @@ function getPriceUpdateTooltip(clinic, doseKey) {
     return `Recently updated · ${rel}`;
   }
   if (clinic.updated_by) return `의원에서 직접 수정 · ${rel}`;
-  if (clinic.verified) return `원장 확인 가격 · ${rel}`;
+  if (clinic.verified) return `확인된 가격 · ${rel}`;
   return `최근 반영 · ${rel}`;
 }
 
@@ -4407,7 +4432,7 @@ function updateHeaderNotice() {
 
   el.innerHTML = `
     <span class="notice-verified">${t("noticeVerified")}</span>
-    <span class="notice-meta">${clinicUpdate} · ${t("noticeCallBefore")}</span>
+    <span class="notice-meta">${clinicUpdate}</span>
   `;
 }
 
@@ -5144,6 +5169,10 @@ document.addEventListener("DOMContentLoaded", () => {
     state.drugKey = "mounjaro";
     state.dose = "2.5mg";
     updateDrugGroupStates();
+  } else if (drug === "eppe") {
+    state.drugKey = "eppe";
+    state.dose = "2mg";
+    updateDrugGroupStates();
   }
 });
 
@@ -5733,6 +5762,11 @@ const REP_KEYS = [
   { drug: "wegovy", dose: "1.0mg" },
   { drug: "wegovy", dose: "1.7mg" },
   { drug: "wegovy", dose: "2.4mg" },
+  { drug: "eppe", dose: "2mg" },
+  { drug: "eppe", dose: "4mg" },
+  { drug: "eppe", dose: "6mg" },
+  { drug: "eppe", dose: "8mg" },
+  { drug: "eppe", dose: "10mg" },
 ];
 
 const REP_SERVICE_GROUPS = [
@@ -5957,7 +5991,7 @@ function renderRepresentativeEditor() {
     <div class="rep-provider-note-field">
       <label for="repProviderNote">기관 한줄 안내</label>
       <textarea id="repProviderNote" maxlength="80" rows="2" placeholder="직접수정 및 업데이트">${escapeHtml(providerNoteValue)}</textarea>
-      <div class="rep-provider-note-help">최대 80자까지 입력됩니다. 공란으로 두면 기존 안내가 사라집니다. 예: 원장 직접 처방 · 일본어 상담 가능</div>
+      <div class="rep-provider-note-help">최대 80자까지 입력됩니다. 공란으로 두면 기존 안내가 사라집니다. 예: 일본어 상담 가능 · 주차 안내</div>
     </div>`;
   function buildRepItemHtml(item) {
     const key = priceKey(item.drug, item.dose);
@@ -6011,20 +6045,19 @@ function renderRepresentativeEditor() {
     ? `<div class="rep-service-board">${REP_SERVICE_GROUPS.map(buildRepServiceGroupHtml).join("")}</div>`
     : "";
 
-  const mounjaroItems = REP_KEYS.filter(item => item.drug === "mounjaro");
-  const wegovyItems = REP_KEYS.filter(item => item.drug === "wegovy");
-  const pairRowCount = Math.max(mounjaroItems.length, wegovyItems.length);
+  const drugOrder = Object.keys(DRUG_INFO);
+  const itemsByDrug = {};
+  drugOrder.forEach(d => { itemsByDrug[d] = REP_KEYS.filter(item => item.drug === d); });
+  const pairRowCount = Math.max(...drugOrder.map(d => itemsByDrug[d].length), 0);
   const pairRows = Array.from({ length: pairRowCount }, (_, i) => `
     <div class="rep-pair-row">
-      ${buildRepPairCell(mounjaroItems[i], i === 0)}
-      ${buildRepPairCell(wegovyItems[i], i === 0)}
+      ${drugOrder.map(d => buildRepPairCell(itemsByDrug[d][i], i === 0)).join("")}
     </div>`).join("");
 
   const priceBoard = `
     <div class="rep-price-board">
       <div class="rep-board-head">
-        <div class="rep-board-head-cell mounjaro">${DRUG_INFO.mounjaro.fullName}</div>
-        <div class="rep-board-head-cell wegovy">${DRUG_INFO.wegovy.fullName}</div>
+        ${drugOrder.map(d => `<div class="rep-board-head-cell ${d}">${DRUG_INFO[d].fullName}</div>`).join("")}
       </div>
       <div class="rep-pair-rows">${pairRows}</div>
     </div>`;

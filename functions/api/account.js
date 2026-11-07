@@ -32,15 +32,22 @@ const ALLOWED_PRICE_KEYS = new Set([
   "mounjaro_5mg",
   "mounjaro_7.5mg",
   "mounjaro_10mg",
+  "mounjaro_12.5mg",
+  "mounjaro_15mg",
   "wegovy_0.25mg",
   "wegovy_0.5mg",
   "wegovy_1.0mg",
   "wegovy_1.7mg",
-  "wegovy_2.4mg"
+  "wegovy_2.4mg",
+  "eppe_2mg",
+  "eppe_4mg",
+  "eppe_6mg",
+  "eppe_8mg",
+  "eppe_10mg"
 ]);
 
 const MAX_PRICE_KRW = 10000000;
-const MAX_ITEM_KEYS = 20;
+const MAX_ITEM_KEYS = 30;
 
 export async function onRequest(context) {
   const { request, env } = context;
