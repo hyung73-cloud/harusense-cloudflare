@@ -550,7 +550,8 @@ body {
   line-height: 1.35;
   text-align: center;
   white-space: nowrap;
-  pointer-events: none;
+  pointer-events: auto;
+  overflow: visible;
 }
 .header-notice .notice-verified {
   display: inline-flex;
@@ -568,6 +569,79 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   color: #64748b;
+  pointer-events: none;
+}
+.notice-tip-wrap {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+.notice-tip-btn {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(5, 150, 105, 0.28);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--verified);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: inherit;
+}
+.notice-tip-btn[aria-expanded="true"] {
+  background: var(--verified-soft);
+  border-color: rgba(5, 150, 105, 0.45);
+}
+.notice-tip-bubble {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1200;
+  width: min(280px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  white-space: normal;
+  text-align: left;
+}
+.notice-tip-bubble::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-left: 1px solid #dbe3ef;
+  border-top: 1px solid #dbe3ef;
+  transform: rotate(45deg);
+}
+.notice-tip-wrap.is-open .notice-tip-bubble { display: block; }
+@media (max-width: 899px) {
+  .notice-tip-bubble {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(300px, calc(100vw - 28px));
+  }
+  .notice-tip-bubble::before {
+    left: 50%;
+    right: auto;
+    margin-left: -5px;
+  }
 }
 @media (min-width: 900px) {
   .region-panel {
@@ -629,8 +703,10 @@ body {
     line-height: 1.4;
     text-align: right;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+  }
+  .notice-tip-bubble {
+    width: min(320px, 42vw);
   }
   .header-notice .notice-verified {
     padding: 4px 10px;
@@ -2839,6 +2915,10 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   </div>
   <div class="header-notice" id="headerNotice">
     <span class="notice-verified">주 1회, 확인된 내용을 반영합니다</span>
+    <span class="notice-tip-wrap" id="noticeTipWrap">
+      <button type="button" class="notice-tip-btn" id="noticeTipBtn" aria-expanded="false" aria-controls="noticeTipBubble" aria-label="지역 확대 안내">ⓘ</button>
+      <div class="notice-tip-bubble" id="noticeTipBubble" role="tooltip">신촌·이대·아현 등 마포·서대문 지역을 중심으로, 가격정보 제공 지역을 단계적으로 확대합니다.</div>
+    </span>
     <span class="notice-meta">업데이트 확인 중</span>
   </div>
 </header>
@@ -3069,6 +3149,8 @@ const I18N = {
     districtNowon: "노원", districtGoyang: "고양",
     drugMounjaroShort: "마운자로", drugWegovyShort: "위고비", drugEppeShort: "에페",
     noticeVerified: "주 1회, 확인된 내용을 반영합니다",
+    noticeAreaExpand: "신촌·이대·아현 등 마포·서대문 지역을 중심으로, 가격정보 제공 지역을 단계적으로 확대합니다.",
+    noticeAreaTipAria: "지역 확대 안내",
     noticeCallBefore: "확인된 정보 기준",
     updateChecking: "업데이트 확인 중",
     updateJustNow: "방금 업데이트",
@@ -3130,6 +3212,8 @@ const I18N = {
     districtNowon: "Nowon", districtGoyang: "Goyang",
     drugMounjaroShort: "Mounjaro", drugWegovyShort: "Wegovy", drugEppeShort: "Eppe",
     noticeVerified: "Updated weekly with verified listings",
+    noticeAreaExpand: "We are gradually expanding price coverage, starting with Mapo and Seodaemun areas such as Sinchon, Ewha, and Ahyeon.",
+    noticeAreaTipAria: "Coverage expansion info",
     noticeCallBefore: "Based on confirmed info",
     updateChecking: "Checking updates",
     updateJustNow: "Updated just now",
@@ -4781,16 +4865,53 @@ function parkingMetaText(clinic) {
   return source;
 }
 
+function setNoticeAreaTipOpen(open) {
+  const wrap = document.getElementById("noticeTipWrap");
+  const btn = document.getElementById("noticeTipBtn");
+  if (!wrap || !btn) return;
+  wrap.classList.toggle("is-open", !!open);
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function initNoticeAreaTip() {
+  const root = document.getElementById("headerNotice");
+  if (!root || root.dataset.tipBound === "true") return;
+  root.dataset.tipBound = "true";
+  root.addEventListener("click", event => {
+    const btn = event.target.closest("#noticeTipBtn");
+    if (!btn) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const wrap = document.getElementById("noticeTipWrap");
+    setNoticeAreaTipOpen(!(wrap && wrap.classList.contains("is-open")));
+  });
+  document.addEventListener("click", event => {
+    const wrap = document.getElementById("noticeTipWrap");
+    if (!wrap || !wrap.classList.contains("is-open")) return;
+    if (wrap.contains(event.target)) return;
+    setNoticeAreaTipOpen(false);
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") setNoticeAreaTipOpen(false);
+  });
+}
+
 function updateHeaderNotice() {
   const el = document.getElementById("headerNotice");
   if (!el) return;
 
   const clinicUpdate = formatRelativeUpdateTime(latestClinicUpdatedAt());
+  const wasOpen = el.querySelector("#noticeTipWrap.is-open");
 
   el.innerHTML = `
     <span class="notice-verified">${t("noticeVerified")}</span>
+    <span class="notice-tip-wrap${wasOpen ? " is-open" : ""}" id="noticeTipWrap">
+      <button type="button" class="notice-tip-btn" id="noticeTipBtn" aria-expanded="${wasOpen ? "true" : "false"}" aria-controls="noticeTipBubble" aria-label="${t("noticeAreaTipAria")}">ⓘ</button>
+      <div class="notice-tip-bubble" id="noticeTipBubble" role="tooltip">${t("noticeAreaExpand")}</div>
+    </span>
     <span class="notice-meta">${clinicUpdate}</span>
   `;
+  initNoticeAreaTip();
 }
 
 // ─────────── Data cache (stale-while-revalidate) ───────────
@@ -5547,6 +5668,7 @@ function paintInlineClinicListEarly() {
 document.addEventListener("DOMContentLoaded", () => {
   paintInlineClinicListEarly();
   applyI18n();
+  initNoticeAreaTip();
   initLangToggle();
   startClinicAutoRefresh();
   window.addEventListener("resize", applyBrandTitle);
