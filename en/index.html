@@ -582,21 +582,33 @@ body {
   align-items: center;
 }
 .notice-tip-btn {
-  width: 22px;
   height: 22px;
+  min-width: 0;
   border: 1px solid rgba(5, 150, 105, 0.28);
   border-radius: 999px;
   background: #fff;
   color: var(--verified);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  gap: 2px;
+  padding: 0 8px;
   font-family: inherit;
+  white-space: nowrap;
+}
+.notice-tip-btn::after {
+  content: "▾";
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.notice-tip-btn[aria-expanded="true"]::after {
+  content: "▴";
 }
 .notice-tip-btn[aria-expanded="true"] {
   background: var(--verified-soft);
@@ -2813,7 +2825,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   <div class="header-notice" id="headerNotice">
     <span class="notice-verified">주 1회, 확인된 내용을 반영합니다</span>
     <span class="notice-tip-wrap" id="noticeTipWrap">
-      <button type="button" class="notice-tip-btn" id="noticeTipBtn" aria-expanded="false" aria-controls="noticeTipBubble" aria-label="지역 확대 안내">ⓘ</button>
+      <button type="button" class="notice-tip-btn" id="noticeTipBtn" aria-expanded="false" aria-controls="noticeTipBubble" aria-label="지역 확대 안내">안내</button>
       <div class="notice-tip-bubble" id="noticeTipBubble" role="tooltip">신촌·이대·아현 등 마포·서대문 지역을 중심으로, 가격정보 제공 지역을 단계적으로 확대합니다.</div>
     </span>
     <span class="notice-meta">업데이트 확인 중</span>
@@ -3048,6 +3060,7 @@ const I18N = {
     noticeVerified: "주 1회, 확인된 내용을 반영합니다",
     noticeAreaExpand: "신촌·이대·아현 등 마포·서대문 지역을 중심으로, 가격정보 제공 지역을 단계적으로 확대합니다.",
     noticeAreaTipAria: "지역 확대 안내",
+    noticeAreaTipLabel: "안내",
     noticeCallBefore: "확인된 정보 기준",
     updateChecking: "업데이트 확인 중",
     updateJustNow: "방금 업데이트",
@@ -3111,6 +3124,7 @@ const I18N = {
     noticeVerified: "Updated weekly with verified listings",
     noticeAreaExpand: "We are gradually expanding price coverage, starting with Mapo and Seodaemun areas such as Sinchon, Ewha, and Ahyeon.",
     noticeAreaTipAria: "Coverage expansion info",
+    noticeAreaTipLabel: "Info",
     noticeCallBefore: "Based on confirmed info",
     updateChecking: "Checking updates",
     updateJustNow: "Updated just now",
@@ -4549,7 +4563,7 @@ function updateHeaderNotice() {
   el.innerHTML = `
     <span class="notice-verified">${t("noticeVerified")}</span>
     <span class="notice-tip-wrap${wasOpen ? " is-open" : ""}" id="noticeTipWrap">
-      <button type="button" class="notice-tip-btn" id="noticeTipBtn" aria-expanded="${wasOpen ? "true" : "false"}" aria-controls="noticeTipBubble" aria-label="${t("noticeAreaTipAria")}">ⓘ</button>
+      <button type="button" class="notice-tip-btn" id="noticeTipBtn" aria-expanded="${wasOpen ? "true" : "false"}" aria-controls="noticeTipBubble" aria-label="${t("noticeAreaTipAria")}">${t("noticeAreaTipLabel")}</button>
       <div class="notice-tip-bubble" id="noticeTipBubble" role="tooltip">${t("noticeAreaExpand")}</div>
     </span>
     <span class="notice-meta">${clinicUpdate}</span>
