@@ -2887,7 +2887,7 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
   <div class="region-picker" id="regionPicker">
     <button type="button" class="region-trigger" id="regionTrigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="regionPanel">
       <span class="region-trigger-icon" aria-hidden="true">📍</span>
-      <span class="region-trigger-label" id="regionTriggerLabel" data-i18n="regionNationWide">전국</span>
+      <span class="region-trigger-label" id="regionTriggerLabel">서울 · 마포</span>
       <span class="region-trigger-chevron" aria-hidden="true">▾</span>
     </button>
     <div class="region-panel" id="regionPanel" role="dialog" aria-modal="true" aria-labelledby="regionPanelTitle" hidden>
@@ -2945,8 +2945,8 @@ html.lang-en .fx-chip { max-width: min(50vw, 300px); }
 
   <!-- Legacy district chips (hidden — existing districtFilter JS) -->
   <div class="district-bar region-picker-legacy" id="districtBar" hidden aria-hidden="true">
-    <button class="chip active" data-district="all" data-i18n="districtAll">전 지역</button>
-    <button class="chip" data-district="마포구" data-i18n="districtMapo">마포</button>
+    <button class="chip" data-district="all" data-i18n="districtAll">전 지역</button>
+    <button class="chip active" data-district="마포구" data-i18n="districtMapo">마포</button>
     <button class="chip" data-district="서대문구" data-i18n="districtSeodaemun">서대문</button>
     <button class="chip" data-district="영등포구" data-i18n="districtYeongdeungpo">영등포</button>
     <button class="chip" data-district="강서구" data-i18n="districtGangseo">강서</button>
@@ -3480,12 +3480,25 @@ function drugDisplayName(drugKey) {
   return appLang === "en" ? info.displayNameEn : info.displayName;
 }
 
+// 당분간 마포(신촌·이대) 집중: 기본 필터·카메라. 지역 버튼으로만 다른 권역 이동.
+const DEFAULT_MAP_FOCUS = {
+  district: "마포구",
+  sidoSlug: "seoul",
+  sigunguSlug: "mapo",
+  center: { lat: 37.5563, lng: 126.9368 },
+  zoom: 14
+};
+
 // ─────────── State ───────────
 let state = {
   drugKey: "mounjaro",
   dose: "2.5mg",
-  districtFilter: "all",
-  region: { sidoSlug: "", sigunguSlug: "", legacyDistrict: "" },
+  districtFilter: DEFAULT_MAP_FOCUS.district,
+  region: {
+    sidoSlug: DEFAULT_MAP_FOCUS.sidoSlug,
+    sigunguSlug: DEFAULT_MAP_FOCUS.sigunguSlug,
+    legacyDistrict: DEFAULT_MAP_FOCUS.district
+  },
 };
 let CLINIC_DATA = { clinics: [] };
 let REGION_DATA = null;
@@ -5371,8 +5384,8 @@ async function bootstrapClinicData() {
 // ─────────── Map init ───────────
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 37.5470, lng: 126.9300 },
-    zoom: 13,
+    center: DEFAULT_MAP_FOCUS.center,
+    zoom: DEFAULT_MAP_FOCUS.zoom,
     disableDefaultUI: true,
     zoomControl: true,
     zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
@@ -5545,10 +5558,18 @@ function renderResults() {
 function fitInitialDefaultMapView() {
   if (!map || !CLINIC_DATA || !Array.isArray(CLINIC_DATA.clinics)) return;
   const params = new URLSearchParams(window.location.search || "");
-  if (params.get("clinic")) return;
-  if (state.districtFilter !== "all") return;
-  if (state.region && (state.region.sidoSlug || state.region.sigunguSlug)) return;
-  focusMapByDistrict("all");
+  // Deep-linked clinic / explicit region URL wins over the temporary Mapo default.
+  if (params.get("clinic") || params.get("institution") || params.get("i")) return;
+  if (params.get("sido") || params.get("sigungu")) return;
+  if (state.districtFilter && state.districtFilter !== "all") {
+    focusMapByDistrict(state.districtFilter);
+    return;
+  }
+  if (state.region && (state.region.sidoSlug || state.region.sigunguSlug)) {
+    focusMapByRegion();
+    return;
+  }
+  focusMapByDistrict(DEFAULT_MAP_FOCUS.district);
 }
 
 // ─────────── Detail sheet ───────────
@@ -5819,11 +5840,11 @@ document.getElementById("districtBar").addEventListener("click", (e) => {
   };
 
   const shellState = {
-    sidoSlug: "",
-    sidoName: I18N[appLang].regionNationWide || "전국",
-    sigunguSlug: "",
-    sigunguName: "",
-    legacyDistrict: ""
+    sidoSlug: DEFAULT_MAP_FOCUS.sidoSlug,
+    sidoName: appLang === "en" ? "Seoul" : "서울",
+    sigunguSlug: DEFAULT_MAP_FOCUS.sigunguSlug,
+    sigunguName: appLang === "en" ? "Mapo" : "마포",
+    legacyDistrict: DEFAULT_MAP_FOCUS.district
   };
 
   function regionName(item) {
