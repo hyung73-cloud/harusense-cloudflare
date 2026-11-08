@@ -1079,6 +1079,11 @@ body {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
+.price-value .price-missing {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
 .price-row.highlight .price-value { color: var(--blue-deep); }
 .price-value .won {
   font-size: 12px;
@@ -1552,6 +1557,7 @@ body {
   }
   .rep-pair-cell.mounjaro { order: 1; }
   .rep-pair-cell.wegovy { order: 2; }
+  .rep-pair-cell.eppe { order: 3; }
   .rep-pair-cell {
     padding-bottom: 6px;
     border-bottom: 1px solid var(--line-soft);
@@ -3070,6 +3076,8 @@ const I18N = {
     updateSuffix: " 업데이트",
     markerNoStock: "재고 없음",
     markerCollecting: "정보 수집중",
+    markerPriceMissing: "가격 미등록",
+    priceMissing: "가격 미등록",
     verifiedBadge: "확인된 정보",
     stockOn: "재고 있음", stockOff: "재고 없음",
     callLabel: "바로 전화하기",
@@ -3134,6 +3142,8 @@ const I18N = {
     updateSuffix: " ago",
     markerNoStock: "Out of stock",
     markerCollecting: "Collecting info",
+    markerPriceMissing: "Price not listed",
+    priceMissing: "Price not listed",
     verifiedBadge: "Verified listing",
     stockOn: "In stock", stockOff: "Out of stock",
     callLabel: "Call now",
@@ -3513,10 +3523,21 @@ function formatMarkerPrice(v) {
 function clinicStockAvailable(clinic, key) {
   return !(clinic.stock && clinic.stock[key] === false);
 }
+function clinicHasPriceValue(clinic, key) {
+  const v = clinic && clinic.prices ? clinic.prices[key] : null;
+  return v != null && v !== "" && Number.isFinite(Number(v));
+}
+function clinicHasStockFlag(clinic, key) {
+  return !!(clinic && clinic.stock && Object.prototype.hasOwnProperty.call(clinic.stock, key));
+}
 function clinicHasSelectedPrice(clinic) {
   const key = priceKey(state.drugKey, state.dose);
-  const v = clinic.prices && clinic.prices[key];
-  return clinicStockAvailable(clinic, key) && v != null && v !== "" && Number.isFinite(Number(v));
+  return clinicStockAvailable(clinic, key) && clinicHasPriceValue(clinic, key);
+}
+function markerStatusLabel(clinic, key) {
+  if (clinic.stock && clinic.stock[key] === false) return t("markerNoStock");
+  if (clinicHasStockFlag(clinic, key)) return t("markerPriceMissing");
+  return t("markerCollecting");
 }
 
 function parseDateMs(value) {
@@ -5026,7 +5047,7 @@ function renderMarkers() {
         <div class="price-marker">${buildPriceMarkerHtml(clinic, price, key)}</div>
       `;
     } else {
-      const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
+      const label = markerStatusLabel(clinic, key);
       el.className = `marker-wrap no-price${pharmacyCls}`;
       const shouldHideInfoLabel = clinic.stock && clinic.stock[key] === false && clinicAllSelectedDrugStockOutExpired(clinic);
       el.innerHTML = shouldHideInfoLabel
@@ -5085,7 +5106,7 @@ function renderClinicList() {
     const hasPrice = clinicHasSelectedPrice(clinic) && price != null;
     const label = hasPrice
       ? buildPriceMarkerHtml(clinic, price, key)
-      : (clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting"));
+      : markerStatusLabel(clinic, key);
 
     rows.push({ clinic, price: hasPrice ? price : Number.POSITIVE_INFINITY, hasPrice, label });
   });
@@ -5151,7 +5172,7 @@ function openSheet(clinic) {
     const info = DRUG_INFO[dKey];
     info.doses.forEach(dose => {
       const k = priceKey(dKey, dose);
-      if (clinic.prices && clinic.prices[k] != null && clinic.prices[k] !== "") {
+      if (clinicHasPriceValue(clinic, k) || clinicHasStockFlag(clinic, k)) {
         allKeys.push({ key: k, drugKey: dKey, dose });
       }
     });
@@ -5159,15 +5180,20 @@ function openSheet(clinic) {
 
   const selectedKey = priceKey(state.drugKey, state.dose);
   const priceRows = allKeys.map(({ key, drugKey, dose }) => {
-    const info = DRUG_INFO[drugKey];
     const isHighlight = key === selectedKey;
     const inStock = clinicStockAvailable(clinic, key);
     const stockBadge = `<span class="stock-badge ${inStock ? "on" : "off"}">${inStock ? t("stockOn") : t("stockOff")}</span>`;
-    const formatted = formatPriceFull(Number(clinic.prices[key]));
+    const hasPrice = clinicHasPriceValue(clinic, key);
+    const priceHtml = hasPrice
+      ? (() => {
+          const formatted = formatPriceFull(Number(clinic.prices[key]));
+          return `${formatted.value}${formatted.suffix}`;
+        })()
+      : `<span class="price-missing">${t("priceMissing")}</span>`;
     return `
       <div class="price-row${isHighlight ? " highlight" : ""}">
         <div class="price-drug">${drugDisplayName(drugKey)}<span class="dose">${dose}</span>${stockBadge}</div>
-        <div class="price-value">${formatted.value}${formatted.suffix}</div>
+        <div class="price-value">${priceHtml}</div>
       </div>`;
   }).join("");
 
@@ -6136,7 +6162,7 @@ function renderRepresentativeEditor() {
     return `
       <div class="rep-item" data-key="${key}">
         <div class="rep-dose">${item.dose}</div>
-        <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price}" placeholder="가격" />
+        <input class="price-input" data-price-key="${key}" inputmode="numeric" value="${price === "" || price == null ? "" : price}" placeholder="가격(원)" autocomplete="off" />
         <button class="stock-toggle ${inStock ? "on" : "off"}" type="button" data-stock-key="${key}" data-stock="${inStock ? "true" : "false"}">${inStock ? "재고 있음" : "재고 없음"}</button>
       </div>`;
   }
@@ -6691,7 +6717,7 @@ function initRepresentativeForm() {
         <div class="price-marker">${buildPriceMarkerHtml(clinic, price, key)}</div>
       `;
     } else {
-      const label = clinic.stock && clinic.stock[key] === false ? t("markerNoStock") : t("markerCollecting");
+      const label = markerStatusLabel(clinic, key);
       el.className = "marker-wrap no-price search-preview-marker" + pharmacyCls;
       el.innerHTML = `
         <div class="marker-dot"></div>
