@@ -751,12 +751,8 @@ function isExplicitlyOutOfStockValue(value) {
 
 function normalizeProviderPriceItems(items) {
   if (!items || typeof items !== "object" || Array.isArray(items)) return {};
-  const entries = Object.entries(items);
-  if (entries.length > MAX_ITEM_KEYS) {
-    throw new Error("too many price keys");
-  }
   const normalized = {};
-  for (const [key, value] of entries) {
+  for (const [key, value] of Object.entries(items)) {
     if (!ALLOWED_PRICE_KEYS.has(String(key))) continue;
     if (value && typeof value === "object" && !Array.isArray(value)) {
       let price = value.price;
@@ -785,6 +781,10 @@ function normalizeProviderPriceItems(items) {
         in_stock: true
       };
     }
+  }
+  // Count only allowlisted GLP-1 keys so service-board fields cannot block saves.
+  if (Object.keys(normalized).length > MAX_ITEM_KEYS) {
+    throw new Error("too many price keys");
   }
   return normalized;
 }

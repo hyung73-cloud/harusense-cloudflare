@@ -6904,11 +6904,14 @@ async function handleRepSubmit() {
   }
 
   const apiItems = {};
-  document.querySelectorAll("[data-price-key]").forEach(input => {
+  // Only GLP-1 dose fields in the price board. Service-board inputs share data-price-key
+  // but are not allowlisted for updatePrices and previously exceeded MAX_ITEM_KEYS.
+  document.querySelectorAll(".rep-price-board [data-price-key]").forEach(input => {
     const key = input.dataset.priceKey;
     const raw = input.value.replace(/[^0-9]/g, "");
     input.value = raw;
-    const stockButton = document.querySelector(`[data-stock-key="${key}"]`);
+    const row = input.closest(".rep-item");
+    const stockButton = row ? row.querySelector("[data-stock-key]") : null;
     const inStock = stockButton ? stockButton.dataset.stock === "true" : true;
     apiItems[key] = { price: raw, in_stock: inStock };
   });
