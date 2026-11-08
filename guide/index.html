@@ -1,15 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-<!-- Google Tag Manager -->
-<script>
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-WQK2X8JV');
-</script>
-<!-- End Google Tag Manager -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
 
@@ -82,10 +73,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 }
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg: #f4f6f9;
@@ -107,7 +94,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   --alert: #dc2626;
   --alert-bg: #fef2f2;
   --alert-ink: #991b1b;
-  --font: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', system-ui, sans-serif;
+  --font: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
@@ -1285,6 +1272,27 @@ h3:first-of-type { margin-top: 8px; }
       iframe = null;
     }
   });
+})();
+</script>
+<!-- Google Tag Manager (deferred until idle after load) -->
+<script>
+window.dataLayer = window.dataLayer || [];
+(function () {
+  function loadGtm() {
+    if (window.__hsGtmLoaded) return;
+    window.__hsGtmLoaded = true;
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WQK2X8JV');
+  }
+  function schedule() {
+    if ('requestIdleCallback' in window) requestIdleCallback(loadGtm, { timeout: 3500 });
+    else setTimeout(loadGtm, 2500);
+  }
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule);
 })();
 </script>
 </body>

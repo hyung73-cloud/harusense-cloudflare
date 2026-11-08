@@ -45,6 +45,11 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
+<!-- Footer destinations: warm cache while the map is open -->
+<link rel="prefetch" href="/guide/" as="document" />
+<link rel="prefetch" href="/mounjaro/" as="document" />
+<link rel="prefetch" href="/wegovy/" as="document" />
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -130,10 +135,6 @@
 }
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard+Variable:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg:          #f7f8fa;
@@ -153,7 +154,7 @@
   --shadow-sm:   0 1px 2px rgba(17,24,39,0.06);
   --shadow-md:   0 4px 16px rgba(17,24,39,0.08);
   --shadow-lg:   0 20px 50px rgba(17,24,39,0.18);
-  --font: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', system-ui, sans-serif;
+  --font: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; }
