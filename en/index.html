@@ -6955,7 +6955,7 @@ window.initMap = initMap;
 })();
 </script>
 
-<!-- Google Maps: 로컬 facade가 LCP. Maps는 첫 입력 또는 딥링크 때 로드 -->
+<!-- Google Maps: facade는 로딩 덮개. 첫 페인트 직후 자동 로드(실사용 우선) -->
 <script>
 (function () {
   var started = false;
@@ -6977,15 +6977,6 @@ window.initMap = initMap;
     mapsHref = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=" + lang + "&region=KR";
     return mapsHref;
   }
-  function prefetchMaps() {
-    try {
-      var l = document.createElement("link");
-      l.rel = "prefetch";
-      l.as = "script";
-      l.href = mapsUrl();
-      document.head.appendChild(l);
-    } catch (e) {}
-  }
   function loadMaps() {
     if (started) return;
     started = true;
@@ -7001,15 +6992,11 @@ window.initMap = initMap;
   });
   var hit = document.getElementById("mapFacadeHit");
   if (hit) hit.addEventListener("click", loadMaps);
-  try {
-    var q = new URLSearchParams(location.search || "");
-    if (q.get("clinic") || q.get("id") || q.get("qr") || location.hash.length > 1) loadMaps();
-  } catch (e) {}
-  if ("requestIdleCallback" in window) {
-    requestIdleCallback(function () { prefetchMaps(); }, { timeout: 900 });
-  } else {
-    setTimeout(prefetchMaps, 400);
-  }
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      setTimeout(loadMaps, 0);
+    });
+  });
 })();
 </script>
 
