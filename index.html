@@ -7166,12 +7166,19 @@ function initRepresentativeForm() {
 
 // ─────────── 병의원/약국 검색 ───────────
 (function () {
-  // "하루센스" 클릭 시 강제 새로고침
+  // 브랜드 클릭 → 메인(/)으로. ?drug= 등 필터를 유지한 reload는 하지 않음.
   const brand = document.querySelector(".brand-name");
   if (brand) {
     brand.style.cursor = "pointer";
-    brand.title = "새로고침";
-    brand.addEventListener("click", () => location.reload());
+    brand.title = "메인으로";
+    brand.setAttribute("role", "link");
+    brand.addEventListener("click", () => {
+      if (location.pathname !== "/" || location.search || location.hash) {
+        location.assign("/");
+      } else {
+        location.reload();
+      }
+    });
   }
 
   const backdrop  = document.getElementById("searchBackdrop");

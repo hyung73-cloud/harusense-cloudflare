@@ -6756,12 +6756,20 @@ function initRepresentativeForm() {
 
 // ─────────── 병의원/약국 검색 ───────────
 (function () {
-  // "하루센스" 클릭 시 강제 새로고침
+  // Brand click → English home without drug filter query.
   const brand = document.querySelector(".brand-name");
   if (brand) {
     brand.style.cursor = "pointer";
-    brand.title = "새로고침";
-    brand.addEventListener("click", () => location.reload());
+    brand.title = "Go to main map";
+    brand.setAttribute("role", "link");
+    brand.addEventListener("click", () => {
+      const onEnHome = location.pathname === "/en/" || location.pathname === "/en";
+      if (!onEnHome || location.search || location.hash) {
+        location.assign("/en/");
+      } else {
+        location.reload();
+      }
+    });
   }
 
   const backdrop  = document.getElementById("searchBackdrop");
