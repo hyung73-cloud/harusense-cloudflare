@@ -53,9 +53,10 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-<link rel="prefetch" href="/guide/" as="document" />
-<link rel="prefetch" href="/mounjaro/" as="document" />
-<link rel="prefetch" href="/wegovy/" as="document" />
+<link rel="preconnect" href="https://maps.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://maps.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://maps.googleapis.com" />
+<link rel="dns-prefetch" href="https://maps.gstatic.com" />
 
 <script type="application/ld+json">
 {
@@ -757,7 +758,22 @@ body {
 #map {
   position: absolute;
   top: 134px; bottom: 38px; left: 0; right: 0;
-  background: var(--bg);
+  background: #e8eef5;
+  overflow: hidden;
+}
+#map:not(.map-ready)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, #e8eef5 0%, #f4f7fb 45%, #e8eef5 90%);
+  background-size: 200% 100%;
+  animation: hs-map-shimmer 1.15s ease-in-out infinite;
+}
+@keyframes hs-map-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 /* ─────────── Detail Sheet ─────────── */
@@ -5006,7 +5022,8 @@ async function bootstrapClinicData() {
 
 // ─────────── Map init ───────────
 function initMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
+  const mapEl = document.getElementById("map");
+  map = new google.maps.Map(mapEl, {
     center: DEFAULT_MAP_FOCUS.center,
     zoom: DEFAULT_MAP_FOCUS.zoom,
     disableDefaultUI: true,
@@ -5020,6 +5037,7 @@ function initMap() {
       { featureType: "transit.station", elementType: "labels", stylers: [{ visibility: "on" }] }
     ]
   });
+  if (mapEl) mapEl.classList.add("map-ready");
   bootstrapClinicData()
     .then(() => ensureMapHasPins())
     .then(() => {
@@ -6888,7 +6906,7 @@ window.initMap = initMap;
 </script>
 
 <!-- 하루센스: 첫 화면 즉시표시용 인라인 스냅샷 + 파스시점 병렬 프리페치 -->
-<script id="hs-bootstrap" type="application/json">{"last_updated":"2026-06-04","version":"excel-v4-verified-pins-no-places","curator_note":"엑셀 검수 좌표 기반 운영 핀. 가격/DB 기관은 /api/clinics와 병합하며, 자동 Places 좌표는 사용하지 않음.","districts":["마포구","서대문구","관악구","영등포구","용산구","광진구","강서구"],"clinics":[{"id":"clinic_12339695","name":"뉴센스의원","district":"마포구","address":"서울 마포구 신촌로 170 이대푸르지오시티 3층","lat":37.5563294,"lng":126.9442987,"phone":"02-3272-8885","verified":true,"prices":{"mounjaro_2.5mg":305000,"mounjaro_5mg":405000,"mounjaro_7.5mg":570000,"mounjaro_10mg":570000,"wegovy_0.25mg":249000,"wegovy_0.5mg":269000,"wegovy_1.0mg":309000,"wegovy_1.7mg":369000,"wegovy_2.4mg":429000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true,"wegovy_0.25mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"원장 직접 처방 · 일본어 상담 가능","source":"excel_v4_verified","institution_no":"12339695","updated_at":"2026-06-04"},{"id":"clinic_excel_001_item","name":"서울바램의원","district":"서대문구","address":"서울특별시 서대문구 신촌역로 22-5 신촌 청년푸드스토어 2층 53호","lat":37.558748,"lng":126.942917,"phone":"02-365-7575","verified":false,"prices":{"mounjaro_2.5mg":320000,"mounjaro_5mg":430000,"mounjaro_7.5mg":596000,"mounjaro_10mg":686000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"신촌기차역가까움","source":"excel_v4_verified"},{"id":"clinic_excel_002_item","name":"위비앙병원","district":"마포구","address":"서울특별시 마포구 아현동 346-56","lat":37.55709,"lng":126.952443,"phone":"02-6207-8811","verified":false,"prices":{"mounjaro_2.5mg":305000,"mounjaro_5mg":405000,"mounjaro_7.5mg":605000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true},"notes":"아현역","source":"excel_v4_verified"},{"id":"clinic_excel_003_item","name":"연세위더스의원","district":"마포구","address":"","lat":37.5574908,"lng":126.9251464,"phone":"02-323-1194","verified":false,"prices":{"mounjaro_2.5mg":335000,"mounjaro_5mg":450000,"mounjaro_7.5mg":579000,"mounjaro_10mg":579000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_004_item","name":"낙성대또본의원","district":"관악구","address":"","lat":37.4772204,"lng":126.9638055,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":320000,"mounjaro_5mg":430000,"mounjaro_7.5mg":570000,"mounjaro_10mg":580000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_005_item","name":"서여의도의원","district":"영등포구","address":"","lat":37.5289314,"lng":126.9203375,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":360000,"mounjaro_5mg":480000,"wegovy_0.5mg":330000,"wegovy_1.0mg":350000,"wegovy_1.7mg":420000,"wegovy_2.4mg":480000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_006_item","name":"로하스의원","district":"영등포구","address":"","lat":37.5267643,"lng":126.9271926,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":349000,"mounjaro_5mg":449000,"mounjaro_7.5mg":599000,"mounjaro_10mg":599000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_007_item","name":"닥터킴이비인후과의원","district":"영등포구","address":"","lat":37.5215394,"lng":126.9248093,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":320000,"mounjaro_5mg":410000,"mounjaro_7.5mg":560000,"mounjaro_10mg":560000,"wegovy_0.25mg":250000,"wegovy_0.5mg":270000,"wegovy_1.0mg":300000,"wegovy_1.7mg":370000,"wegovy_2.4mg":420000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true,"wegovy_0.25mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"","source":"excel_v4_verified","updated_at":"2026-06-04"},{"id":"clinic_excel_008_item","name":"아이엠유의원","district":"","address":"","lat":37.5585422,"lng":126.8264079,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":315000,"mounjaro_5mg":405000,"mounjaro_7.5mg":575000,"mounjaro_10mg":580000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_009_item","name":"밴스의원","district":"용산구","address":"","lat":37.5301751,"lng":126.9677165,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":374000,"mounjaro_5mg":484000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_010_365","name":"덕은365의원","district":"","address":"","lat":37.5800393,"lng":126.8708873,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":360000,"mounjaro_5mg":450000,"mounjaro_7.5mg":600000,"mounjaro_10mg":600000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_011_item","name":"다시봄의원","district":"","address":"","lat":37.5048589,"lng":126.9658328,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":315000,"mounjaro_5mg":410000,"mounjaro_7.5mg":560000,"mounjaro_10mg":560000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_012_item","name":"필모어의원","district":"","address":"","lat":37.5706106,"lng":126.9920933,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":300000,"mounjaro_5mg":385000,"mounjaro_7.5mg":540000,"mounjaro_10mg":540000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_013_item","name":"종로광장정형외과","district":"","address":"","lat":37.5712211,"lng":127.0024872,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":330000,"mounjaro_7.5mg":540000,"mounjaro_10mg":540000},"stock":{"mounjaro_2.5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_014_item","name":"목동기운찬마취통증의학과의원","district":"","address":"","lat":37.5370203,"lng":126.8714588,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":410000,"mounjaro_7.5mg":550000,"mounjaro_10mg":550000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_015_item","name":"엄소아과의원","district":"","address":"","lat":37.6774161,"lng":127.054858,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":410000,"mounjaro_7.5mg":560000,"mounjaro_10mg":560000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_016_item","name":"웰빙내과의원","district":"","address":"","lat":37.67018,"lng":126.7619286,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":410000,"mounjaro_7.5mg":560000,"mounjaro_10mg":560000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_017_365","name":"미래365가정의학과의원","district":"","address":"","lat":37.5583609,"lng":126.8550758,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":350000,"mounjaro_5mg":450000,"mounjaro_7.5mg":580000,"mounjaro_10mg":580000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_018_item","name":"서울투탑재활의학과","district":"","address":"","lat":37.556481,"lng":127.0820772,"phone":"","verified":false,"prices":{"wegovy_0.25mg":260000,"wegovy_0.5mg":290000,"wegovy_1.0mg":310000,"wegovy_1.7mg":390000,"wegovy_2.4mg":420000},"stock":{"wegovy_0.25mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_019_item","name":"샤프성형외과의원","district":"","address":"","lat":37.5037492,"lng":127.0235048,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":305000,"mounjaro_5mg":405000,"mounjaro_7.5mg":565000,"mounjaro_10mg":585000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_020_item","name":"삼성신내과의원","district":"광진구","address":"","lat":37.5410409,"lng":127.0664694,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":360000,"mounjaro_5mg":450000,"mounjaro_7.5mg":600000,"mounjaro_10mg":600000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_021_item","name":"강서아이엠유의원","district":"강서구","address":"","lat":37.5585422,"lng":126.8264079,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":410000,"mounjaro_7.5mg":545000,"mounjaro_10mg":545000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_022_365","name":"강동이엠365의원","district":"","address":"","lat":37.5725851,"lng":127.1758394,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":320000,"mounjaro_5mg":420000,"mounjaro_7.5mg":575000,"mounjaro_10mg":575000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"clinic_excel_023_item","name":"서울수정형외과의원","district":"","address":"","lat":37.625137,"lng":127.0268646,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":350000,"mounjaro_5mg":450000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true},"notes":"","source":"excel_v4_verified"},{"id":"pharmacy_01_item","name":"튼튼약국","district":"마포구","address":"서울 마포구 대흥로24길 24","lat":37.5542434,"lng":126.9469319,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":400000,"wegovy_0.25mg":240000,"wegovy_0.5mg":260000,"wegovy_1.0mg":280000,"wegovy_1.7mg":360000,"wegovy_2.4mg":418000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"wegovy_0.25mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy","updated_at":"2026-06-04"},{"id":"pharmacy_02_item","name":"맑은약국","district":"서대문구","address":"서울 서대문구 신촌로 107, 세인빌딩1층","lat":37.5556146,"lng":126.9378572,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":405000,"mounjaro_7.5mg":560000,"mounjaro_10mg":560000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"},{"id":"pharmacy_03_item","name":"세란약국","district":"서대문구","address":"서울 서대문구 연세로 39 1층","lat":37.5591264,"lng":126.9367267,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":304000,"mounjaro_5mg":403000,"mounjaro_7.5mg":570000,"mounjaro_10mg":570000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"},{"id":"pharmacy_04_item","name":"두리봄약국","district":"","address":"","lat":37.5447911,"lng":126.9495627,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":289900,"mounjaro_5mg":384900,"mounjaro_7.5mg":538900,"mounjaro_10mg":538900},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"},{"id":"pharmacy_05_item","name":"피크약국","district":"","address":"","lat":37.5508223,"lng":126.9150691,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":290000,"mounjaro_5mg":385000,"mounjaro_7.5mg":537000,"mounjaro_10mg":537000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"},{"id":"pharmacy_06_item","name":"셀약국","district":"","address":"","lat":37.5507977,"lng":126.9167221,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":290000,"mounjaro_5mg":390000,"mounjaro_7.5mg":539000,"mounjaro_10mg":539000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"},{"id":"pharmacy_07_item","name":"청심약국","district":"","address":"지우지말것/","lat":37.551053,"lng":126.9067976,"phone":"","verified":false,"prices":{},"stock":{},"notes":"","source":"excel_v4_verified","type":"pharmacy"}]}</script>
+<script id="hs-bootstrap" type="application/json">{"last_updated":"2026-06-04","version":"excel-v4-verified-pins-no-places","curator_note":"엑셀 검수 좌표 기반 운영 핀. 가격/DB 기관은 /api/clinics와 병합하며, 자동 Places 좌표는 사용하지 않음. (inline slim; full via clinics.json)","districts":["마포구","서대문구","관악구","영등포구","용산구","광진구","강서구"],"clinics":[{"id":"clinic_12339695","name":"뉴센스의원","district":"마포구","address":"서울 마포구 신촌로 170 이대푸르지오시티 3층","lat":37.5563294,"lng":126.9442987,"phone":"02-3272-8885","verified":true,"prices":{"mounjaro_2.5mg":305000,"mounjaro_5mg":405000,"mounjaro_7.5mg":570000,"mounjaro_10mg":570000,"wegovy_0.25mg":249000,"wegovy_0.5mg":269000,"wegovy_1.0mg":309000,"wegovy_1.7mg":369000,"wegovy_2.4mg":429000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true,"wegovy_0.25mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"원장 직접 처방 · 일본어 상담 가능","source":"excel_v4_verified","institution_no":"12339695","updated_at":"2026-06-04"},{"id":"clinic_excel_001_item","name":"서울바램의원","district":"서대문구","address":"서울특별시 서대문구 신촌역로 22-5 신촌 청년푸드스토어 2층 53호","lat":37.558748,"lng":126.942917,"phone":"02-365-7575","verified":false,"prices":{"mounjaro_2.5mg":320000,"mounjaro_5mg":430000,"mounjaro_7.5mg":596000,"mounjaro_10mg":686000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"신촌기차역가까움","source":"excel_v4_verified"},{"id":"clinic_excel_002_item","name":"위비앙병원","district":"마포구","address":"서울특별시 마포구 아현동 346-56","lat":37.55709,"lng":126.952443,"phone":"02-6207-8811","verified":false,"prices":{"mounjaro_2.5mg":305000,"mounjaro_5mg":405000,"mounjaro_7.5mg":605000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true},"notes":"아현역","source":"excel_v4_verified"},{"id":"clinic_excel_003_item","name":"연세위더스의원","district":"마포구","address":"","lat":37.5574908,"lng":126.9251464,"phone":"02-323-1194","verified":false,"prices":{"mounjaro_2.5mg":335000,"mounjaro_5mg":450000,"mounjaro_7.5mg":579000,"mounjaro_10mg":579000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified"},{"id":"pharmacy_01_item","name":"튼튼약국","district":"마포구","address":"서울 마포구 대흥로24길 24","lat":37.5542434,"lng":126.9469319,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":400000,"wegovy_0.25mg":240000,"wegovy_0.5mg":260000,"wegovy_1.0mg":280000,"wegovy_1.7mg":360000,"wegovy_2.4mg":418000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"wegovy_0.25mg":true,"wegovy_0.5mg":true,"wegovy_1.0mg":true,"wegovy_1.7mg":true,"wegovy_2.4mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy","updated_at":"2026-06-04"},{"id":"pharmacy_02_item","name":"맑은약국","district":"서대문구","address":"서울 서대문구 신촌로 107, 세인빌딩1층","lat":37.5556146,"lng":126.9378572,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":310000,"mounjaro_5mg":405000,"mounjaro_7.5mg":560000,"mounjaro_10mg":560000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"},{"id":"pharmacy_03_item","name":"세란약국","district":"서대문구","address":"서울 서대문구 연세로 39 1층","lat":37.5591264,"lng":126.9367267,"phone":"","verified":false,"prices":{"mounjaro_2.5mg":304000,"mounjaro_5mg":403000,"mounjaro_7.5mg":570000,"mounjaro_10mg":570000},"stock":{"mounjaro_2.5mg":true,"mounjaro_5mg":true,"mounjaro_7.5mg":true,"mounjaro_10mg":true},"notes":"","source":"excel_v4_verified","type":"pharmacy"}]}</script>
 <script>
 (function () {
   try {
@@ -6907,19 +6925,41 @@ window.initMap = initMap;
 })();
 </script>
 
-<!-- Google Maps JavaScript API -->
+<!-- Google Maps: 첫 페인트 1프레임 양보 후 로드 + footer prefetch는 맵 시작 뒤로 -->
 <script>
 (function () {
-  var lang = window.__HS_LANG === "en" ? "en" : "ko";
-  var s = document.createElement("script");
-  s.async = true;
-  s.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=" + lang + "&region=KR";
-  document.head.appendChild(s);
+  var started = false;
+  function warmFooterPages() {
+    try {
+      ["/guide/", "/mounjaro/", "/wegovy/"].forEach(function (href) {
+        var l = document.createElement("link");
+        l.rel = "prefetch";
+        l.as = "document";
+        l.href = href;
+        document.head.appendChild(l);
+      });
+    } catch (e) {}
+  }
+  function loadMaps() {
+    if (started) return;
+    started = true;
+    var lang = window.__HS_LANG === "en" ? "en" : "ko";
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAgN3qp_CPqJWGbtAL_KNEiSlke-73fGRg&loading=async&libraries=marker&callback=initMap&language=" + lang + "&region=KR";
+    document.head.appendChild(s);
+    setTimeout(warmFooterPages, 1200);
+  }
+  ["pointerdown", "touchstart", "keydown"].forEach(function (evt) {
+    window.addEventListener(evt, loadMaps, { once: true, passive: true, capture: true });
+  });
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      setTimeout(loadMaps, 0);
+    });
+  });
 })();
 </script>
-
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"44143251d0d240c49d6a51afe827638b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-
 
 </body>
 </html>
